@@ -1,4 +1,4 @@
-defmodule VinculiApiWeb.ConnCase do
+defmodule VinculiApi.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -19,10 +19,10 @@ defmodule VinculiApiWeb.ConnCase do
     quote do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
-      import VinculiApiWeb.Router.Helpers
+      import VinculiApi.Router.Helpers
 
       # The default endpoint for testing
-      @endpoint VinculiApiWeb.Endpoint
+      @endpoint VinculiApi.Endpoint
     end
   end
 

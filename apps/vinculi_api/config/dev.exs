@@ -6,7 +6,7 @@ use Mix.Config
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
-config :vinculi_api_web, VinculiApiWeb.Endpoint,
+config :vinculi_api, VinculiApi.Endpoint,
   http: [port: 4400],
   debug_errors: true,
   code_reloader: true,

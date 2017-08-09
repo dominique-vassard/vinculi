@@ -6,16 +6,16 @@
 use Mix.Config
 
 # General application configuration
-config :vinculi_api_web,
-  namespace: VinculiApiWeb,
+config :vinculi_api,
+  namespace: VinculiApi,
   ecto_repos: [VinculiApi.Repo]
 
 # Configures the endpoint
-config :vinculi_api_web, VinculiApiWeb.Endpoint,
+config :vinculi_api, VinculiApi.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "4WXM4AvUlbU+GCeGXAg39k8ZWmXGjc7m8PFasct9OY5H6rLZWzHJPXFC6tfpn2Pw",
-  render_errors: [view: VinculiApiWeb.ErrorView, accepts: ~w(json)],
-  pubsub: [name: VinculiApiWeb.PubSub,
+  render_errors: [view: VinculiApi.ErrorView, accepts: ~w(json)],
+  pubsub: [name: VinculiApi.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
@@ -23,7 +23,7 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-config :vinculi_api_web, :generators,
+config :vinculi_api, :generators,
   context_app: :vinculi_api
 
 # Import environment specific config. This must remain at the bottom

@@ -6,7 +6,7 @@ defmodule Vinculi.Proxy do
   def call(conn, _opts) do
     cond do
       conn.request_path =~ ~r{/api} ->
-        VinculiApiWeb.Endpoint.call(conn, [])
+        VinculiApi.Endpoint.call(conn, [])
       true ->
         VinculiWeb.Endpoint.call(conn, [])
     end

@@ -1,4 +1,4 @@
-defmodule VinculiApiWeb.ChannelCase do
+defmodule VinculiApi.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -21,7 +21,7 @@ defmodule VinculiApiWeb.ChannelCase do
       use Phoenix.ChannelTest
 
       # The default endpoint for testing
-      @endpoint VinculiApiWeb.Endpoint
+      @endpoint VinculiApi.Endpoint
     end
   end
 

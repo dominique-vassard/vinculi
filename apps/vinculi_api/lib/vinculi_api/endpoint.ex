@@ -1,14 +1,14 @@
-defmodule VinculiApiWeb.Endpoint do
-  use Phoenix.Endpoint, otp_app: :vinculi_api_web
+defmodule VinculiApi.Endpoint do
+  use Phoenix.Endpoint, otp_app: :vinculi_api
 
-  socket "/socket", VinculiApiWeb.UserSocket
+  socket "/socket", VinculiApi.UserSocket
 
   # Serve at "/" the static files from "priv/static" directory.
   #
   # You should set gzip to true if you are running phoenix.digest
   # when deploying your static files in production.
   plug Plug.Static,
-    at: "/", from: :vinculi_api_web, gzip: false,
+    at: "/", from: :vinculi_api, gzip: false,
     only: ~w(css fonts images js favicon.ico robots.txt)
 
   # Code reloading can be explicitly enabled under the
@@ -33,10 +33,10 @@ defmodule VinculiApiWeb.Endpoint do
   # Set :encryption_salt if you would also like to encrypt it.
   plug Plug.Session,
     store: :cookie,
-    key: "_vinculi_api_web_key",
+    key: "_vinculi_api_key",
     signing_salt: "Mfth4adl"
 
-  plug VinculiApiWeb.Router
+  plug VinculiApi.Router
 
   @doc """
   Callback invoked for dynamically configuring the endpoint.

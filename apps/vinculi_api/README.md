@@ -1,4 +1,4 @@
-# VinculiApiWeb
+# VinculiApi
 
 To start your Phoenix server:
 

@@ -1,12 +1,12 @@
-defmodule VinculiApiWeb do
+defmodule VinculiApi do
   @moduledoc """
   The entrypoint for defining your web interface, such
   as controllers, views, channels and so on.
 
   This can be used in your application as:
 
-      use VinculiApiWeb, :controller
-      use VinculiApiWeb, :view
+      use VinculiApi, :controller
+      use VinculiApi, :view
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -19,24 +19,24 @@ defmodule VinculiApiWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: VinculiApiWeb
+      use Phoenix.Controller, namespace: VinculiApi
       import Plug.Conn
-      import VinculiApiWeb.Router.Helpers
-      import VinculiApiWeb.Gettext
+      import VinculiApi.Router.Helpers
+      import VinculiApi.Gettext
     end
   end
 
   def view do
     quote do
-      use Phoenix.View, root: "lib/vinculi_api_web/templates",
-                        namespace: VinculiApiWeb
+      use Phoenix.View, root: "lib/vinculi_api/templates",
+                        namespace: VinculiApi
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_flash: 2, view_module: 1]
 
-      import VinculiApiWeb.Router.Helpers
-      import VinculiApiWeb.ErrorHelpers
-      import VinculiApiWeb.Gettext
+      import VinculiApi.Router.Helpers
+      import VinculiApi.ErrorHelpers
+      import VinculiApi.Gettext
     end
   end
 
@@ -51,7 +51,7 @@ defmodule VinculiApiWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import VinculiApiWeb.Gettext
+      import VinculiApi.Gettext
     end
   end
 

@@ -1,5 +1,5 @@
-defmodule VinculiApiWeb.ErrorView do
-  use VinculiApiWeb, :view
+defmodule VinculiApi.ErrorView do
+  use VinculiApi, :view
 
   def render("404.json", _assigns) do
     %{errors: %{detail: "Page not found"}}

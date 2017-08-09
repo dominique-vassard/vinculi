@@ -1,4 +1,4 @@
-defmodule VinculiApiWeb.ErrorHelpers do
+defmodule VinculiApi.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """
@@ -21,9 +21,9 @@ defmodule VinculiApiWeb.ErrorHelpers do
     #     dgettext "errors", "is invalid"
     #
     if count = opts[:count] do
-      Gettext.dngettext(VinculiApiWeb.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(VinculiApi.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(VinculiApiWeb.Gettext, "errors", msg, opts)
+      Gettext.dgettext(VinculiApi.Gettext, "errors", msg, opts)
     end
   end
 end

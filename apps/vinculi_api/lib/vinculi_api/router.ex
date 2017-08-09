@@ -1,11 +1,11 @@
-defmodule VinculiApiWeb.Router do
-  use VinculiApiWeb, :router
+defmodule VinculiApi.Router do
+  use VinculiApi, :router
 
   pipeline :api do
     plug :accepts, ["json"]
   end
 
-  scope "/api", VinculiApiWeb do
+  scope "/api", VinculiApi do
     pipe_through :api
     get "/test", TestController, :index
   end
