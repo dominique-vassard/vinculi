@@ -36,8 +36,6 @@ defmodule Vinculi.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:postgrex, ">= 0.0.0"},
-      {:ecto, "~> 2.1"},
       {:cowboy, "~> 1.0"},
       {:vinculi_web, in_umbrella: true},
       {:vinculi_api, in_umbrella: true}
@@ -51,10 +49,6 @@ defmodule Vinculi.Mixfile do
   #
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
-    [
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      "ecto.reset": ["ecto.drop", "ecto.setup"],
-      "test": ["ecto.create --quiet", "ecto.migrate", "test"]
-    ]
+    [ ]
   end
 end

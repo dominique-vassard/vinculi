@@ -1,4 +1,4 @@
 ExUnit.start()
 
-Ecto.Adapters.SQL.Sandbox.mode(Vinculi.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(VinculiDb.Repo, :manual)
 

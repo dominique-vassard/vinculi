@@ -17,8 +17,7 @@ defmodule Vinculi.Application do
     cowboy = Plug.Adapters.Cowboy.child_spec(:http, Vinculi.Proxy, [], [port: port])
 
     children = [
-      cowboy,
-      supervisor(Vinculi.Repo, [])
+      cowboy
     ]
 
     opts = [strategy: :one_for_one, name: Vinculi.Supervisor]
