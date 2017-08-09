@@ -41,7 +41,6 @@ defmodule VinculiApiWeb.Mixfile do
       {:phoenix_pubsub, "~> 1.0"},
       {:phoenix_ecto, "~> 3.2"},
       {:gettext, "~> 0.11"},
-      {:vinculi, in_umbrella: true},
       {:cowboy, "~> 1.0"}
     ]
   end
