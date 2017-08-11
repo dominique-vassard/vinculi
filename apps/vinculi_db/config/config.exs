@@ -33,3 +33,22 @@ config :vinculi_db,
 # here (which is why it is important to import them last).
 #
 import_config "#{Mix.env}.exs"
+
+# %% Coherence Configuration %%   Don't remove this line
+config :coherence,
+  user_schema: VinculiDb.Coherence.User,
+  repo: VinculiDb.Repo,
+  module: VinculiDb,
+  web_module: VinculiDbWeb,
+  router: VinculiDbWeb.Router,
+  messages_backend: VinculiDbWeb.Coherence.Messages,
+  logged_out_url: "/",
+  email_from_name: "Your Name",
+  email_from_email: "yourname@example.com",
+  opts: [:invitable, :confirmable, :authenticatable, :recoverable, :lockable,
+         :trackable, :unlockable_with_token, :registerable]
+
+# config :coherence, VinculiDbWeb.Coherence.Mailer,
+#   adapter: Swoosh.Adapters.Sendgrid,
+#   api_key: "your api key here"
+# %% End Coherence Configuration %%

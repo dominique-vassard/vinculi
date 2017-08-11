@@ -29,3 +29,23 @@ config :vinculi_web, :generators,
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
+
+# %% Coherence Configuration %%   Don't remove this line
+config :coherence,
+  user_schema: VinculiDb.Coherence.User,
+  repo: VinculiDb.Repo,
+  module: VinculiWeb,
+  web_module: VinculiWeb,
+  router: VinculiWeb.Router,
+  messages_backend: VinculiWeb.Coherence.Messages,
+  logged_out_url: "/",
+  email_from_name: "Vinculi",
+  email_from_email: "dominique.vassard@gmail.com",
+  opts: [:invitable, :confirmable, :authenticatable, :recoverable, :lockable,
+         :trackable, :unlockable_with_token, :registerable]
+
+config :coherence, VinculiWeb.Coherence.Mailer,
+  adapter: Swoosh.Adapters.Mailgun,
+  api_key: "key-781d9e526c394ab4d3d48df927bc4777",
+  domain: "sandbox5109e75f640a4bf58ab0b735923ed4e7.mailgun.org"
+# %% End Coherence Configuration %%
