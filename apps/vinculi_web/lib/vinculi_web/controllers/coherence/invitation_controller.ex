@@ -18,7 +18,8 @@ defmodule VinculiWeb.Coherence.InvitationController do
 
   alias Coherence.{Config}
   alias Coherence.ControllerHelpers, as: Helpers
-  alias Coherence.{Schemas, Messages}
+  alias Coherence.{Messages}
+  alias VinculiDb.Coherence.Schemas
 
   require Logger
 
