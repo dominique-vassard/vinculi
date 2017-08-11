@@ -1,5 +1,5 @@
-defmodule Vinculi.Repo do
-  use Ecto.Repo, otp_app: :vinculi
+defmodule VinculiDb.Repo do
+  use Ecto.Repo, otp_app: :vinculi_db
 
   @doc """
   Dynamically loads the repository url from the
