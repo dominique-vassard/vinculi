@@ -1,0 +1,1 @@
+web: cd apps/vinculi && MIX_ENV=prod mix run --no-halt

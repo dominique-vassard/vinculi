@@ -1,0 +1,52 @@
+dist: trusty
+sudo: required
+
+language: elixir
+elixir: 1.4.2
+otp_release: 19.3
+
+env:
+  global:
+    - NEO4J_PATH=/usr/local/neo4j-3.2.1
+    - NEO4J_CONF_PATH=/usr/local/neo4j-3.2.1/conf
+
+services:
+  - mysql
+  - postgresql
+  - neo4j
+
+before_script:
+  - mysql -e "CREATE DATABASE arsmagbdd_test;" -u root
+  - mysql -e "CREATE USER 'arsmagbdd'@'localhost' IDENTIFIED BY 'ars_magica';"
+  - mysql -e "GRANT ALL ON *.* TO 'arsmagbdd'@'localhost' WITH GRANT OPTION;"
+  - mysql -e "FLUSH PRIVILEGES;" -u root
+  - mysql -e "SELECT User, Host, Password, plugin FROM mysql.user;" -u root
+  - psql -c "CREATE USER vinculi WITH PASSWORD 'Koysteuk';" -U postgres
+  - psql -c "ALTER USER vinculi WITH SUPERUSER;" -U postgres
+  - psql -c "CREATE DATABASE vinculi_test;" -U postgres
+  - sudo service neo4j stop
+  - sleep 20
+  - mkdir $NEO4J_PATH/data/dbms
+  - cp config/travis/auth $NEO4J_PATH/data/dbms/auth
+  - echo 'dbms.allow_format_migration=true' | sudo tee --append $NEO4J_CONF_PATH/neo4j.conf
+  - echo 'dbms.connector.bolt.listen_address=0.0.0.0:7688' | sudo tee --append $NEO4J_CONF_PATH/neo4j.conf
+  - sudo sed -i 's|dbms.security.auth_enabled=false|dbms.security.auth_enabled=true|g' $NEO4J_CONF_PATH/neo4j.conf
+  - sudo chown -R travis:travis $NEO4J_PATH/data/dbms
+  - sudo service neo4j start
+  - sleep 30
+  - nvm install 6.2 && nvm use 6.2
+  - cd apps/vinculi_web/assets && npm install
+  - ./node_modules/brunch/bin/brunch build --production && cd ../../..
+
+script:
+  - mix test
+  - echo "Re-running tests for each app" ; for app in apps/**; do cd $app && mix test; cd ../.. ; done
+
+deploy:
+  provider: heroku
+  app: vinculi
+  api_key:
+    secure: KAmtZP7EorwYu8wu+7d8ykowhrQISOoU4Rx9uyXIaOOGUPAV2sv6R9OSlOYH+nZJltDkdwlGqPsh1bxyRq8BUYwPszki3Vjy3Edhbzbdcv7RcKKBTm4rOLL6dV1wbwVARYidXS+YS5BlTQKuisdVrdg99skTSHw5gZiSCM/tbm0+hTfGvaryTQUjshIutjNm6DHrxOZ/P6pli7bpGKJd1BHZqXZVwYDIZqlX39pbBun4O4sq6PhhwLdG9e1ndgffvHYh1tmVb36GQkKLtehKcivu5s6xM8k3s0Rtm+MczDXrtZJVns39SRWYicukkB/z/FzUmtqzUejvoujkfNOtIi9k6W7rQAfrnlozcUIp5WjWTbDokH7p9bk2jMx+fHxvO3vbZ8Vam0WsqcBg5sTfLYVpI0cGSBfEQlavkaUfvyChVClZ4d1BaPEX920h4f7dU8m0ClMEGs5gRy2KpYVMr3olaLLOledCjqPlxbbxMRCnTK1pZIx+SrybqMR+gYsHd2dJ9y2nAItPaFmwdT8GdU1JPa6L2OT+q2h+1G14Pbi8O6oAakQ/TOiFvCQ/U6OiZsgZbXM4kByI2pu6weYMW0bUUyOYFdVKu3rAYKlOCmBGbZFIbcYNamEazI8klG3XvIBAHzj9Cc5seAnaZaIWVb3t6Q4w8X1mV5Orkq13/qo=
+  buildpack:
+    - https://github.com/HashNuke/heroku-buildpack-elixir.git
+    - https://github.com/gjaldon/heroku-buildpack-phoenix-static.git
