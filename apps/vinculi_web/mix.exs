@@ -55,6 +55,6 @@ defmodule VinculiWeb.Mixfile do
   #
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
-    ["test": ["ecto.create --quiet", "ecto.migrate", "test"]]
+    [ ]
   end
 end
