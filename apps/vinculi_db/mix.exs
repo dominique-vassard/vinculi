@@ -12,6 +12,7 @@ defmodule VinculiDb.Mixfile do
      elixirc_paths: elixirc_paths(Mix.env),
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     aliases: aliases(),
      deps: deps()]
   end
 
@@ -45,5 +46,12 @@ defmodule VinculiDb.Mixfile do
     [{:postgrex, ">= 0.0.0"},
      {:ecto, "~> 2.1"},
      {:coherence, "~> 0.5"}]
+  end
+
+  defp aliases do
+    ["ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+     "ecto.reset": ["ecto.drop", "ecto.setup"],
+     "test": ["ecto.create --quiet", "ecto.migrate", "test"]
+    ]
   end
 end
