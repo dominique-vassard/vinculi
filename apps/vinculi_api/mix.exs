@@ -42,6 +42,7 @@ defmodule VinculiApi.Mixfile do
       {:phoenix_ecto, "~> 3.2"},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
+      {:ars_magica, in_umbrella: true},
       {:vinculi_db, in_umbrella: true}
     ]
   end
