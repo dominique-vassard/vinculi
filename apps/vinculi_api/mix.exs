@@ -43,7 +43,8 @@ defmodule VinculiApi.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:ars_magica, in_umbrella: true},
-      {:vinculi_db, in_umbrella: true}
+      {:vinculi_db, in_umbrella: true},
+      {:vinculi_graph, in_umbrella: true}
     ]
   end
 
