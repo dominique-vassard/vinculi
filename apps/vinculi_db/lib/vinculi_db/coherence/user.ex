@@ -8,6 +8,7 @@ defmodule VinculiDb.Coherence.User do
   schema "users" do
     field :first_name, :string
     field :last_name, :string
+    field :name, :string
     field :email, :string
     coherence_schema()
 
@@ -32,12 +33,34 @@ defmodule VinculiDb.Coherence.User do
     |> validate_format(:email, email_regex)
     |> update_change(:email, &String.downcase/1)
     |> unique_constraint(:email)
+    |> put_name()
   end
 
   def changeset(model, params, :password) do
     model
     |> cast(params, ~w(password password_confirmation reset_password_token reset_password_sent_at))
     |> validate_coherence_password_reset(params)
+  end
+
+  def put_name(changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{first_name: first_name, last_name: last_name}} ->
+        put_change(changeset, :name, first_name <> " " <> last_name)
+      _ ->
+        changeset
+    end
+  end
+
+  @doc """
+  Computes password hash from pass
+  """
+  def put_password_hash(changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{pass: pass}} ->
+        put_change(changeset, :password, Comeonin.Bcrypt.hashpwsalt(pass))
+      _ ->
+        changeset
+    end
   end
 
   @doc """
