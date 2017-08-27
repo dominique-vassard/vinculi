@@ -38,7 +38,7 @@ defmodule VinculiDb.Coherence.Messages do
   def could_not_find_that_email_address, do: "Could not find that email address"
   def forgot_your_password, do: "Forgot your password?"
   def http_authentication_required, do: "HTTP Authentication Required"
-  def incorrect_login_or_password(opts), do: "Incorrect #{opts["login_field"]} or password."
+  def incorrect_login_or_password(opts), do: "Incorrect #{opts[:login_field]} or password."
   def invalid_current_password, do: "invalid current password"
   def invalid_invitation, do: "Invalid Invitation. Please contact the site administrator."
   def invalid_request, do: "Invalid Request."
@@ -73,7 +73,7 @@ defmodule VinculiDb.Coherence.Messages do
   def you_must_confirm_your_account, do: "You must confirm your account before you can login."
   def your_account_has_been_unlocked, do: "Your account has been unlocked"
   def your_account_is_not_locked, do: "Your account is not locked."
-  def verify_user_token(opts), do: "Invalid #{opts["user_token"]} error: #{opts["error"]}"
+  def verify_user_token(opts), do: "Invalid #{opts[:user_token]} error: #{opts[:error]}"
   def you_are_using_an_invalid_security_token,
     do: "You are using an invalid security token for this site! This security\n" <>
       "violation has been logged.\n"
