@@ -44,7 +44,7 @@ config :coherence,
   messages_backend: VinculiDb.Coherence.Messages,
   logged_out_url: "/",
   email_from_name: "Vinculi",
-  email_from_email: "dominique.vassard@gmail.com",
+  email_from_email: "contact@mg.vinculi.com",
   opts: [:invitable, :confirmable, :authenticatable, :recoverable, :lockable,
          :trackable, :unlockable_with_token, :registerable]
 
