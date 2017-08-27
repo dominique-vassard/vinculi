@@ -1,5 +1,7 @@
 defmodule VinculiDb.UserTestHelpers do
   use ExUnit.CaseTemplate
+
+  alias VinculiDb.Coherence.Helpers
   alias VinculiDb.Coherence.User
 
   @doc """
@@ -7,7 +9,7 @@ defmodule VinculiDb.UserTestHelpers do
   """
   def get_changeset_from_email(email, valid_attrs) do
     attrs = Map.put(valid_attrs, :email, email)
-    User.user_changeset(%User{}, attrs)
+    Helpers.user_changeset(%User{}, attrs)
   end
 
   @doc """

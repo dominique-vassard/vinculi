@@ -5,9 +5,11 @@ defmodule VinculiDb.Coherence.Invitation do
   use Ecto.Schema
   import Ecto.Changeset
 
-
+  alias VinculiDb.Coherence.Helpers
 
   schema "invitations" do
+    field :first_name, :string
+    field :last_name, :string
     field :name, :string
     field :email, :string
     field :token, :string
@@ -24,10 +26,7 @@ defmodule VinculiDb.Coherence.Invitation do
   @spec changeset(Ecto.Schema.t, Map.t) :: Ecto.Changeset.t
   def changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(name email token))
-    |> validate_required([:name, :email])
-    |> unique_constraint(:email)
-    |> validate_format(:email, ~r/@/)
+    |> Helpers.user_changeset(params)
   end
 
   @doc """
