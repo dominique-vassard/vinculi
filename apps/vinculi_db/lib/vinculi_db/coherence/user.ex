@@ -1,5 +1,14 @@
 defmodule VinculiDb.Coherence.User do
-  @moduledoc false
+  @moduledoc """
+    Coherence user schema, augmented for the Vinculi needs
+
+    fields are:
+      - first_name  (string)  3 < nb characters < 40
+      - last_name   (string)  3 < nb characters < 40
+      - email       (string)  must be valid, is unique
+      - password    (string)  must co,tain at least 1 uppercase char, 1
+        lowercase char, 1 digit and 1 special char
+  """
   use Ecto.Schema
   use Coherence.Schema
 
@@ -15,6 +24,15 @@ defmodule VinculiDb.Coherence.User do
     timestamps()
   end
 
+  @doc """
+    Initial changeset.
+    Requires:
+      - first name
+      - last name
+      - email
+      - password
+      - password confirmation
+  """
   def changeset(model, params \\ %{}) do
     model
     |> user_changeset(params)
@@ -23,6 +41,13 @@ defmodule VinculiDb.Coherence.User do
     |> validate_coherence(params)
   end
 
+  @doc """
+    User changeset.
+    Validates:
+      - first name
+      - last name
+      - email
+  """
   def user_changeset(model, params) do
     email_regex = ~r/^[\w-+.]+@[a-z0-9-]+\.[a-z]+(\.{1}[a-z]+)?$/i
     model
@@ -36,12 +61,20 @@ defmodule VinculiDb.Coherence.User do
     |> put_name()
   end
 
+  @doc """
+    Password changeset.
+    Validates password
+  """
   def changeset(model, params, :password) do
     model
     |> cast(params, ~w(password password_confirmation reset_password_token reset_password_sent_at))
     |> validate_coherence_password_reset(params)
   end
 
+  @doc """
+    As name is required by Coherence, this function computes one by concatening
+    first name and last name
+  """
   def put_name(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{first_name: first_name, last_name: last_name}} ->

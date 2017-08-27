@@ -156,4 +156,16 @@ defmodule VinculiDb.Coherence.UserTest do
         in changeset.errors
     end
   end
+
+  # Test put_name function
+  test "put_name/1 adds a computed name to changeset" do
+    changeset = change(%User{}, @valid_user_attrs)
+    |> User.put_name()
+    %{first_name: first_name, last_name: last_name} = @valid_user_attrs
+
+    assert changeset.valid?
+    assert {:name, first_name <> " " <> last_name}
+      in changeset.changes
+
+  end
 end
