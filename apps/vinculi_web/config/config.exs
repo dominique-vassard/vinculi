@@ -8,7 +8,8 @@ use Mix.Config
 # General application configuration
 config :vinculi_web,
   namespace: VinculiWeb,
-  ecto_repos: [VinculiDb.Repo]
+  ecto_repos: [VinculiDb.Repo],
+  fallback_locale: "fr"
 
 # Configures the endpoint
 config :vinculi_web, VinculiWeb.Endpoint,
