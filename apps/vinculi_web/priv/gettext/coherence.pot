@@ -46,7 +46,7 @@ msgstr ""
 msgid "Already logged in."
 msgstr ""
 
-#: lib/vinculi_web/templates/coherence/registration/show.html.eex:25
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:29
 msgid "Are you sure?"
 msgstr ""
 
@@ -97,11 +97,11 @@ msgstr ""
 msgid "Create my Account"
 msgstr ""
 
-#: lib/vinculi_web/templates/coherence/registration/show.html.eex:22
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:26
 msgid "Delete"
 msgstr ""
 
-#: lib/vinculi_web/templates/coherence/registration/show.html.eex:21
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:25
 msgid "Edit"
 msgstr ""
 
@@ -117,7 +117,7 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: lib/vinculi_web/templates/coherence/registration/show.html.eex:15
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:19
 msgid "Email:"
 msgstr ""
 
@@ -128,7 +128,8 @@ msgid "First name"
 msgstr ""
 
 #: lib/vinculi_web/coherence_messages.ex:35
-#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:15
+#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:16
+#: lib/vinculi_web/views/coherence/translation_helpers.ex:4
 msgid "Forgot your password?"
 msgstr ""
 
@@ -192,7 +193,8 @@ msgid "Invitation sent."
 msgstr ""
 
 #: lib/vinculi_web/coherence_messages.ex:48
-#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:18
+#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:19
+#: lib/vinculi_web/views/coherence/translation_helpers.ex:7
 msgid "Invite Someone"
 msgstr ""
 
@@ -210,12 +212,9 @@ msgstr ""
 msgid "Maximum Login attempts exceeded. Your account has been locked."
 msgstr ""
 
-#: lib/vinculi_web/templates/coherence/registration/show.html.eex:4
-msgid "Name:"
-msgstr ""
-
 #: lib/vinculi_web/coherence_messages.ex:50
-#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:17
+#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:18
+#: lib/vinculi_web/views/coherence/translation_helpers.ex:6
 msgid "Need An Account?"
 msgstr ""
 
@@ -280,7 +279,8 @@ msgid "Resend Invitation!"
 msgstr ""
 
 #: lib/vinculi_web/coherence_messages.ex:57
-#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:19
+#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:20
+#: lib/vinculi_web/views/coherence/translation_helpers.ex:8
 msgid "Resend confirmation email"
 msgstr ""
 
@@ -305,7 +305,8 @@ msgid "Send Invitation"
 msgstr ""
 
 #: lib/vinculi_web/coherence_messages.ex:60
-#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:16
+#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:17
+#: lib/vinculi_web/views/coherence/translation_helpers.ex:5
 msgid "Send an unlock email"
 msgstr ""
 
@@ -319,12 +320,14 @@ msgstr ""
 
 #: lib/vinculi_web/coherence_messages.ex:61
 #: lib/vinculi_web/templates/coherence/session/new.html.eex:27
-#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:20
+#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:21
+#: lib/vinculi_web/views/coherence/translation_helpers.ex:9
 msgid "Sign In"
 msgstr ""
 
 #: lib/vinculi_web/coherence_messages.ex:62
-#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:21
+#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:22
+#: lib/vinculi_web/views/coherence/translation_helpers.ex:10
 msgid "Sign Out"
 msgstr ""
 
@@ -428,4 +431,16 @@ msgstr ""
 
 #: lib/vinculi_web/coherence_messages.ex:56
 msgid "required"
+msgstr ""
+
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:4
+msgid "First name:"
+msgstr ""
+
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:8
+msgid "Last name:"
+msgstr ""
+
+#: lib/vinculi_web/templates/coherence/registration/form.html.eex:37
+msgid "Current password"
 msgstr ""

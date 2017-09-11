@@ -1,8 +1,12 @@
 <h2><%= dgettext "coherence", "Show account" %></h2>
 <ul>
   <li>
-    <strong><%= dgettext "coherence", "Name:" %></strong>
-    <%= @user.name %>
+    <strong><%= dgettext "coherence", "First name:" %></strong>
+    <%= @user.first_name %>
+  </li>
+  <li>
+    <strong><%= dgettext "coherence", "Last name:" %></strong>
+    <%= @user.last_name %>
   </li>
   <%= unless (login_field = Coherence.Config.login_field) == :email do %>
     <li>

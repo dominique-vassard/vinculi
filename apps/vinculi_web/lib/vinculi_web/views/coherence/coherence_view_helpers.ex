@@ -74,7 +74,7 @@ defmodule VinculiWeb.Coherence.ViewHelpers do
   """
   @spec coherence_links(conn, atom, Keyword.t) :: tuple
   def coherence_links(conn, which, opts \\ [])
-  def coherence_links(conn, :new_session, opts) do
+  def coherence_links(conn, :new_session, _opts) do
     recover_link  = TranslationHelpers.recover_link()
     unlock_link   = TranslationHelpers.unlock_link()
     register_link = TranslationHelpers.register_link()

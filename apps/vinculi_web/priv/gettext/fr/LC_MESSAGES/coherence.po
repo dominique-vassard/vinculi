@@ -46,7 +46,7 @@ msgstr "Compte mis à jour avec succès."
 msgid "Already logged in."
 msgstr "Déjà connecté."
 
-#: lib/vinculi_web/templates/coherence/registration/show.html.eex:25
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:29
 msgid "Are you sure?"
 msgstr "Etes-vous sûr(e)?"
 
@@ -97,11 +97,11 @@ msgstr "Créer un nouveau mot de passe"
 msgid "Create my Account"
 msgstr "Créer mon compte"
 
-#: lib/vinculi_web/templates/coherence/registration/show.html.eex:22
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:26
 msgid "Delete"
 msgstr "Supprimer"
 
-#: lib/vinculi_web/templates/coherence/registration/show.html.eex:21
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:25
 msgid "Edit"
 msgstr "Modifier"
 
@@ -117,7 +117,7 @@ msgstr "Modifier le compte"
 msgid "Email"
 msgstr "Email"
 
-#: lib/vinculi_web/templates/coherence/registration/show.html.eex:15
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:19
 msgid "Email:"
 msgstr "Email:"
 
@@ -128,7 +128,8 @@ msgid "First name"
 msgstr "Prénom"
 
 #: lib/vinculi_web/coherence_messages.ex:35
-#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:15
+#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:16
+#: lib/vinculi_web/views/coherence/translation_helpers.ex:4
 msgid "Forgot your password?"
 msgstr "Mot de passe oublié?"
 
@@ -192,7 +193,8 @@ msgid "Invitation sent."
 msgstr "Invitation envoyée."
 
 #: lib/vinculi_web/coherence_messages.ex:48
-#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:18
+#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:19
+#: lib/vinculi_web/views/coherence/translation_helpers.ex:7
 msgid "Invite Someone"
 msgstr "Inviter un nouvel utilisateur"
 
@@ -210,12 +212,9 @@ msgstr "Configuration du mailer requise!"
 msgid "Maximum Login attempts exceeded. Your account has been locked."
 msgstr "Nombre maximul d'essai de connexion dépassé. Votre compte a été bloqué."
 
-#: lib/vinculi_web/templates/coherence/registration/show.html.eex:4
-msgid "Name:"
-msgstr "Nom:"
-
 #: lib/vinculi_web/coherence_messages.ex:50
-#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:17
+#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:18
+#: lib/vinculi_web/views/coherence/translation_helpers.ex:6
 msgid "Need An Account?"
 msgstr "S'inscrire"
 
@@ -280,7 +279,8 @@ msgid "Resend Invitation!"
 msgstr "Envoyer l'invitation à nouveau"
 
 #: lib/vinculi_web/coherence_messages.ex:57
-#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:19
+#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:20
+#: lib/vinculi_web/views/coherence/translation_helpers.ex:8
 msgid "Resend confirmation email"
 msgstr "Envoyer l'email de confirmation à nouveau"
 
@@ -305,7 +305,8 @@ msgid "Send Invitation"
 msgstr "Envoyer une invitation"
 
 #: lib/vinculi_web/coherence_messages.ex:60
-#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:16
+#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:17
+#: lib/vinculi_web/views/coherence/translation_helpers.ex:5
 msgid "Send an unlock email"
 msgstr "Envoyer un email de déblocage"
 
@@ -319,12 +320,14 @@ msgstr "Voir le compte"
 
 #: lib/vinculi_web/coherence_messages.ex:61
 #: lib/vinculi_web/templates/coherence/session/new.html.eex:27
-#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:20
+#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:21
+#: lib/vinculi_web/views/coherence/translation_helpers.ex:9
 msgid "Sign In"
 msgstr "Se connecter"
 
 #: lib/vinculi_web/coherence_messages.ex:62
-#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:21
+#: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:22
+#: lib/vinculi_web/views/coherence/translation_helpers.ex:10
 msgid "Sign Out"
 msgstr "Déconnexion"
 
@@ -429,3 +432,15 @@ msgstr "non bloqué"
 #: lib/vinculi_web/coherence_messages.ex:56
 msgid "required"
 msgstr "requis"
+
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:4
+msgid "First name:"
+msgstr "Prénom:"
+
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:8
+msgid "Last name:"
+msgstr "Nom:"
+
+#: lib/vinculi_web/templates/coherence/registration/form.html.eex:37
+msgid "Current password"
+msgstr "Mot de passe actuel"
