@@ -24,6 +24,8 @@ defmodule VinculiWeb.TestHelpers do
     |> put_change(:confirmation_token, "")
     |> put_change(:confirmed_at, Ecto.DateTime.from_erl :calendar.local_time())
     |> put_change(:confirmation_sent_at, Ecto.DateTime.from_erl :calendar.local_time())
+    |> put_change(:reset_password_token, "token123456")
+    |> put_change(:reset_password_sent_at, Ecto.DateTime.from_erl :calendar.local_time())
     |> Repo.insert!()
   end
 
