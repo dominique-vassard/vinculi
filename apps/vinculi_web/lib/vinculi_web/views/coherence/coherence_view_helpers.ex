@@ -4,6 +4,7 @@ defmodule VinculiWeb.Coherence.ViewHelpers do
   """
   use Phoenix.HTML
   alias Coherence.Config
+  alias VinculiWeb.Coherence.TranslationHelpers
   import VinculiWeb.Gettext
 
   @type conn :: Plug.Conn.t
@@ -73,11 +74,11 @@ defmodule VinculiWeb.Coherence.ViewHelpers do
   """
   @spec coherence_links(conn, atom, Keyword.t) :: tuple
   def coherence_links(conn, which, opts \\ [])
-  def coherence_links(conn, :new_session, opts) do
-    recover_link  = Keyword.get opts, :recover, @recover_link
-    unlock_link   = Keyword.get opts, :unlock, @unlock_link
-    register_link = Keyword.get opts, :register, @register_link
-    confirm_link  = Keyword.get opts, :confirm, @confirm_link
+  def coherence_links(conn, :new_session, _opts) do
+    recover_link  = TranslationHelpers.recover_link()
+    unlock_link   = TranslationHelpers.unlock_link()
+    register_link = TranslationHelpers.register_link()
+    confirm_link  = TranslationHelpers.confirm_link()
 
     user_schema = Coherence.Config.user_schema
     [
@@ -93,9 +94,9 @@ defmodule VinculiWeb.Coherence.ViewHelpers do
   def coherence_links(conn, :layout, opts) do
     list_tag      = Keyword.get opts, :list_tag, :li
     signout_class = Keyword.get opts, :signout_class, "navbar-form"
-    signin        = Keyword.get opts, :signin, @signin_link
-    signout       = Keyword.get opts, :signout, @signout_link
-    register      = Keyword.get opts, :register, @register_link
+    signin        = TranslationHelpers.signin_link()
+    signout       = TranslationHelpers.signout_link()
+    register      = TranslationHelpers.register_link()
 
     if Coherence.logged_in?(conn) do
       current_user = Coherence.current_user(conn)
@@ -135,7 +136,7 @@ defmodule VinculiWeb.Coherence.ViewHelpers do
   end
 
   @spec recover_link(conn, String.t) :: tuple
-  def recover_link(conn, text \\ @recover_link), do:
+  def recover_link(conn, text \\ TranslationHelpers.recover_link()), do:
     link(text, to: coherence_path(@helpers, :password_path, conn, :new))
 
   @spec register_link(conn, module, false | String.t) :: [any] | []
@@ -145,7 +146,7 @@ defmodule VinculiWeb.Coherence.ViewHelpers do
   end
 
   @spec register_link(conn, String.t) :: tuple
-  def register_link(conn, text \\ @register_link), do:
+  def register_link(conn, text \\ TranslationHelpers.register_link()), do:
     link(text, to: coherence_path(@helpers, :registration_path, conn, :new))
 
   @spec unlock_link(conn, module, false | String.t) :: [any] | []
@@ -155,7 +156,7 @@ defmodule VinculiWeb.Coherence.ViewHelpers do
   end
 
   @spec unlock_link(conn, String.t) :: tuple
-  def unlock_link(conn, text \\ @unlock_link), do:
+  def unlock_link(conn, text \\ TranslationHelpers.unlock_link()), do:
     link(text, to: coherence_path(@helpers, :unlock_path, conn, :new))
 
   @spec invitation_link(conn, String.t) :: tuple
@@ -164,7 +165,7 @@ defmodule VinculiWeb.Coherence.ViewHelpers do
   end
 
   @spec signout_link(conn, String.t, String.t) :: tuple
-  def signout_link(conn, text \\ @signout_link, signout_class \\ "") do
+  def signout_link(conn, text \\ TranslationHelpers.signout_link(), signout_class \\ "") do
     link(text, to: coherence_path(@helpers, :session_path, conn, :delete), method: :delete, class: signout_class)
   end
 

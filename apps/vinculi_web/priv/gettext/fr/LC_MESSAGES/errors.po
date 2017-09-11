@@ -1,0 +1,86 @@
+## `msgid`s in this file come from POT (.pot) files.
+##
+## Do not add, change, or remove `msgid`s manually here as
+## they're tied to the ones in the corresponding POT file
+## (with the same domain).
+##
+## Use `mix gettext.extract --merge` or `mix gettext.merge`
+## to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: fr\n"
+
+msgid "can't be blank"
+msgstr "ne peut pas être vide"
+
+msgid "has already been taken"
+msgstr "déjà utilisé"
+
+msgid "is invalid"
+msgstr "est invalide"
+
+msgid "must be accepted"
+msgstr "doit être accepté"
+
+msgid "has invalid format"
+msgstr "a un format invalide"
+
+msgid "has an invalid entry"
+msgstr "contient une entrée non valide"
+
+msgid "is reserved"
+msgstr "est réservé"
+
+msgid "does not match confirmation"
+msgstr "ne correspond pas à la confirmation"
+
+msgid "is still associated with this entry"
+msgstr "est déjà associé à cette entrée"
+
+msgid "are still associated with this entry"
+msgstr "sont déjà associés à cette entrée"
+
+msgid "should be %{count} character(s)"
+msgid_plural "should be %{count} character(s)"
+msgstr[0] "doit contenir %{count} caractère(s)"
+msgstr[1] "doivent contenir %{count} caractère(s)"
+
+msgid "should have %{count} item(s)"
+msgid_plural "should have %{count} item(s)"
+msgstr[0] "doit contenir %{count} items"
+msgstr[1] "doivent contenir %{count} items"
+
+msgid "should be at least %{count} character(s)"
+msgid_plural "should be at least %{count} character(s)"
+msgstr[0] "doit être d'une longueur d'au moins %{count} caractère(s)"
+msgstr[1] "doivent être d'une longueur d'au moins %{count} caractère(s)"
+
+msgid "should have at least %{count} item(s)"
+msgid_plural "should have at least %{count} item(s)"
+msgstr[0] "doit contenir au moins %{count} items"
+msgstr[1] "doivent contenir au moins %{count} items"
+
+msgid "should be at most %{count} character(s)"
+msgid_plural "should be at most %{count} character(s)"
+msgstr[0] "doit être d'une longueur maximale de %{count} caractère(s)"
+msgstr[1] "doivent être d'une longueur maximale de %{count} caractère(s)"
+
+msgid "should have at most %{count} item(s)"
+msgid_plural "should have at most %{count} item(s)"
+msgstr[0] "doit contenir au maximum %{count} items"
+msgstr[1] "doivent contenir au maximum %{count} items"
+
+msgid "must be less than %{number}"
+msgstr "doit être inférieur à %{number}"
+
+msgid "must be greater than %{number}"
+msgstr "doit être supérieur à  %{number}"
+
+msgid "must be less than or equal to %{number}"
+msgstr "doit être inférieur ou égal à %{number}"
+
+msgid "must be greater than or equal to %{number}"
+msgstr "doit être supérieur ou égal à %{number}"
+
+msgid "must be equal to %{number}"
+msgstr "doit être égal à %{number}"

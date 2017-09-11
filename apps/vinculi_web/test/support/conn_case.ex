@@ -23,6 +23,9 @@ defmodule VinculiWeb.ConnCase do
 
       # The default endpoint for testing
       @endpoint VinculiWeb.Endpoint
+
+      # Custom deps
+      import VinculiWeb.TestHelpers
     end
   end
 
