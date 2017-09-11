@@ -2,13 +2,11 @@ defmodule VinculiWeb.Coherence.SessionViewtest do
   use VinculiWeb.ConnCase, async: true
   import Phoenix.View
 
-  alias VinculiDb.Coherence.Schemas
-
   describe "Test with locale" do
     setup [:setup_locale]
 
     @tag locale: "fr"
-    test "GET /invitations/new", %{conn: conn} do
+    test "GET /session/new", %{conn: conn} do
 
       content = render_to_string(VinculiWeb.Coherence.SessionView,
                                  "new.html", conn: conn, remember: false)
