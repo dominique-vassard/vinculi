@@ -2,6 +2,7 @@ defmodule VinculiWeb.TestHelpers do
   import Ecto.Changeset
 
   use Phoenix.ConnTest
+  use ExUnit.CaseTemplate
 
   alias VinculiDb.Coherence.User
   alias VinculiDb.Repo
@@ -78,4 +79,18 @@ defmodule VinculiWeb.TestHelpers do
     {:ok, conn: conn, user: user}
   end
   def setup_login(_context), do: :ok
+
+  @doc """
+    Check if given routes requires authentication
+  """
+  def check_authentication_required_routes(routes) do
+    Enum.each(routes, fn conn -> assert html_response(conn, 302) end)
+  end
+
+  @doc """
+    Check if given routes are public
+  """
+  def check_public_routes(routes) do
+    Enum.each(routes, fn conn -> assert html_response(conn, 200) end)
+  end
 end

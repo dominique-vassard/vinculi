@@ -1,16 +1,13 @@
 defmodule VinculiWeb.Coherence.InvitationControllerTest do
   use VinculiWeb.ConnCase, async: true
 
-  test "Requires authentication on all pages", %{conn: conn} do
-    Enum.each(
-      [get(conn, invitation_path(conn, :edit, 123)),
+  test "Requires authentication on all routes", %{conn: conn} do
+    routes = [get(conn, invitation_path(conn, :edit, 123)),
        # post(conn, invitation_path(conn, :create_user)),
        get(conn, invitation_path(conn, :new)),
        post(conn, invitation_path(conn, :create)),
-       get(conn, invitation_path(conn, :resend, 123)),],
-       fn conn ->
-        assert html_response(conn, 302)
-       end)
+       get(conn, invitation_path(conn, :resend, 123))]
+    check_authentication_required_routes(routes)
   end
 
   describe "Test with logged users" do
@@ -18,8 +15,7 @@ defmodule VinculiWeb.Coherence.InvitationControllerTest do
 
     @tag login: true
     test "GET /invitations/new", %{conn: conn, user: _user} do
-
-      conn = get conn, "/invitations/new"
+      conn = get conn, invitation_path(conn, :new)
       assert html_response(conn, 200)
     end
   end
