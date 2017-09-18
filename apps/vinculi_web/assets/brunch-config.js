@@ -22,7 +22,7 @@ exports.config = {
     stylesheets: {
       joinTo: "css/app.css",
       order: {
-        after: ["priv/static/css/app.scss"] // concat app.css last
+        after: ["css/app.scss", "node_modules/colors.css/css/colors.css"] // concat app.css last
       }
     },
     templates: {
@@ -77,6 +77,9 @@ exports.config = {
       jQuery: 'jquery',
       Popper: 'popper.js',
       bootstrap: 'bootstrap' // require Bootstrap JavaScript globally too
+    },
+    styles: {
+      "colors.css": ["css/colors.css"]
     }
   }
 };
