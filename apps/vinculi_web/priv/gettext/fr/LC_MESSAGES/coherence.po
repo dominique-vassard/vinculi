@@ -12,7 +12,7 @@ msgstr ""
 
 #: lib/vinculi_web/emails/coherence/user_email.ex:27
 msgid "%{site_name} - Confirm your new account"
-msgstr "%{ssite_name} - Confirmez votre nouveau compte"
+msgstr "%{site_name} - Confirmez votre nouveau compte"
 
 #: lib/vinculi_web/emails/coherence/user_email.ex:36
 msgid "%{site_name} - Invitation to create a new account"
