@@ -36,7 +36,6 @@ defmodule VinculiWeb.Coherence.RegistrationViewtest do
       assert String.contains? content, "Nom"
       assert String.contains? content, "Email"
       assert String.contains? content, "Modifier"
-      assert String.contains? content, "Supprimer"
     end
 
     @tag locale: "fr", login: true

@@ -13,7 +13,6 @@ defmodule VinculiWeb.Coherence.SessionViewtest do
       assert String.contains? content, "Email"
       assert String.contains? content, "Mot de passe"
       assert String.contains? content, "Mot de passe oublié?"
-      assert String.contains? content, "S&#39;inscrire"
     end
   end
 end
