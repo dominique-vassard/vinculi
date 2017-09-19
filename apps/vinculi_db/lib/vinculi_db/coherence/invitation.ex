@@ -3,7 +3,6 @@ defmodule VinculiDb.Coherence.Invitation do
   Schema to support inviting a someone to create an account.
   """
   use Ecto.Schema
-  import Ecto.Changeset
 
   alias VinculiDb.Coherence.Helpers
 
