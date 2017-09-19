@@ -60,7 +60,7 @@ msgstr "Jeton introuvable"
 #: lib/vinculi_web/templates/coherence/password/edit.html.eex:23
 #: lib/vinculi_web/templates/coherence/password/new.html.eex:15
 #: lib/vinculi_web/templates/coherence/registration/form.html.eex:57
-#: lib/vinculi_web/templates/coherence/session/new.html.eex:28
+#: lib/vinculi_web/templates/coherence/session/new.html.eex:32
 #: lib/vinculi_web/templates/coherence/unlock/new.html.eex:19
 msgid "Cancel"
 msgstr "Annuler"
@@ -193,6 +193,7 @@ msgid "Invitation sent."
 msgstr "Invitation envoyée."
 
 #: lib/vinculi_web/coherence_messages.ex:48
+#: lib/vinculi_web/templates/layout/menu_user.html.eex:5
 #: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:19
 #: lib/vinculi_web/views/coherence/translation_helpers.ex:7
 msgid "Invite Someone"
@@ -213,6 +214,7 @@ msgid "Maximum Login attempts exceeded. Your account has been locked."
 msgstr "Nombre maximul d'essai de connexion dépassé. Votre compte a été bloqué."
 
 #: lib/vinculi_web/coherence_messages.ex:50
+#: lib/vinculi_web/templates/layout/menu_no_user.html.eex:7
 #: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:18
 #: lib/vinculi_web/views/coherence/translation_helpers.ex:6
 msgid "Need An Account?"
@@ -227,7 +229,7 @@ msgstr "Un champ est invalide! Voire les erreurs ci-dessous."
 #: lib/vinculi_web/templates/coherence/invitation/edit.html.eex:40
 #: lib/vinculi_web/templates/coherence/password/edit.html.eex:10
 #: lib/vinculi_web/templates/coherence/registration/form.html.eex:44
-#: lib/vinculi_web/templates/coherence/session/new.html.eex:13
+#: lib/vinculi_web/templates/coherence/session/new.html.eex:17
 #: lib/vinculi_web/templates/coherence/unlock/new.html.eex:12
 msgid "Password"
 msgstr "Mot de passe"
@@ -262,7 +264,7 @@ msgstr "S'inscrire"
 msgid "Registration created successfully."
 msgstr "Inscription réussie."
 
-#: lib/vinculi_web/templates/coherence/session/new.html.eex:21
+#: lib/vinculi_web/templates/coherence/session/new.html.eex:25
 msgid "Remember Me?"
 msgstr "Se souvenir de moi?"
 
@@ -315,17 +317,20 @@ msgid "Send reset password link"
 msgstr "Envoyer un lien de réinitialisation de mot de passe"
 
 #: lib/vinculi_web/templates/coherence/registration/show.html.eex:1
+#: lib/vinculi_web/templates/layout/menu_user.html.eex:6
 msgid "Show account"
 msgstr "Voir le compte"
 
 #: lib/vinculi_web/coherence_messages.ex:61
-#: lib/vinculi_web/templates/coherence/session/new.html.eex:27
+#: lib/vinculi_web/templates/coherence/session/new.html.eex:31
+#: lib/vinculi_web/templates/layout/menu_no_user.html.eex:3
 #: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:21
 #: lib/vinculi_web/views/coherence/translation_helpers.ex:9
 msgid "Sign In"
 msgstr "Se connecter"
 
 #: lib/vinculi_web/coherence_messages.ex:62
+#: lib/vinculi_web/templates/layout/menu_user.html.eex:8
 #: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:22
 #: lib/vinculi_web/views/coherence/translation_helpers.ex:10
 msgid "Sign Out"
@@ -444,3 +449,7 @@ msgstr "Nom:"
 #: lib/vinculi_web/templates/coherence/registration/form.html.eex:37
 msgid "Current password"
 msgstr "Mot de passe actuel"
+
+#: lib/vinculi_web/templates/coherence/session/new.html.eex:3
+msgid "Login"
+msgstr "Connexion"
