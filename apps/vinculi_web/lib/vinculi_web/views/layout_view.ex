@@ -9,4 +9,8 @@ defmodule VinculiWeb.LayoutView do
   def account_menu(%{assigns: %{current_user: _user}} = conn) do
     render(__MODULE__, "menu_user.html", conn: conn)
   end
+
+  def account_menu(conn) do
+    render(__MODULE__, "menu_no_user.html", conn: conn)
+  end
 end
