@@ -49,7 +49,10 @@ defmodule VinculiWeb.Coherence.SessionController do
     login_field = Config.login_field()
     conn
     |> put_view(Module.concat(Config.web_module, Coherence.SessionView))
-    |> render(:new, [{login_field, ""}, remember: rememberable_enabled?()])
+    |> render(:new, [{login_field, ""},
+              remember: rememberable_enabled?(),
+              layout: {VinculiWeb.LayoutView, "app_light.html"}]
+              )
   end
 
   @doc """

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Hello Vinculi!</title>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+  </head>
+
+  <body class="bg-dark">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top border-bottom-1">
+    <a class="navbar-brand" href="/">Vinculi</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsVinculi" aria-controls="navbarsVinculi" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon">Toogle</span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarsVinculi">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active"><a class="nav-link" href="#">Admin</a></li>
+        <li class="nav-item active"><a class="nav-link" href="#">Constellation</a></li>
+      </ul>
+      <%= account_menu(@conn) %>
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="http://arsmargica.fr" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i> Ars Magica</a>
+        </li>
+      </ul>
+
+    </div>
+  </nav>
+
+  <!--CONTENT -->
+  <div class="container-fluid">
+      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+      <%= render @view_module, @view_template, assigns %>
+  </div>
+
+    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+  </body>
+</html>
