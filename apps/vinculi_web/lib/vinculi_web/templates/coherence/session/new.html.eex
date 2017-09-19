@@ -1,6 +1,6 @@
-<div class="jumbotron w-50 mx-auto">
+<div class="jumbotron w-25 mx-auto">
 <div class="mx-auto">
-  <center><h1><i class="fa fa-lock fa-2x" aria-hidden="true"></i> <%= dgettext "coherence", "Sign In" %></h1></center>
+  <center><h1><i class="fa fa-lock" aria-hidden="true"></i> <%= dgettext "coherence", "Login" %></h1></center>
   <br \>
 </div>
 
@@ -33,7 +33,8 @@
     </div>
 
     <div class="form-group">
-      <%= coherence_links(@conn, :new_session) %>
+      <%= link(dgettext("coherence", "Forgot your password?"), to: coherence_path(VinculiWeb.Router.Helpers, :password_path, @conn, :new)) %> |
+      <%= link(dgettext("coherence", "Resend Confirmation Instructions"), to: coherence_path(VinculiWeb.Router.Helpers, :confirmation_path, @conn, :new)) %>
     </div>
 
   <% end %>

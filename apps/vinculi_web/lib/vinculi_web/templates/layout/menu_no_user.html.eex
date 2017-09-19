@@ -4,6 +4,6 @@
     </li>
     <li class="nav-item active"><a class="nav-link" href="#">|</a></li>
     <li class="nav-item active">
-        <%= link(dgettext("coherence", "Need An Account?"), to: coherence_path(VinculiWeb.Router.Helpers, :registration_path, @conn, :new), class: "nav-link") %>
+        <%= link(dgettext("coherence", "Need An Account?"), to: coherence_path(VinculiWeb.Router.Helpers, :registration_path, @conn, :new), class: "nav-link btn btn-outline-info text-info") %>
     </li>
 </ul>
