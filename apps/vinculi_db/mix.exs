@@ -10,6 +10,7 @@ defmodule VinculiDb.Mixfile do
      lockfile: "../../mix.lock",
      elixir: "~> 1.4",
      elixirc_paths: elixirc_paths(Mix.env),
+     compilers: [:gettext] ++ Mix.compilers,
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      aliases: aliases(),
@@ -21,7 +22,7 @@ defmodule VinculiDb.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
-    [extra_applications: [:logger, :coherence],
+    [extra_applications: [:logger, :coherence, :gettext],
      mod: {VinculiDb.Application, []}]
   end
 
@@ -45,7 +46,8 @@ defmodule VinculiDb.Mixfile do
   defp deps do
     [{:postgrex, ">= 0.0.0"},
      {:ecto, "~> 2.1"},
-     {:coherence, "~> 0.5"}]
+     {:coherence, "~> 0.5"},
+     {:gettext, "~> 0.13"}]
   end
 
   defp aliases do
