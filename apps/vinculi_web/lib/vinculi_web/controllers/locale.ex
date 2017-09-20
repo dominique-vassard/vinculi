@@ -20,6 +20,10 @@ defmodule VinculiWeb.Locale do
     locale = @fallback_locale
 
     Gettext.put_locale(VinculiWeb.Gettext, locale)
+
+    # Because of coherence translation, force VinculiDb locale
+    Gettext.put_locale(VinculiDb.Gettext, locale)
+
     conn
     |> put_session(:locale, locale)
   end
