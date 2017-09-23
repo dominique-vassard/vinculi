@@ -6,8 +6,9 @@ defmodule VinculiDb.Coherence.User do
       - first_name  (string)  3 < nb characters < 40
       - last_name   (string)  3 < nb characters < 40
       - email       (string)  must be valid, is unique
-      - password    (string)  must co,tain at least 1 uppercase char, 1
+      - password    (string)  must cotain at least 1 uppercase char, 1
         lowercase char, 1 digit and 1 special char
+      - role_id     (int)     reelated to roles.id
   """
   use Ecto.Schema
   use Coherence.Schema
@@ -20,6 +21,7 @@ defmodule VinculiDb.Coherence.User do
     field :name, :string
     field :email, :string
     coherence_schema()
+    belongs_to :role, VinculiDb.Account.Role
 
     timestamps()
   end
