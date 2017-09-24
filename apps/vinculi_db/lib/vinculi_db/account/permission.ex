@@ -1,14 +1,15 @@
 defmodule VinculiDb.Account.Permission do
   use Ecto.Schema
-  import Ecto
   import Ecto.Changeset
-  import Ecto.Query
+
+  alias VinculiDb.Account.Role
+  alias VinculiDb.Account.RolePermission
 
   @required_fields ~w(name)
 
   schema "permissions" do
     field :name, :string
-    has_many :roles, VinculiDb.Account.Role
+    many_to_many :roles, Role, join_through: RolePermission, on_replace: :delete
 
     timestamps()
   end
