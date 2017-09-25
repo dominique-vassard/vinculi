@@ -3,6 +3,7 @@ defmodule VinculiDb.Account do
   The accounts context
   """
   alias VinculiDb.Repo
+  import Ecto.Query
 
   alias VinculiDb.Account.Role
   alias VinculiDb.Account.Permission
@@ -31,6 +32,20 @@ defmodule VinculiDb.Account do
   """
   def change_permission(%Permission{} = permission) do
     Permission.changeset(permission, %{})
+  end
+
+  def get_all_roles(options \\ :no_option)
+  def get_all_roles(:with_permissions) do
+    _get_all_roles()
+    |> Repo.preload(:permissions)
+  end
+
+  def get_all_roles(_opts) do
+    _get_all_roles()
+  end
+
+  defp _get_all_roles() do
+    Repo.all from r in Role
   end
 
   def get_role(role_id, option \\ :no_option)

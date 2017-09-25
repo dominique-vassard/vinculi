@@ -4,8 +4,9 @@ defmodule VinculiDb.AccountTest do
   alias VinculiDb.Account.Role
   alias VinculiDb.Account.Permission
 
-  def role_fixture do
-    Repo.insert! %Role{name: "Test role"}
+  def role_fixture(attrs \\ %{}) do
+    role_attrs = Map.merge(%Role{name: "Test role"}, attrs)
+    Repo.insert! role_attrs
   end
 
   def permission_fixture do
@@ -14,6 +15,28 @@ defmodule VinculiDb.AccountTest do
 
   test "change_role/1 returns a Ecto changeset" do
     assert %Ecto.Changeset{} = Account.change_role(%Role{})
+  end
+
+  describe "Test get_all_roles/1:" do
+    test "without option returns a Role without Permissions" do
+      role = role_fixture()
+      role2 = role_fixture(%{name: "Test role 2"})
+      res = Account.get_all_roles()
+      assert %Role{permissions: permissions} = Enum.find(res, fn(x) -> x.id == role.id end)
+      refute is_list permissions
+      assert %Role{permissions: permissions} = Enum.find(res, fn(x) -> x.id == role2.id end)
+      refute is_list permissions
+    end
+
+    test "with :with_permissions returns a Role with all Permissions" do
+      role = role_fixture()
+      role2 = role_fixture(%{name: "Test role 2"})
+      res = Account.get_all_roles :with_permissions
+      assert %Role{permissions: permissions} = Enum.find(res, fn(x) -> x.id == role.id end)
+      assert is_list permissions
+      assert %Role{permissions: permissions} = Enum.find(res, fn(x) -> x.id == role2.id end)
+      assert is_list permissions
+    end
   end
 
   describe "Test get_role/2:" do
