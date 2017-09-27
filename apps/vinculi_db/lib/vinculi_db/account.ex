@@ -3,7 +3,6 @@ defmodule VinculiDb.Account do
   The accounts context
   """
   alias VinculiDb.Repo
-  import Ecto.Query
 
   alias VinculiDb.Account.Role
   alias VinculiDb.Account.Permission
@@ -35,17 +34,32 @@ defmodule VinculiDb.Account do
   end
 
   def get_all_roles(options \\ :no_option)
-  def get_all_roles(:with_permissions) do
+
+  @doc """
+  Returns all Roles with asocations.
+
+  Valid associations are: :permissions, :users
+
+  ## Usage
+      Account.get_all_roles :permissions
+  """
+  def get_all_roles(with_assoc) when is_list with_assoc do
     _get_all_roles()
-    |> Repo.preload(:permissions)
+    |> Repo.preload(with_assoc)
   end
 
-  def get_all_roles(_opts) do
+  @doc """
+  Returns all Roles without permissions.
+
+  ## Usage
+      Account.get_all_roles()
+  """
+  def get_all_roles(_with_assoc) do
     _get_all_roles()
   end
 
   defp _get_all_roles() do
-    Repo.all from r in Role
+    Repo.all Role
   end
 
   def get_role(role_id, option \\ :no_option)
@@ -239,4 +253,11 @@ defmodule VinculiDb.Account do
   end
 
   defp do_get_permission_by(attributes), do: Repo.get_by Permission, attributes
+
+  @doc """
+    Get all permissions
+  """
+  def get_all_permissions() do
+    Repo.all Permission
+  end
 end

@@ -31,11 +31,21 @@ defmodule VinculiDb.AccountTest do
     test "with :with_permissions returns a Role with all Permissions" do
       role = role_fixture()
       role2 = role_fixture(%{name: "Test role 2"})
-      res = Account.get_all_roles :with_permissions
+      res = Account.get_all_roles [:permissions]
       assert %Role{permissions: permissions} = Enum.find(res, fn(x) -> x.id == role.id end)
       assert is_list permissions
       assert %Role{permissions: permissions} = Enum.find(res, fn(x) -> x.id == role2.id end)
       assert is_list permissions
+    end
+
+    test "with :with_users returns a Role with all Users" do
+      role = role_fixture()
+      role2 = role_fixture(%{name: "Test role 2"})
+      res = Account.get_all_roles [:users]
+      assert %Role{users: users} = Enum.find(res, fn(x) -> x.id == role.id end)
+      assert is_list users
+      assert %Role{users: users} = Enum.find(res, fn(x) -> x.id == role2.id end)
+      assert is_list users
     end
   end
 

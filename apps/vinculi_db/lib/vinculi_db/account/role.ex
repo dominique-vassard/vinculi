@@ -2,6 +2,7 @@ defmodule VinculiDb.Account.Role do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias VinculiDb.Coherence.User
   alias VinculiDb.Account.RolePermission
   alias VinculiDb.Account.Permission
 
@@ -9,6 +10,7 @@ defmodule VinculiDb.Account.Role do
 
   schema "roles" do
     field :name, :string
+    has_many :users, User
     many_to_many :permissions, Permission, join_through: RolePermission, on_replace: :delete
 
     timestamps()
