@@ -4,7 +4,9 @@ defmodule VinculiWeb.TestHelpers do
   use Phoenix.ConnTest
   use ExUnit.CaseTemplate
 
+  alias VinculiDb.TestSupport.RolePermissionFixtures
   alias VinculiDb.Coherence.User
+  alias VinculiDb.Account
   alias VinculiDb.Repo
 
   @user_attrs %{first_name: "John", last_name: "Duff",
@@ -19,6 +21,8 @@ defmodule VinculiWeb.TestHelpers do
   def insert_user(attrs \\ %{}) do
     user_attrs = Map.merge(@user_attrs, attrs)
 
+    RolePermissionFixtures.insert_fixtures()
+
     %User{}
     |> User.changeset(user_attrs)
     |> put_change(:confirmation_token, "")
@@ -26,6 +30,7 @@ defmodule VinculiWeb.TestHelpers do
     |> put_change(:confirmation_sent_at, Ecto.DateTime.from_erl :calendar.local_time())
     |> put_change(:reset_password_token, "token123456")
     |> put_change(:reset_password_sent_at, Ecto.DateTime.from_erl :calendar.local_time())
+    |> put_assoc(:role, Account.get_role_by(%{name: "Administrator"}))
     |> Repo.insert!()
   end
 
