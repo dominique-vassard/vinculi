@@ -7,5 +7,5 @@ config :logger, level: :info
 config :vinculi_db, VinculiDb.Repo,
   adapter: Ecto.Adapters.Postgres,
   url: System.get_env("DATABASE_URL"),
-  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "8"),
   ssl: true

@@ -21,7 +21,7 @@ defmodule VinculiWeb.LayoutViewTest do
     setup [:setup_locale, :setup_login]
 
     @tag login: true, locale: "fr"
-    test "GET /sessions/new : check menu with user", %{conn: conn, user: user} do
+    test "GET /sessions/new : check menu with user", %{conn: conn} do
       content = render_to_string(VinculiWeb.LayoutView,
                                  "menu_user.html",
                                  conn: conn)

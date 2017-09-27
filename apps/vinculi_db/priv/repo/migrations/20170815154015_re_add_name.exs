@@ -3,11 +3,11 @@ defmodule VinculiDb.Repo.Migrations.ReAddName do
 
   def change do
     alter table(:users) do
-      add :name, :string
+      add :name, :string, null: false
     end
 
     alter table(:invitations) do
-      add :name, :string
+      add :name, :string, null: false
     end
   end
 end

@@ -3,8 +3,8 @@ defmodule VinculiDb.Repo.Migrations.CreateCoherenceInvitable do
   def change do
     create table(:invitations) do
 
-      add :name, :string
-      add :email, :string
+      add :name, :string, null: false
+      add :email, :string, null: false
       add :token, :string
       timestamps()
     end

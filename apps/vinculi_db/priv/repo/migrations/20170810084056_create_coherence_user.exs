@@ -3,8 +3,8 @@ defmodule VinculiDb.Repo.Migrations.CreateCoherenceUser do
   def change do
     create table(:users) do
 
-      add :name, :string
-      add :email, :string
+      add :name, :string, null: false
+      add :email, :string, null: false
       # confirmable
       add :confirmation_token, :string
       add :confirmed_at, :utc_datetime
@@ -25,7 +25,7 @@ defmodule VinculiDb.Repo.Migrations.CreateCoherenceUser do
       add :last_sign_in_ip, :string
       # unlockable_with_token
       add :unlock_token, :string
-      
+
       timestamps()
     end
     create unique_index(:users, [:email])
