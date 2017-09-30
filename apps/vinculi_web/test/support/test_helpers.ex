@@ -19,7 +19,9 @@ defmodule VinculiWeb.TestHelpers do
   `attrs` will be merge in `@user_attrs` andused for insertion.
   """
   def insert_user(attrs \\ %{}) do
-    user_attrs = Map.merge(@user_attrs, attrs)
+    u_attrs = Map.merge(@user_attrs, attrs)
+    {role_name, user_attrs} = Map.pop(u_attrs, :role_name, "Administrator")
+
 
     RolePermissionFixtures.insert_fixtures()
 
@@ -30,7 +32,7 @@ defmodule VinculiWeb.TestHelpers do
     |> put_change(:confirmation_sent_at, Ecto.DateTime.from_erl :calendar.local_time())
     |> put_change(:reset_password_token, "token123456")
     |> put_change(:reset_password_sent_at, Ecto.DateTime.from_erl :calendar.local_time())
-    |> put_assoc(:role, Account.get_role_by(%{name: "Administrator"}))
+    |> put_assoc(:role, Account.get_role_by(%{name: role_name}))
     |> Repo.insert!()
   end
 
