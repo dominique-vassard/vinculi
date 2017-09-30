@@ -2,6 +2,12 @@
   <h2><%= gettext "Welcome to %{name}!", name: "Phoenix" %></h2>
   <p class="lead">A productive web framework that<br />does not compromise speed and maintainability.</p>
   <%= link "Invite your friends!", to: invitation_path(@conn, :new) %>
+
+  <br />
+  <br />
+  <br />
+  <br />
+  This is page: <%= @page_name %>
 </div>
 
 <div class="row marketing">
