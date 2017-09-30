@@ -86,6 +86,7 @@ defmodule VinculiWeb.Coherence.ConfirmationController do
           |> put_flash(:error, Messages.backend().confirmation_token_expired())
           |> redirect_to(:confirmation_edit_expired, params)
         else
+          user = Config.repo.preload(user, :role)
           changeset = Helpers.changeset(:confirmation, user_schema, user, %{
             confirmation_token: nil,
             confirmed_at: DateTime.utc,

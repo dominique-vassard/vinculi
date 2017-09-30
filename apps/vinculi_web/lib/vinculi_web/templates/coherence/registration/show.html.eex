@@ -19,12 +19,21 @@
     <strong><%= dgettext "coherence", "Email:" %></strong>
     <%= @user.email %>
   </li>
+  <li>
+    <strong><%= dgettext "coherence", "Role:" %></strong>
+    <%= Gettext.dgettext VinculiWeb.Gettext, "role", @user.role.name %>
+  </li>
 
 </ul>
 
-<%= link dgettext("coherence", "Edit"), to: registration_path(@conn, :edit) %>
+<%= dgettext("user", "Note: If you want to change your role, please contact an administrator.") %><br />
+
+<%= link dgettext("coherence", "Edit"),
+         to: registration_path(@conn, :edit),
+         class: "btn btn-outline-primary" %>
 <!-- | -->
 <% link dgettext("coherence", "Delete"),
         to: registration_path(@conn, :delete),
         method: :delete,
-        data: [confirm: dgettext("coherence", "Are you sure?")] %>
+        data: [confirm: dgettext("coherence", "Are you sure?")],
+        class: "btn btn-outline-info text-info" %>
