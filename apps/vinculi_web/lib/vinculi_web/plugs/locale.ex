@@ -1,4 +1,4 @@
-defmodule VinculiWeb.Locale do
+defmodule VinculiWeb.LocalePlug do
   @moduledoc """
     A plug to handle locale
 

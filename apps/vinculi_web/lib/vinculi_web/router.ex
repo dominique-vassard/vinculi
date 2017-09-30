@@ -9,7 +9,7 @@ defmodule VinculiWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug Coherence.Authentication.Session
-    plug VinculiWeb.Locale
+    plug VinculiWeb.LocalePlug
   end
 
   pipeline :protected do
@@ -19,7 +19,7 @@ defmodule VinculiWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug Coherence.Authentication.Session, protected: true
-    plug VinculiWeb.Locale
+    plug VinculiWeb.LocalePlug
   end
 
   # Add this block
