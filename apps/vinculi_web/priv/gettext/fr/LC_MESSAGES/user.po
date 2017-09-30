@@ -1,0 +1,28 @@
+## `msgid`s in this file come from POT (.pot) files.
+##
+## Do not add, change, or remove `msgid`s manually here as
+## they're tied to the ones in the corresponding POT file
+## (with the same domain).
+##
+## Use `mix gettext.extract --merge` or `mix gettext.merge`
+## to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: fr\n"
+
+msgid "Administrator"
+msgstr "Administrateur"
+
+msgid "Validator"
+msgstr "Validateur"
+
+msgid "Writer"
+msgstr "Editeur"
+
+msgid "Reader"
+msgstr "Lecteur"
+
+#, fuzzy
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:30
+msgid "Note: If you want to change your role, please contact an administrator."
+msgstr "Note: pour changer de rôle, merci de contacter un administrateur."
