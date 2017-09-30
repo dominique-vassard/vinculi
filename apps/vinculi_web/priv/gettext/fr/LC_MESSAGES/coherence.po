@@ -46,7 +46,7 @@ msgstr "Compte mis à jour avec succès."
 msgid "Already logged in."
 msgstr "Déjà connecté."
 
-#: lib/vinculi_web/templates/coherence/registration/show.html.eex:29
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:39
 msgid "Are you sure?"
 msgstr "Etes-vous sûr(e)?"
 
@@ -54,12 +54,12 @@ msgstr "Etes-vous sûr(e)?"
 msgid "Can't find that token"
 msgstr "Jeton introuvable"
 
-#: lib/vinculi_web/templates/coherence/confirmation/new.html.eex:15
+#: lib/vinculi_web/templates/coherence/confirmation/new.html.eex:14
 #: lib/vinculi_web/templates/coherence/invitation/edit.html.eex:53
-#: lib/vinculi_web/templates/coherence/invitation/new.html.eex:27
+#: lib/vinculi_web/templates/coherence/invitation/new.html.eex:29
 #: lib/vinculi_web/templates/coherence/password/edit.html.eex:23
-#: lib/vinculi_web/templates/coherence/password/new.html.eex:15
-#: lib/vinculi_web/templates/coherence/registration/form.html.eex:57
+#: lib/vinculi_web/templates/coherence/password/new.html.eex:14
+#: lib/vinculi_web/templates/coherence/registration/form.html.eex:59
 #: lib/vinculi_web/templates/coherence/session/new.html.eex:32
 #: lib/vinculi_web/templates/coherence/unlock/new.html.eex:19
 msgid "Cancel"
@@ -97,11 +97,11 @@ msgstr "Créer un nouveau mot de passe"
 msgid "Create my Account"
 msgstr "Créer mon compte"
 
-#: lib/vinculi_web/templates/coherence/registration/show.html.eex:26
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:36
 msgid "Delete"
 msgstr "Supprimer"
 
-#: lib/vinculi_web/templates/coherence/registration/show.html.eex:25
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:32
 msgid "Edit"
 msgstr "Modifier"
 
@@ -109,10 +109,10 @@ msgstr "Modifier"
 msgid "Edit Account"
 msgstr "Modifier le compte"
 
-#: lib/vinculi_web/templates/coherence/confirmation/new.html.eex:8
+#: lib/vinculi_web/templates/coherence/confirmation/new.html.eex:7
 #: lib/vinculi_web/templates/coherence/invitation/edit.html.eex:34
-#: lib/vinculi_web/templates/coherence/invitation/new.html.eex:20
-#: lib/vinculi_web/templates/coherence/registration/form.html.eex:30
+#: lib/vinculi_web/templates/coherence/invitation/new.html.eex:22
+#: lib/vinculi_web/templates/coherence/registration/form.html.eex:32
 #: lib/vinculi_web/templates/coherence/unlock/new.html.eex:6
 msgid "Email"
 msgstr "Email"
@@ -122,12 +122,13 @@ msgid "Email:"
 msgstr "Email:"
 
 #: lib/vinculi_web/templates/coherence/invitation/edit.html.eex:14
-#: lib/vinculi_web/templates/coherence/invitation/new.html.eex:8
-#: lib/vinculi_web/templates/coherence/registration/form.html.eex:10
+#: lib/vinculi_web/templates/coherence/invitation/new.html.eex:10
+#: lib/vinculi_web/templates/coherence/registration/form.html.eex:12
 msgid "First name"
 msgstr "Prénom"
 
 #: lib/vinculi_web/coherence_messages.ex:35
+#: lib/vinculi_web/templates/coherence/session/new.html.eex:36
 #: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:16
 #: lib/vinculi_web/views/coherence/translation_helpers.ex:4
 msgid "Forgot your password?"
@@ -193,6 +194,7 @@ msgid "Invitation sent."
 msgstr "Invitation envoyée."
 
 #: lib/vinculi_web/coherence_messages.ex:48
+#: lib/vinculi_web/templates/coherence/invitation/new.html.eex:2
 #: lib/vinculi_web/templates/layout/menu_user.html.eex:5
 #: lib/vinculi_web/views/coherence/coherence_view_helpers.ex:19
 #: lib/vinculi_web/views/coherence/translation_helpers.ex:7
@@ -200,8 +202,8 @@ msgid "Invite Someone"
 msgstr "Inviter un nouvel utilisateur"
 
 #: lib/vinculi_web/templates/coherence/invitation/edit.html.eex:20
-#: lib/vinculi_web/templates/coherence/invitation/new.html.eex:14
-#: lib/vinculi_web/templates/coherence/registration/form.html.eex:16
+#: lib/vinculi_web/templates/coherence/invitation/new.html.eex:16
+#: lib/vinculi_web/templates/coherence/registration/form.html.eex:18
 msgid "Last name"
 msgstr "Nom"
 
@@ -221,14 +223,14 @@ msgid "Need An Account?"
 msgstr "S'inscrire"
 
 #: lib/vinculi_web/templates/coherence/invitation/edit.html.eex:7
-#: lib/vinculi_web/templates/coherence/invitation/new.html.eex:4
-#: lib/vinculi_web/templates/coherence/registration/form.html.eex:5
+#: lib/vinculi_web/templates/coherence/invitation/new.html.eex:6
+#: lib/vinculi_web/templates/coherence/registration/form.html.eex:7
 msgid "Oops, something went wrong! Please check the errors below."
 msgstr "Un champ est invalide! Voire les erreurs ci-dessous."
 
 #: lib/vinculi_web/templates/coherence/invitation/edit.html.eex:40
 #: lib/vinculi_web/templates/coherence/password/edit.html.eex:10
-#: lib/vinculi_web/templates/coherence/registration/form.html.eex:44
+#: lib/vinculi_web/templates/coherence/registration/form.html.eex:46
 #: lib/vinculi_web/templates/coherence/session/new.html.eex:17
 #: lib/vinculi_web/templates/coherence/unlock/new.html.eex:12
 msgid "Password"
@@ -236,7 +238,7 @@ msgstr "Mot de passe"
 
 #: lib/vinculi_web/templates/coherence/invitation/edit.html.eex:46
 #: lib/vinculi_web/templates/coherence/password/edit.html.eex:16
-#: lib/vinculi_web/templates/coherence/registration/form.html.eex:50
+#: lib/vinculi_web/templates/coherence/registration/form.html.eex:52
 msgid "Password Confirmation"
 msgstr "Confirmation du mot de passe"
 
@@ -268,15 +270,16 @@ msgstr "Inscription réussie."
 msgid "Remember Me?"
 msgstr "Se souvenir de moi?"
 
-#: lib/vinculi_web/templates/coherence/confirmation/new.html.eex:3
+#: lib/vinculi_web/templates/coherence/confirmation/new.html.eex:2
+#: lib/vinculi_web/templates/coherence/session/new.html.eex:37
 msgid "Resend Confirmation Instructions"
 msgstr "Envoyer le mail de confirmation à nouveau"
 
-#: lib/vinculi_web/templates/coherence/confirmation/new.html.eex:14
+#: lib/vinculi_web/templates/coherence/confirmation/new.html.eex:13
 msgid "Resend Email"
 msgstr "Envoyer l'email à nouveau"
 
-#: lib/vinculi_web/templates/coherence/invitation/new.html.eex:29
+#: lib/vinculi_web/templates/coherence/invitation/new.html.eex:31
 msgid "Resend Invitation!"
 msgstr "Envoyer l'invitation à nouveau"
 
@@ -286,7 +289,7 @@ msgstr "Envoyer l'invitation à nouveau"
 msgid "Resend confirmation email"
 msgstr "Envoyer l'email de confirmation à nouveau"
 
-#: lib/vinculi_web/templates/coherence/password/new.html.eex:14
+#: lib/vinculi_web/templates/coherence/password/new.html.eex:13
 msgid "Reset Password"
 msgstr "Réinitialiser le mot de passe"
 
@@ -302,7 +305,7 @@ msgstr "Accès restreint"
 msgid "Send Instructions"
 msgstr "Envoyer les instructions"
 
-#: lib/vinculi_web/templates/coherence/invitation/new.html.eex:26
+#: lib/vinculi_web/templates/coherence/invitation/new.html.eex:28
 msgid "Send Invitation"
 msgstr "Envoyer une invitation"
 
@@ -312,7 +315,7 @@ msgstr "Envoyer une invitation"
 msgid "Send an unlock email"
 msgstr "Envoyer un email de déblocage"
 
-#: lib/vinculi_web/templates/coherence/password/new.html.eex:3
+#: lib/vinculi_web/templates/coherence/password/new.html.eex:2
 msgid "Send reset password link"
 msgstr "Envoyer un lien de réinitialisation de mot de passe"
 
@@ -446,10 +449,14 @@ msgstr "Prénom:"
 msgid "Last name:"
 msgstr "Nom:"
 
-#: lib/vinculi_web/templates/coherence/registration/form.html.eex:37
+#: lib/vinculi_web/templates/coherence/registration/form.html.eex:39
 msgid "Current password"
 msgstr "Mot de passe actuel"
 
 #: lib/vinculi_web/templates/coherence/session/new.html.eex:3
 msgid "Login"
 msgstr "Connexion"
+
+#: lib/vinculi_web/templates/coherence/registration/show.html.eex:23
+msgid "Role:"
+msgstr "Rôle:"

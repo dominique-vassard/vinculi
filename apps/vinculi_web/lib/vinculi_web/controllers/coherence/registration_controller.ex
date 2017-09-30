@@ -78,7 +78,7 @@ defmodule VinculiWeb.Coherence.RegistrationController do
   """
   @spec show(conn, any) :: conn
   def show(conn, _) do
-    user = Coherence.current_user(conn)
+    user = Coherence.current_user(conn) |> Config.repo.preload(:role)
     render(conn, "show.html", user: user)
   end
 

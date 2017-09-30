@@ -14,6 +14,7 @@ defmodule VinculiDb.Coherence.User do
   use Coherence.Schema
 
   alias VinculiDb.Coherence.Helpers
+  alias VinculiDb.Account
 
   schema "users" do
     field :first_name, :string
@@ -21,7 +22,7 @@ defmodule VinculiDb.Coherence.User do
     field :name, :string
     field :email, :string
     coherence_schema()
-    belongs_to :role, VinculiDb.Account.Role
+    belongs_to :role, VinculiDb.Account.Role, on_replace: :update
 
     timestamps()
   end
@@ -41,6 +42,7 @@ defmodule VinculiDb.Coherence.User do
     |> cast(params, coherence_fields())
     |> validate_password()
     |> validate_coherence(params)
+    |> put_assoc(:role, Account.get_role_by %{name: "Reader"})
   end
 
   @doc """

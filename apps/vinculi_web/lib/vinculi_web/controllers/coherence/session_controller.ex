@@ -82,7 +82,7 @@ defmodule VinculiWeb.Coherence.SessionController do
     login = params["session"][login_field_str]
     password = params["session"]["password"]
     remember = if Config.user_schema.rememberable?(), do: params["remember"], else: false
-    user = Config.repo.one(from u in user_schema, where: field(u, ^login_field) == ^login)
+    user = Config.repo.one(from u in user_schema, where: field(u, ^login_field) == ^login, preload: :role)
     if user != nil and user_schema.checkpw(password, Map.get(user, Config.password_hash())) do
       if ConfirmableService.confirmed?(user) || ConfirmableService.unconfirmed_access?(user) do
         do_lockable(conn, login_field, [user, user_schema, remember, lockable?, remember, params],
