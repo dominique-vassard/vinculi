@@ -83,21 +83,21 @@ defmodule VinculiWeb.AuthorizationPlug do
     Permissions for /restrict1
   """
   def permissions_for(Elixir.VinculiWeb.PageController, :restrict_one) do
-    ["Read"]
+    ["read"]
   end
 
   @doc """
     Permissions for /restrict2
   """
   def permissions_for(Elixir.VinculiWeb.PageController, :restrict_two) do
-    ["Write"]
+    ["write"]
   end
 
   @doc """
     Fallback permissions: Access denied!
   """
   def permissions_for(_, _) do
-    ["NonExistingPerm"]
+    ["non_existing_perm"]
   end
 
 end

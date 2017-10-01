@@ -12,10 +12,10 @@ defmodule VinculiDb.TestSupport.RolePermissionFixtures do
   def insert_fixtures() do
     # Data to insert
     role_permissions = [
-      %{role: "Administrator", permissions: ["Administer", "Read", "Write", "Validate"]},
-      %{role: "Reader", permissions: ["Read"]},
-      %{role: "Writer", permissions: ["Read", "Write"]},
-      %{role: "Validator", permissions: ["Read", "Write", "Validate"]}
+      %{role: "Administrator", permissions: ["administer", "read", "write", "validate"]},
+      %{role: "Reader", permissions: ["read"]},
+      %{role: "Writer", permissions: ["read", "write"]},
+      %{role: "Validator", permissions: ["read", "write", "validate"]}
     ]
 
     for role_perm <- role_permissions do
