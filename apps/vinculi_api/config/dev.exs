@@ -13,6 +13,10 @@ config :vinculi_api, VinculiApi.Endpoint,
   check_origin: false,
   watchers: []
 
+config :basic_auth,
+  username: "vinculi",
+  password: "menejicjushItnacIdlofacPiWuechcu"
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
