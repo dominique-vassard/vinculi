@@ -25,11 +25,11 @@ defmodule VinculiApi.BasicAuthPlug do
   @doc """
   Credentials check
 
-  Valid user/password can be found in config under :basic_auth
+  Valid user/password can be found in config under :vinculi_api
   """
   def check_creds(conn, auth) do
-    [username, password] = [Application.get_env(:basic_auth, :username),
-                            Application.get_env(:basic_auth, :password)]
+    [username, password] = [Application.get_env(:vinculi_api, :username),
+                            Application.get_env(:vinculi_api, :password)]
     case extract_creds(auth) do
       [^username, ^password] -> conn
       _ -> send_unauthorized_response(conn)

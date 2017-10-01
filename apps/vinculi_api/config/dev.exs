@@ -11,9 +11,9 @@ config :vinculi_api, VinculiApi.Endpoint,
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
-  watchers: []
+  watchers: [],
 
-config :basic_auth,
+  # Basic auth configs
   username: "vinculi",
   password: "menejicjushItnacIdlofacPiWuechcu"
 

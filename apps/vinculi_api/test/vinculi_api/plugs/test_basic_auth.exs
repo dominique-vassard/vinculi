@@ -3,8 +3,8 @@ defmodule VinculiApi.TestBasicAuth do
 
   alias VinculiApi.BasicAuthPlug
 
-  @username Application.get_env :basic_auth, :username
-  @password Application.get_env :basic_auth, :password
+  @username Application.get_env :vinculi_api, :username
+  @password Application.get_env :vinculi_api, :password
 
   def use_basic_auth(conn, basic_auth \\ @username, password \\ @password) do
     header_content = "Basic " <> Base.encode64("#{basic_auth}:#{password}")

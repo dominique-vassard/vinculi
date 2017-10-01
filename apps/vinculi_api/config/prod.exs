@@ -18,11 +18,12 @@ config :vinculi_api, VinculiApi.Web.Endpoint,
   # http: [port: {:system, "PORT"}],
   url: [scheme: "https", host: "vinculi.herokuapp.com", port: 443],
   force_ssl: [host: nil, rewrite_on: [:x_forwarded_proto]],
-  secret_key_base: System.get_env("SECRET_KEY_BASE")
+  secret_key_base: System.get_env("SECRET_KEY_BASE"),
 
-config :basic_auth,
+  # Basic auth configs
   username: System.get_env("BASIC_AUTH_USERNAME"),
   password: System.get_env("BASIC_AUTH_PASSWORD")
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key
