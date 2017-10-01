@@ -4,8 +4,9 @@ use Mix.Config
 # you can enable the server option below.
 config :vinculi_api, VinculiApi.Endpoint,
   http: [port: 4001],
-  server: false,
+  server: false
 
-  # Basic auth configs
+# Basic auth configs
+config :vinculi_api,
   username: "vinculi",
   password: "EjijsiquachFaHachquechoffAcErtya"
