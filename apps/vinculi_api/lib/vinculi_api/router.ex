@@ -3,6 +3,7 @@ defmodule VinculiApi.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug VinculiApi.BasicAuthPlug
   end
 
   scope "/api", VinculiApi do
