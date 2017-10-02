@@ -1,0 +1,16 @@
+<h1><%= dgettext "constellation", "search entry node" %></h1>
+<hr>
+<%= form_for @conn, constellation_path(@conn, :search), [as: :search], fn f -> %>
+    <div class="form-group row">
+        <label for="node_type" class="col-sm-2 col-form-label"><%= dgettext "constellation", "Select your entry node type" %></label>
+        <%= select f, :label, @labels, class: "form-control w-25" %>
+        <%= submit dgettext("constellation", "Search") , class: "btn btn-outline-primary" %>
+    </div>
+<hr>
+    <%= for field <- @fields do %>
+        <div class="form-group row">
+            <%= label f, field, class: "col-sm-2 col-form-label" %>
+            <%= text_input f, field, class: "form-control w-25" %>
+        </div>
+    <% end %>
+<% end %>
