@@ -132,7 +132,7 @@ defmodule VinculiGraph.Repo do
         -> from  query: #{inspect cql_params_names}
         -> from params: #{inspect params_names}
       """
-      raise raise Bolt.Sips.Exception, code: "Invalid params", message: msg
+      raise Bolt.Sips.Exception, code: "Invalid params", message: msg
      end
   end
 
