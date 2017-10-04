@@ -50,3 +50,9 @@ config :coherence, VinculiWeb.Coherence.Mailer,
   api_key: "key-781d9e526c394ab4d3d48df927bc4777",
   domain: "sandbox5109e75f640a4bf58ab0b735923ed4e7.mailgun.org"
 # %% End Coherence Configuration %%
+
+# Configure Drab
+config :phoenix, :template_engines,
+  drab: Drab.Live.Engine
+
+config :drab, main_phoenix_app: :vinculi_web

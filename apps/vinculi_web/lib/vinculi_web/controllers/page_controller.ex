@@ -1,5 +1,6 @@
 defmodule VinculiWeb.PageController do
   use VinculiWeb, :controller
+  use Drab.Controller
 
   plug VinculiWeb.AuthorizationPlug when action in [:restrict_one,
                                                     :restrict_two,

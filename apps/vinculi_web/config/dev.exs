@@ -37,7 +37,7 @@ config :vinculi_web, VinculiWeb.Endpoint,
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
       ~r{lib/vinculi_web/views/.*(ex)$},
-      ~r{lib/vinculi_web/templates/.*(eex)$}
+      ~r{lib/vinculi_web/templates/.*(eex|drab)$}
     ]
   ]
 
