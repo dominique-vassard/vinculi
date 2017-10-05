@@ -6,7 +6,7 @@
     <input name="_utf8" type="hidden" value="✓">
     <div class="form-group row">
         <label for="node_type" class="col-sm-2 col-form-label"><%= dgettext "constellation", "Select your entry node type" %></label>
-        <select id="label" name="label" class="form-control w-25" drab-event="change" drab-handler="update_fields">
+        <select id="label" name="search[label]" class="form-control w-25" drab-event="change" drab-handler="update_fields">
             <%= for label <- @labels do %>
                 <option value="<%= label %>"><%= label %></option>
             <% end %>
@@ -15,7 +15,7 @@
     <%= for field <- @fields do %>
     <div class="form-group row">
             <label for="<%= field %>" class="col-sm-2 col-form-label"><%= to_label field %></label>
-            <input type="text" id="<%= field %>" name="<%= field %>" class="form-control w-25">
+            <input type="text" id="search[properties][<%= field %>]" name="search[properties][<%= field %>]" class="form-control w-25">
         </div>
     <% end %>
     <button class="btn btn-outline-primary" type="submit"><%= dgettext("constellation", "Search") %></button>
