@@ -2,6 +2,7 @@ defmodule VinculiGraph.TestPerson do
   @moduledoc """
   Test model for database tests
   """
+  use VinculiGraph.NodeSchema
   use Ecto.Schema
 
   import Ecto.Changeset
@@ -24,5 +25,9 @@ defmodule VinculiGraph.TestPerson do
     |> validate_required(Enum.map @required_fields, &String.to_atom/1)
     |> validate_length(:lastName, min: 2, max: 50)
     |> validate_length(:firstName, min: 2, max: 50)
+  end
+
+  def get_name_fields() do
+    [:firstName, :lastName]
   end
 end

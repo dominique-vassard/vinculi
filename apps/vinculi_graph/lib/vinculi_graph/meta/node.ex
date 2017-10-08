@@ -57,4 +57,56 @@ defmodule VinculiGraph.Meta.Node do
     """
     {cql, params}
   end
+
+  @doc """
+    Returns cypher query and params required to perform a fuzzy search, for the
+    given the search data.
+
+    ## Example:
+        iex> VinculiGraph.Meta.Node.get_cql_fuzzy_by "Person", %{"firstName": "David", "lastName": ""}
+        {"MATCH\\n  (n:Person)\\nWHERE\\n  toLower(n.firstName) CONTAINS {firstName}\\nRETURN n\\n",
+        %{firstName: "david"}}
+  """
+  def get_cql_fuzzy_by(node_label, search_data) do
+    #Use only non empty data
+    node_data =
+      search_data
+      |> Enum.reject(fn {_field, value} -> is_empty?(value) end)
+
+    cql = """
+    MATCH
+      (n:#{node_label})
+    WHERE
+      #{get_fuzzy_by_where(node_label, node_data)}
+    RETURN n
+    """
+    params = get_fuzzy_by_params(node_data)
+    {cql, params}
+  end
+
+  defp get_fuzzy_by_where(node_label, node_data) do
+    fields_types = VinculiGraph.Helpers.get_fields_types(node_label)
+
+    node_data
+      |> Enum.map(fn {field, _} ->
+          case fields_types[field] do
+            :integer ->
+              "toString(n.#{field} CONTAINS {#{field}}"
+            :string ->
+              "toLower(n.#{field}) CONTAINS {#{field}}"
+          end
+        end)
+    |> Enum.join(" OR ")
+  end
+
+  defp get_fuzzy_by_params(node_data) do
+    node_data
+    |> Enum.into(%{}, fn {field, value} when is_binary value ->
+                        {field, String.downcase(value)}
+                      end)
+  end
+
+  defp is_empty?(value) when is_binary(value), do: String.length(value) == 0
+  defp is_empty?(value) when is_list(value), do: length(value) == 0
+  defp is_empty?(value), do: false
 end

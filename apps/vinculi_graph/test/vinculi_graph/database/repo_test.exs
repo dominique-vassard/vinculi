@@ -40,6 +40,34 @@ defmodule VinculiGraph.Database.RepoTest do
        r = Repo.get(TestPerson, "non-existent-node")
        assert r == nil
     end
+
+    test "get_fuzzy_by/2 on existing value should return a result" do
+      changes = insert_test_person(%{uuid: "TestPerson-3"})
+
+      res = Repo.get_fuzzy_by TestPerson, %{firstName: "Test"}
+      check_node(res, %{labels: ["TestPerson"], properties: changes})
+    end
+
+    test "get_fuzzy_by/2 is non case sensitive" do
+      changes = insert_test_person(%{uuid: "TestPerson-4"})
+
+      res = Repo.get_fuzzy_by TestPerson, %{firstName: "test"}
+      check_node(res, %{labels: ["TestPerson"], properties: changes})
+    end
+
+    test "get_fuzzy_by/2 is performing an OR" do
+      changes = insert_test_person(%{uuid: "TestPerson-4"})
+
+      res = Repo.get_fuzzy_by TestPerson, %{firstName: "test", lastName: "Z"}
+      check_node(res, %{labels: ["TestPerson"], properties: changes})
+    end
+
+    test "get_fuzzy_by/2 returns [] when no results found" do
+      changes = insert_test_person(%{uuid: "TestPerson-5"})
+
+      res = Repo.get_fuzzy_by TestPerson, %{firstName: "nonexisting"}
+      check_node(res, [])
+    end
   end
 
   describe "Test the `insert` functions: " do
