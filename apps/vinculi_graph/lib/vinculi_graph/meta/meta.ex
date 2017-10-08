@@ -11,49 +11,55 @@ defmodule VinculiGraph.Meta do
     |> Graph.extract_node_labels()
   end
 
-  def get_fuzzy_node_by(%{"label" => label, "properties" => properties}) do
+  @doc """
+  Get nodes that match the geiven label and properties.
+  Empty property will not be used.
+  It's a fuzzy search, not an exact one, then:
+  `get_fuzzy_node_by %{label: "Domain",properties: %{"name", "the"}}`
+  will produce:
+  `MATCH (n:Domain) WHERE toLower(n.name) CONTAINS 'the'`
+
+  With same logic, integers will be compared as string, then:
+  `get_fuzzy_node_by %{label: "Year",properties: %{"value", "17"}}`
+  will produce:
+  `MATCH (n:Year) WHERE toString(n.value) CONTAINS '17'`
+  """
+  def get_fuzzy_node_by(%{label: label, properties: properties}) do
     schema = Module.concat(["VinculiGraph", label])
     struct = Kernel.apply(schema, :__struct__, [])
-    %{changes: search_data} = Ecto.Changeset.change(struct, properties)
+    %{changes: search_data} = schema.changeset(struct, properties)
 
-    filtered_node =
+    node_data =
       search_data
-      |> Enum.reject(fn {_field, value} -> String.length(value) == 0 end)
+      |> Enum.reject(fn {_field, value} -> is_empty?(value) end)
 
-    where =
-      filtered_node
+    cql = "MATCH (n:#{label}) WHERE " <> get_where(schema, node_data) <> " RETURN n"
+
+    res = VinculiGraph.Repo.all cql, get_params(node_data)
+    res |> Enum.map(fn %{"n" => result} -> result end)
+  end
+
+  defp get_where(schema, node_data) do
+    node_data
       |> Enum.map(fn {field, _} ->
-      case Kernel.apply(schema, :__schema__, [:type, String.to_atom field]) do
-        :integer -> "toString(n.#{to_camel field} CONTAINS {#{field}}"
-        :string -> "toLower(n.#{to_camel field}) CONTAINS {#{field}}"
+      case Kernel.apply(schema, :__schema__, [:type, field]) do
+        :integer ->
+          "toString(n.#{Utils.String.camelize field} CONTAINS {#{field}}"
+        :string ->
+          "toLower(n.#{Utils.String.camelize field}) CONTAINS {#{field}}"
       end
     end)
     |> Enum.join(" AND ")
-
-    params =
-      filtered_node
-      |> Enum.into(%{}, fn {field, value} -> {String.to_atom(field), String.downcase(value)} end)
-
-    cql = "MATCH (n:#{label}) WHERE " <> where <> " RETURN n"
-
-
-    r = VinculiGraph.Repo.all cql, params
-    IO.puts inspect r
-    # Enum.each(search_data, fn x -> IO.puts(inspect x) end)
-
-    # Kernel.apply(schema, :__schema__, [])
   end
 
-  def to_camel(value) do
-     value
-    |> String.trim
-    |> replace(~r/^[_\.\-\s]+/, "")
-    |> replace(~r/([a-zA-Z]+)([A-Z][a-z\d]+)/, "\\1-\\2")
-    |> String.downcase
-    |> replace(~r/[_\.\-\s]+(\w|$)/, fn(_, x) -> String.upcase(x) end)
+  defp get_params(node_data) do
+    node_data
+    |> Enum.into(%{}, fn {field, value} when is_binary value ->
+                        {field, String.downcase(value)}
+                      end)
   end
 
-  def replace(value, regex, new_value) do
-    Regex.replace(regex, value, new_value)
-  end
+  defp is_empty?(value) when is_binary(value), do: String.length(value) == 0
+  defp is_empty?(value) when is_list(value), do: length(value) == 0
+  defp is_empty?(value), do: false
 end
