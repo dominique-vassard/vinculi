@@ -4,8 +4,15 @@ defmodule VinculiGraph.Node do
   def get_fuzzy_by(%{label: label, properties: properties}) do
     schema = Module.concat(["VinculiGraph", label])
     struct = Kernel.apply(schema, :__struct__, [])
-    %{changes: search_data} = schema.changeset(struct, properties)
+    changeset = schema.changeset(struct, properties)
 
-    Repo.get_fuzzy_by(schema, search_data)
+    cond do
+      Enum.count(changeset.changes) > 0 ->
+        %{changes: search_data} = changeset
+        Repo.get_fuzzy_by(schema, search_data)
+        |> Enum.map(fn %{"n" => result} -> result end)
+      true ->
+        []
+    end
   end
 end

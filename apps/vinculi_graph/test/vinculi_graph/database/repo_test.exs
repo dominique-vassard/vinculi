@@ -5,6 +5,12 @@ defmodule VinculiGraph.Database.RepoTest do
   use VinculiGraph.DatabaseCase
   alias VinculiGraph.TestPerson
 
+  setup do
+    on_exit fn ->
+      VinculiGraph.Repo.query("MATCH (n:TestPerson) DELETE n")
+    end
+  end
+
   @valid_changes %{
     firstName: "Test_firstName",
     lastName: "Test_lastname",
@@ -42,31 +48,35 @@ defmodule VinculiGraph.Database.RepoTest do
     end
 
     test "get_fuzzy_by/2 on existing value should return a result" do
-      changes = insert_test_person(%{uuid: "TestPerson-3"})
+      changes = insert_test_person(%{firstName: "TestPerson-3"})
 
-      res = Repo.get_fuzzy_by TestPerson, %{firstName: "Test"}
+      [%{"n" => res}] = Repo.get_fuzzy_by TestPerson,
+                                          %{firstName: "TestPerson-3"}
       check_node(res, %{labels: ["TestPerson"], properties: changes})
     end
 
     test "get_fuzzy_by/2 is non case sensitive" do
-      changes = insert_test_person(%{uuid: "TestPerson-4"})
+      changes = insert_test_person(%{firstName: "TestPerson-4"})
 
-      res = Repo.get_fuzzy_by TestPerson, %{firstName: "test"}
+      [%{"n" => res}] = Repo.get_fuzzy_by TestPerson,
+                                          %{firstName: "testperson-4"}
       check_node(res, %{labels: ["TestPerson"], properties: changes})
     end
 
     test "get_fuzzy_by/2 is performing an OR" do
-      changes = insert_test_person(%{uuid: "TestPerson-4"})
+      changes = insert_test_person(%{firstName: "TestPerson-5"})
 
-      res = Repo.get_fuzzy_by TestPerson, %{firstName: "test", lastName: "Z"}
+      [%{"n" => res}] = Repo.get_fuzzy_by TestPerson,
+                                          %{firstName: "TestPerson-5",
+                                            lastName: "Z"}
       check_node(res, %{labels: ["TestPerson"], properties: changes})
     end
 
     test "get_fuzzy_by/2 returns [] when no results found" do
-      changes = insert_test_person(%{uuid: "TestPerson-5"})
+      insert_test_person(%{uuid: "TestPerson-6"})
 
       res = Repo.get_fuzzy_by TestPerson, %{firstName: "nonexisting"}
-      check_node(res, [])
+      assert res == []
     end
   end
 
@@ -156,8 +166,7 @@ defmodule VinculiGraph.Database.RepoTest do
     test "invalid query (missing params) raises an error" do
       cql = "MATCH (n:TestPerson {uuid: {uuid}}) RETURN n"
       assert_raise Bolt.Sips.Exception, fn ->
-        r = Repo.query(cql)
-        IO.puts inspect r
+        Repo.query(cql)
       end
     end
 

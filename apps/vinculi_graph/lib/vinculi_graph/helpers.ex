@@ -24,13 +24,15 @@ defmodule VinculiGraph.Helpers do
     Schema must exists!
 
     ## Example:
-        iex> VinculiGraph.Helpers.get_name %{labels: ["Person"], properties: %{firstName: "David", lastName: "HUME"}}
+        iex> VinculiGraph.Helpers.get_name %{labels: ["Person"], properties: %{"firstName" => "David", "lastName" => "HUME"}}
         "David HUME"
   """
   def get_name(%{labels: labels, properties: properties}) do
     prop_list = get_name_fields(List.first labels)
 
+
     properties
+    |> Utils.Struct.to_atom_map()
     |> Enum.filter(fn {k, _} -> Enum.member?(prop_list, k) end)
     |> Enum.map(fn {_, v} -> v end)
     |> Enum.join(" ")
