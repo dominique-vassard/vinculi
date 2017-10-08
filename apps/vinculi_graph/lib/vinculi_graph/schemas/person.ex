@@ -3,15 +3,15 @@ defmodule VinculiGraph.Person do
   use Ecto.Schema
 
     @primary_key {:uuid, :binary_id, autogenerate: true}
-    schema "person" do
-      field :first_name, :string
-      field :last_name, :string
+    schema "Person" do
+      field :firstName, :string
+      field :lastName, :string
       field :aka, :string
-      field :internal_link, :string
-      field :external_link, :string
+      field :internalLink, :string
+      field :externalLink, :string
     end
 
     def get_name_fields() do
-      [:first_name, :last_name]
+      [:firstName, :lastName]
     end
 end

@@ -6,12 +6,12 @@ defmodule VinculiGraph.Publication do
     schema "Publication" do
       field :type, :string
       field :title, :string
-      field :title_fr, :string
-      field :internal_link, :string
-      field :external_link, :string
+      field :titleFr, :string
+      field :internalLink, :string
+      field :externalLink, :string
     end
 
     def get_name_fields() do
-      [:title_fr]
+      [:titleFr]
     end
 end
