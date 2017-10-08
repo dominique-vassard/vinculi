@@ -15,8 +15,18 @@
     <%= for field <- @fields do %>
     <div class="form-group row">
             <label for="<%= field %>" class="col-sm-2 col-form-label"><%= to_label field %></label>
-            <input type="text" id="search[properties][<%= field %>]" name="search[properties][<%= field %>]" class="form-control w-25">
+            <input type="text" id="search[properties][<%= field %>]" name="search[properties][<%= field %>]" class="form-control w-25"
+                   drab-event="keyup" drab-handler="search">
         </div>
     <% end %>
     <button class="btn btn-outline-primary" type="submit"><%= dgettext("constellation", "Search") %></button>
 </form>
+<hr>
+<h2><%= dgettext "constellation", "results" %></h2>
+<div class="card">
+    <ul class="list-group list-group-flush">
+        <%= for result <- @results do %>
+            <li class="list-group-item"><%= result %></li>
+        <% end %>
+    </ul>
+</div>

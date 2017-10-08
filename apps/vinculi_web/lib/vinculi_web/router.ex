@@ -45,7 +45,7 @@ defmodule VinculiWeb.Router do
     get "/", PageController, :index
 
     get "/constellation/index", ConstellationController, :index
-    post "/constellation/search", ConstellationController, :search
+    # post "/constellation/search", ConstellationController, :search
 
     # Test pages
     get "/restrict1", PageController, :restrict_one
