@@ -132,7 +132,7 @@ defmodule VinculiGraph.Repo do
         -> from  query: #{inspect cql_params_names}
         -> from params: #{inspect params_names}
       """
-      raise raise Bolt.Sips.Exception, code: "Invalid params", message: msg
+      raise Bolt.Sips.Exception, code: "Invalid params", message: msg
      end
   end
 
@@ -165,6 +165,22 @@ defmodule VinculiGraph.Repo do
   defp do_get(model, uuid) do
     source = model.__schema__(:source)
     one(Node.get_cql_get_by_uuid(source), %{uuid: uuid})
+  end
+
+  @doc """
+    Fetches all nodes for the given search parameters.
+
+    It's a fuzzy search, then result just need to contains the desired string.
+    This means that:
+    `get_fuzzy_by Person, %{firs_name: "e"}`
+    will retrieves all Person whose name contains an 'e'
+
+    Matches are all done in string and in lowercase.
+  """
+  def get_fuzzy_by(model, search_params) do
+    source = model.__schema__(:source)
+    {cql, params} = Node.get_cql_fuzzy_by(source, search_params)
+    all cql, params
   end
 
   @doc """

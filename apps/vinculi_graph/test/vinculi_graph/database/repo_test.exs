@@ -5,6 +5,12 @@ defmodule VinculiGraph.Database.RepoTest do
   use VinculiGraph.DatabaseCase
   alias VinculiGraph.TestPerson
 
+  setup do
+    on_exit fn ->
+      VinculiGraph.Repo.query("MATCH (n:TestPerson) DELETE n")
+    end
+  end
+
   @valid_changes %{
     firstName: "Test_firstName",
     lastName: "Test_lastname",
@@ -39,6 +45,38 @@ defmodule VinculiGraph.Database.RepoTest do
     test "try to [get] non-existent node raise an error" do
        r = Repo.get(TestPerson, "non-existent-node")
        assert r == nil
+    end
+
+    test "get_fuzzy_by/2 on existing value should return a result" do
+      changes = insert_test_person(%{firstName: "TestPerson-3"})
+
+      [%{"n" => res}] = Repo.get_fuzzy_by TestPerson,
+                                          %{firstName: "TestPerson-3"}
+      check_node(res, %{labels: ["TestPerson"], properties: changes})
+    end
+
+    test "get_fuzzy_by/2 is non case sensitive" do
+      changes = insert_test_person(%{firstName: "TestPerson-4"})
+
+      [%{"n" => res}] = Repo.get_fuzzy_by TestPerson,
+                                          %{firstName: "testperson-4"}
+      check_node(res, %{labels: ["TestPerson"], properties: changes})
+    end
+
+    test "get_fuzzy_by/2 is performing an OR" do
+      changes = insert_test_person(%{firstName: "TestPerson-5"})
+
+      [%{"n" => res}] = Repo.get_fuzzy_by TestPerson,
+                                          %{firstName: "TestPerson-5",
+                                            lastName: "Z"}
+      check_node(res, %{labels: ["TestPerson"], properties: changes})
+    end
+
+    test "get_fuzzy_by/2 returns [] when no results found" do
+      insert_test_person(%{uuid: "TestPerson-6"})
+
+      res = Repo.get_fuzzy_by TestPerson, %{firstName: "nonexisting"}
+      assert res == []
     end
   end
 
@@ -128,8 +166,7 @@ defmodule VinculiGraph.Database.RepoTest do
     test "invalid query (missing params) raises an error" do
       cql = "MATCH (n:TestPerson {uuid: {uuid}}) RETURN n"
       assert_raise Bolt.Sips.Exception, fn ->
-        r = Repo.query(cql)
-        IO.puts inspect r
+        Repo.query(cql)
       end
     end
 

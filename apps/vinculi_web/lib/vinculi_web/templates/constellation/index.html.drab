@@ -1,0 +1,32 @@
+<h1><%= dgettext "constellation", "search entry node" %></h1>
+<hr>
+
+<form name="search" accept-charset="UTF-8" action="/constellation/search" method="post">
+    <input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>">
+    <input name="_utf8" type="hidden" value="✓">
+    <div class="form-group row">
+        <label for="node_type" class="col-sm-2 col-form-label"><%= dgettext "constellation", "Select your entry node type" %></label>
+        <select id="label" name="search[label]" class="form-control w-25" drab-event="change" drab-handler="update_fields">
+            <%= for label <- @labels do %>
+                <option value="<%= label %>"><%= label %></option>
+            <% end %>
+        </select>
+    </div>
+    <%= for field <- @fields do %>
+    <div class="form-group row">
+            <label for="<%= field %>" class="col-sm-2 col-form-label"><%= to_label field %></label>
+            <input type="text" id="search[properties][<%= field %>]" name="search[properties][<%= field %>]" class="form-control w-25"
+                   drab-event="keyup" drab-handler="search">
+        </div>
+    <% end %>
+    <button class="btn btn-outline-primary" type="submit"><%= dgettext("constellation", "Search") %></button>
+</form>
+<hr>
+<h2><%= dgettext "constellation", "results" %></h2>
+<div class="card">
+    <ul class="list-group list-group-flush">
+        <%= for result <- @results do %>
+            <li class="list-group-item"><%= result %></li>
+        <% end %>
+    </ul>
+</div>

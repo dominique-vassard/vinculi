@@ -43,6 +43,11 @@ defmodule VinculiWeb.Router do
     pipe_through :protected
     # Add protected routes below
     get "/", PageController, :index
+
+    get "/constellation/index", ConstellationController, :index
+    # post "/constellation/search", ConstellationController, :search
+
+    # Test pages
     get "/restrict1", PageController, :restrict_one
     get "/restrict2", PageController, :restrict_two
     get "/restrict3", PageController, :restrict_three
