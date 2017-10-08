@@ -8,13 +8,10 @@ defmodule VinculiWeb.ConstellationControllerTest do
   #   test "valid search results", %{conn: conn} do
   #     search_params = %{"search" =>
   #                       %{"label" => "Person",
-  #                         "properties" => %{"aka" => "",
-  #                                           "external_link" => "",
-  #                                           # "first_name" => "dav",
-  #                                           "first_name" => "",
-  #                                           "internal_link" => "",
-  #                                           # "last_name" => "hume"}
-  #                                           "last_name" => "e"}
+  #                         "properties" => %{# "firstName" => "dav",
+  #                                           "firstName" => "",
+  #                                           # "lastName" => "hume"}
+  #                                           "lastName" => "e"}
   #                        }
   #                       }
   #     conn = post conn, constellation_path(conn, :search, search_params)
