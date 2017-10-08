@@ -11,13 +11,13 @@ defmodule Utils.String do
   Camelize a snakecase string.
 
   ## Examples/ Usage:
-      iex> Utils.String.snake_to_camel "snake_case"
+      iex> Utils.String.camelize "snake_case"
       "snakeCase"
 
-      iex> Utils.String.snake_to_camel "nonsnake"
+      iex> Utils.String.camelize "nonsnake"
       "nonsnake"
 
-      iex> Utils.String.snake_to_camel "misFormed_snake_is_reformed"
+      iex> Utils.String.camelize "misFormed_snake_is_reformed"
       "misformedSnakeIsReformed"
   """
   def camelize(str) when is_binary str do
