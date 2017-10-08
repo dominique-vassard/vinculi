@@ -43,6 +43,7 @@ defmodule VinculiGraph.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [{:bolt_sips, "~> 0.3"},
-     {:ecto, "~> 2.1"}]
+     {:ecto, "~> 2.1"},
+     {:utils, in_umbrella: true}]
   end
 end
