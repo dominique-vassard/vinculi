@@ -1,4 +1,4 @@
-defmodule VinculiWeb.TestAuthorization do
+defmodule VinculiWeb.AuthorizationTest do
   use VinculiWeb.ConnCase
 
   alias VinculiWeb.AuthorizationPlug
@@ -12,7 +12,7 @@ defmodule VinculiWeb.TestAuthorization do
       n_conn = conn
       |> put_private(:phoenix_controller, VinculiWeb.PageController)
       |> put_private(:phoenix_action, :restrict_one)
-      f_conn = AuthorizationPlug.call(n_conn, [])
+      AuthorizationPlug.call(n_conn, [])
     end
 
     @tag login: %{role_name: "Reader"}

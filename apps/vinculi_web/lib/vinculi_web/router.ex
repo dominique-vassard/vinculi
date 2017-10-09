@@ -22,6 +22,11 @@ defmodule VinculiWeb.Router do
     plug VinculiWeb.LocalePlug
   end
 
+  pipeline :api do
+    plug :accepts, ["json"]
+    plug VinculiWeb.BasicAuthPlug
+  end
+
   # Add this block
   scope "/", VinculiWeb do
     pipe_through :browser
@@ -51,6 +56,11 @@ defmodule VinculiWeb.Router do
     get "/restrict1", PageController, :restrict_one
     get "/restrict2", PageController, :restrict_two
     get "/restrict3", PageController, :restrict_three
+  end
+
+  scope "/api", VinculiApi do
+    pipe_through :api
+    get "/test", TestController, :index
   end
 
   # Other scopes may use custom stacks.

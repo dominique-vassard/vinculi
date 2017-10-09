@@ -12,14 +12,8 @@ defmodule Vinculi.Application do
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
-    port = (System.get_env("PORT") || Application.get_env :vinculi, :port) |> String.to_integer
 
-    cowboy = Plug.Adapters.Cowboy.child_spec(:http, Vinculi.Proxy, [], [port: port])
-
-    children = [
-      cowboy
-    ]
-
+    children = []
     opts = [strategy: :one_for_one, name: Vinculi.Supervisor]
 
     Supervisor.start_link(children, opts)

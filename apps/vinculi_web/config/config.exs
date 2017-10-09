@@ -56,3 +56,8 @@ config :phoenix, :template_engines,
   drab: Drab.Live.Engine
 
 config :drab, main_phoenix_app: :vinculi_web
+
+# Access to api
+config :vinculi_web,
+  username: "vinculi",
+  password: "menejicjushItnacIdlofacPiWuechcu"

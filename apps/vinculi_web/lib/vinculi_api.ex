@@ -5,8 +5,8 @@ defmodule VinculiApi do
 
   This can be used in your application as:
 
-      use VinculiApi, :controller
-      use VinculiApi, :view
+      use VinculiWeb, :controller
+      use VinculiWeb, :view
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -19,24 +19,24 @@ defmodule VinculiApi do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: VinculiApi
+      use Phoenix.Controller, namespace: VinculiWeb
       import Plug.Conn
-      import VinculiApi.Router.Helpers
-      import VinculiApi.Gettext
+      import VinculiWeb.Router.Helpers
+      import VinculiWeb.Gettext
     end
   end
 
   def view do
     quote do
       use Phoenix.View, root: "lib/vinculi_api/templates",
-                        namespace: VinculiApi
+                        namespace: VinculiWeb
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_flash: 2, view_module: 1]
 
-      import VinculiApi.Router.Helpers
-      import VinculiApi.ErrorHelpers
-      import VinculiApi.Gettext
+      import VinculiWeb.Router.Helpers
+      import VinculiWeb.ErrorHelpers
+      import VinculiWeb.Gettext
     end
   end
 
@@ -51,7 +51,7 @@ defmodule VinculiApi do
   def channel do
     quote do
       use Phoenix.Channel
-      import VinculiApi.Gettext
+      import VinculiWeb.Gettext
     end
   end
 

@@ -1,5 +1,5 @@
 defmodule VinculiApi.TestMetaController do
-  use VinculiApi.ConnCase
+  use VinculiWeb.ConnCase
 
   test "labels/2", %{conn: conn} do
     # n_conn = get conn, meta_path(conn, :labels)
