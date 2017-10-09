@@ -36,9 +36,7 @@ defmodule Vinculi.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:cowboy, "~> 1.0"},
-      {:vinculi_web, in_umbrella: true},
-      {:vinculi_api, in_umbrella: true}
+      {:vinculi_web, in_umbrella: true}
     ]
   end
 
