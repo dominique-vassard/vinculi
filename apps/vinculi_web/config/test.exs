@@ -5,3 +5,8 @@ use Mix.Config
 config :vinculi_web, VinculiWeb.Endpoint,
   http: [port: 4001],
   server: false
+
+# Basic auth configs
+config :vinculi_web,
+  username: "vinculi",
+  password: "EjijsiquachFaHachquechoffAcErtya"
