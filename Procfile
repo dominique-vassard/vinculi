@@ -1,1 +1,1 @@
-web: cd apps/vinculi_db && POOL_SIZE=2 mix ecto.migrate && cd ../vinculi && MIX_ENV=prod mix run --no-halt
+web: cd apps/vinculi_db && POOL_SIZE=2 mix ecto.migrate && cd ../.. && MIX_ENV=prod mix phx.server
