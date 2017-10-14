@@ -50,6 +50,7 @@ defmodule VinculiWeb.Router do
     get "/", PageController, :index
 
     get "/constellation/index", ConstellationController, :index
+    get "/constellation/explore/:node_uuid", ConstellationController, :explore
     # post "/constellation/search", ConstellationController, :search
 
     # Test pages

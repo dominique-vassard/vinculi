@@ -9,7 +9,12 @@ defmodule VinculiWeb.ConstellationCommander do
   """
   def update_fields(socket, sender) do
     %{"search" => %{"label" => label}} = sender.params
-    poke socket, fields: Helpers.get_name_fields(label), results: []
+    fields =
+      case label do
+        "" -> []
+        label -> Helpers.get_name_fields(label)
+      end
+    poke socket, fields: fields, results: []
   end
 
   @doc """
@@ -23,14 +28,16 @@ defmodule VinculiWeb.ConstellationCommander do
     |> Enum.filter(fn {_, value} -> String.length(value) >= 1 end)
     |> length()
 
+    # Order on results is down to take care of accentuated characters
     results = cond do
       nb_changes >= 1 ->
         Node.get_fuzzy_by(Utils.Struct.to_atom_map node_form_params)
-        |> Enum.map(&VinculiGraph.Helpers.get_name/1)
+        |> Enum.map(fn node -> %{uuid: node.properties["uuid"],
+                                 name: VinculiGraph.Helpers.get_name(node)} end)
+        |> Enum.sort_by(&(&1.name |> String.normalize(:nfd)))
        true ->
         []
     end
-
     poke socket, results: results
   end
 end

@@ -11,6 +11,11 @@ defmodule VinculiWeb.ConstellationController do
     render conn, "index.html", labels: labels, fields: [], results: []
   end
 
+  def explore(conn, params) do
+    IO.puts inspect params
+    render conn, "explore.html"
+  end
+
   # def search(conn, %{"search" => node_form_params}) do
   #   IO.puts inspect node_form_params
   #   res = Node.get_fuzzy_by(Utils.Struct.to_atom_map node_form_params)
