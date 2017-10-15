@@ -2,7 +2,7 @@ exports.config = {
   // See http://brunch.io/#documentation for docs.
   files: {
     javascripts: {
-      joinTo: "js/app.js"
+      joinTo: "js/app.js",
 
       // To use a separate vendor.js bundle, specify two files path
       // http://brunch.io/docs/config#-files-
@@ -40,7 +40,7 @@ exports.config = {
   // Phoenix paths configuration
   paths: {
     // Dependencies and current project directories to watch
-    watched: ["static", "css", "js", "vendor"],
+    watched: ["static", "css", "js", "vendor", "elm"],
     // Where to compile files to
     public: "../priv/static"
   },
@@ -55,6 +55,15 @@ exports.config = {
       "fonts": ["node_modules/font-awesome/fonts"], // copy node_modules/font-awesome/fonts/* to priv/static/fonts/
       verbose: true,
       onlyChanged: true
+    },
+    elmBrunch: {
+      elmFolder: "elm",
+
+      executablePath: "../node_modules/elm/binwrappers",
+      mainModules: ["VinculiExplorer.elm"],
+      makeParameters: ["--debug"],
+      outputFolder: "../js/vinculi-explorer",
+      outputFile: "elm-vinculi-explorer.js"
     },
     sass: {
       options: {
