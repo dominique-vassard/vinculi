@@ -15,7 +15,7 @@ $( document ).ready(function() {
 
   $("#reset-style").click(function() {
 
-    elmApp.ports.resetStyle.send("#11FF22")
+    elmApp.ports.resetStyle.send({obj: "#11FF22"})
   })
 
   ports_init(elmApp, cy);

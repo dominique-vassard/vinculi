@@ -1,8 +1,10 @@
-port module Main exposing (..)
+module Main exposing (..)
 
 import Html exposing (Html, button, div, text, span, input)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick, onInput)
+import Json.Decode exposing (string, decodeString)
+import Ports exposing (..)
 
 
 main : Program Never Model Msg
@@ -33,16 +35,13 @@ init =
 -- UPDATE
 
 
-port changeStyle : String -> Cmd msg
-
-
 type Msg
     = Increment
     | Decrement
     | Change String
     | ChangeStyle
-    | CurrentStyle String
-    | ResetStyle String
+    | CurrentStyle (Result String String)
+    | ResetStyle (Result String String)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -58,31 +57,36 @@ update msg model =
             ( { model | style = newStyle }, Cmd.none )
 
         ChangeStyle ->
-            ( model, changeStyle model.style )
+            ( model, Ports.changeStyle model.style )
 
-        CurrentStyle curStyle ->
+        CurrentStyle (Ok curStyle) ->
             ( { model | style = curStyle }, Cmd.none )
 
-        ResetStyle style ->
+        CurrentStyle (Err err) ->
+            ( model, Cmd.none )
+
+        ResetStyle (Ok style) ->
             ( { model | style = style }, Cmd.none )
+
+        ResetStyle (Err err) ->
+            ( model, Cmd.none )
 
 
 
 --- SUBSCRIPTIONS
 
 
-port currentStyle : (String -> msg) -> Sub msg
-
-
-port resetStyle : (String -> msg) -> Sub msg
-
-
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ currentStyle CurrentStyle
-        , resetStyle ResetStyle
+        [ Ports.currentStyle (decodeStyle >> CurrentStyle)
+        , Ports.resetStyle (decodeStyle >> ResetStyle)
         ]
+
+
+decodeStyle : Json.Decode.Value -> Result String String
+decodeStyle =
+    Json.Decode.decodeValue Json.Decode.string
 
 
 

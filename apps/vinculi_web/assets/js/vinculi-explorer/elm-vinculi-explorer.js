@@ -12416,16 +12416,15 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
-var _user$project$Main$init = {
-	ctor: '_Tuple2',
-	_0: {number: 1, style: ''},
-	_1: _elm_lang$core$Platform_Cmd$none
-};
-var _user$project$Main$changeStyle = _elm_lang$core$Native_Platform.outgoingPort(
+var _user$project$Ports$changeStyle = _elm_lang$core$Native_Platform.outgoingPort(
 	'changeStyle',
 	function (v) {
 		return v;
 	});
+var _user$project$Ports$currentStyle = _elm_lang$core$Native_Platform.incomingPort('currentStyle', _elm_lang$core$Json_Decode$value);
+var _user$project$Ports$resetStyle = _elm_lang$core$Native_Platform.incomingPort('resetStyle', _elm_lang$core$Json_Decode$value);
+
+var _user$project$Main$decodeStyle = _elm_lang$core$Json_Decode$decodeValue(_elm_lang$core$Json_Decode$string);
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
@@ -12458,28 +12457,39 @@ var _user$project$Main$update = F2(
 				return {
 					ctor: '_Tuple2',
 					_0: model,
-					_1: _user$project$Main$changeStyle(model.style)
+					_1: _user$project$Ports$changeStyle(model.style)
 				};
 			case 'CurrentStyle':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{style: _p0._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+				if (_p0._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{style: _p0._0._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 			default:
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{style: _p0._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+				if (_p0._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{style: _p0._0._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 		}
 	});
-var _user$project$Main$currentStyle = _elm_lang$core$Native_Platform.incomingPort('currentStyle', _elm_lang$core$Json_Decode$string);
-var _user$project$Main$resetStyle = _elm_lang$core$Native_Platform.incomingPort('resetStyle', _elm_lang$core$Json_Decode$string);
+var _user$project$Main$init = {
+	ctor: '_Tuple2',
+	_0: {number: 1, style: ''},
+	_1: _elm_lang$core$Platform_Cmd$none
+};
 var _user$project$Main$Model = F2(
 	function (a, b) {
 		return {number: a, style: b};
@@ -12494,10 +12504,18 @@ var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$batch(
 		{
 			ctor: '::',
-			_0: _user$project$Main$currentStyle(_user$project$Main$CurrentStyle),
+			_0: _user$project$Ports$currentStyle(
+				function (_p1) {
+					return _user$project$Main$CurrentStyle(
+						_user$project$Main$decodeStyle(_p1));
+				}),
 			_1: {
 				ctor: '::',
-				_0: _user$project$Main$resetStyle(_user$project$Main$ResetStyle),
+				_0: _user$project$Ports$resetStyle(
+					function (_p2) {
+						return _user$project$Main$ResetStyle(
+							_user$project$Main$decodeStyle(_p2));
+					}),
 				_1: {ctor: '[]'}
 			}
 		});
@@ -12666,7 +12684,7 @@ var _user$project$Main$main = _elm_lang$html$Html$program(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Main.Msg":{"args":[],"tags":{"Decrement":[],"ResetStyle":["String"],"Change":["String"],"CurrentStyle":["String"],"Increment":[],"ChangeStyle":[]}}},"aliases":{},"message":"Main.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Main.Msg":{"args":[],"tags":{"Decrement":[],"ResetStyle":["Result.Result String String"],"Change":["String"],"CurrentStyle":["Result.Result String String"],"Increment":[],"ChangeStyle":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{},"message":"Main.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])
