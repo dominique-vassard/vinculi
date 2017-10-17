@@ -13,7 +13,7 @@ defmodule VinculiWeb.ConstellationController do
 
   def explore(conn, params) do
     IO.puts inspect params
-    render conn, "explore.html"
+    render conn, "explore.html", layout: {VinculiWeb.LayoutView, "app_light.html"}
   end
 
   # def search(conn, %{"search" => node_form_params}) do
