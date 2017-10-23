@@ -5,10 +5,13 @@ defmodule Utils.Struct do
 
   @doc """
   Transform a string map in a keyword map.
-  Works wirth nested maps.
+  Works with nested maps.
 
   ## Example / Usage
       iex> Utils.Struct.to_atom_map %{"first" => 1, "second" => "two"}
+      %{first: 1, second: "two"}
+
+      iex> Utils.Struct.to_atom_map %{"first" => 1, second:"two"}
       %{first: 1, second: "two"}
 
       iex> map = %{"first" => 1, "nested" => %{"second" => "two"}}
@@ -20,11 +23,23 @@ defmodule Utils.Struct do
     Enum.into(map, %{}, &do_to_atom/1)
   end
 
-  defp do_to_atom({key, value}) when is_map value do
-    {String.to_atom(key), to_atom_map(value)}
+  defp do_to_atom({key, value}) when is_map(value) do
+    {key_to_atom(key), to_atom_map(value)}
   end
 
-  defp do_to_atom({key, value}) do
-    {String.to_atom(key), value}
+  defp do_to_atom({key, value}) when is_atom(key) do
+    {key, value}
+  end
+
+  defp do_to_atom({key, value}) when is_binary(key) do
+    {key_to_atom(key), value}
+  end
+
+  defp key_to_atom(key) when is_binary(key) do
+   String.to_atom(key)
+  end
+
+  defp key_to_atom(key) do
+    key
   end
 end
