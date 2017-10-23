@@ -58,23 +58,22 @@ defmodule VinculiGraph.Format.TestCytoscape do
   describe "Test format/1:" do
     test "produces a valid json for cytoscape" do
       expected = [
-        %{:labels => ["Person"], :name => "Marcel MAUSS", "firstName" => "Marcel",
-         "lastName" => "MAUSS", "uuid" => "person-9"},
-        %{:end => "person-9", :start => "person-1", :type => "INFLUENCED",
-         "strength" => 2},
-        %{:labels => ["Person"], :name => "David HUME",
-         "externalLink" => "https://en.wikipedia.org/wiki/David_Hume",
-         "firstName" => "David",
-         "internalLink" => "http://arsmagica.fr/polyphonies/hume-david-1711-1776",
-         "lastName" => "HUME", "uuid" => "person-1"},
-        %{:labels => ["Person"], :name => "Edmund HUSSERL", "firstName" => "Edmund",
-         "lastName" => "HUSSERL", "uuid" => "person-6"},
-        %{:end => "person-6", :start => "person-1", :type => "INFLUENCED",
-         "strength" => 2},
-        %{:labels => ["Person"], :name => "Immanuel KANT", "firstName" => "Immanuel",
-         "lastName" => "KANT", "uuid" => "person-3"},
-        %{:end => "person-3", :start => "person-1", :type => "INFLUENCED",
-         "strength" => 3}]
+        %{firstName: "Marcel", group: "nodes", labels: ["Person"], lastName: "MAUSS",
+         name: "Marcel MAUSS", uuid: "person-9"},
+        %{end: "person-9", group: "edges", start: "person-1", strength: 2,
+         type: "INFLUENCED"},
+        %{externalLink: "https://en.wikipedia.org/wiki/David_Hume", firstName: "David",
+         group: "nodes",
+         internalLink: "http://arsmagica.fr/polyphonies/hume-david-1711-1776",
+         labels: ["Person"], lastName: "HUME", name: "David HUME", uuid: "person-1"},
+        %{firstName: "Edmund", group: "nodes", labels: ["Person"], lastName: "HUSSERL",
+         name: "Edmund HUSSERL", uuid: "person-6"},
+        %{end: "person-6", group: "edges", start: "person-1", strength: 2,
+         type: "INFLUENCED"},
+        %{firstName: "Immanuel", group: "nodes", labels: ["Person"], lastName: "KANT",
+         name: "Immanuel KANT", uuid: "person-3"},
+        %{end: "person-3", group: "edges", start: "person-1", strength: 3,
+         type: "INFLUENCED"}]
 
       res = Cytoscape.format(@query_result)
       assert expected == res
@@ -112,9 +111,8 @@ defmodule VinculiGraph.Format.TestCytoscape do
       data = %Bolt.Sips.Types.Relationship{end: "person-3", id: 1428,
         properties: %{"strength" => 3}, start: "person-1", type: "INFLUENCED"}
 
-      expected = %{:end => "person-3", :start => "person-1",
-                   :type => "INFLUENCED", "strength" => 3}
-
+      expected = %{end: "person-3", group: "edges", start: "person-1",
+                   strength: 3, type: "INFLUENCED"}
       assert expected == Cytoscape.format_element(data)
     end
 
@@ -123,9 +121,8 @@ defmodule VinculiGraph.Format.TestCytoscape do
         properties: %{"firstName" => "Immanuel", "lastName" => "KANT",
           "uuid" => "person-3"}}
 
-      expected = %{:labels => ["Person"], :name => "Immanuel KANT",
-                   "firstName" => "Immanuel", "lastName" => "KANT",
-                   "uuid" => "person-3"}
+      expected = %{firstName: "Immanuel", group: "nodes", labels: ["Person"],
+                   lastName: "KANT", name: "Immanuel KANT", uuid: "person-3"}
       assert expected == Cytoscape.format_element(data)
     end
   end

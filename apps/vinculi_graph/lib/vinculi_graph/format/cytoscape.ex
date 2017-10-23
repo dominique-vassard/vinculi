@@ -31,22 +31,21 @@ defmodule VinculiGraph.Format.Cytoscape do
       properties: %{"externalLink" => "https://en.wikipedia.org/wiki/David_Hume",
         "firstName" => "David",
         "internalLink" => "http://arsmagica.fr/polyphonies/hume-david-1711-1776",
-        "lastName" => "HUME", "uuid" => "person-1"}}}
+        "lastName" => "HUME", "uuid" => "person-1"}}}]
 
-    iex> VinculiGraph.Format.Cytoscape.format(data)
-    [%{:labels => ["Person"], :name => "Marcel MAUSS", "firstName" => "Marcel",
-       "lastName" => "MAUSS", "uuid" => "person-9"},
-      %{:end => "person-9", :start => "person-1", :type => "INFLUENCED",
-       "strength" => 2},
-      %{:labels => ["Person"], :name => "David HUME",
-       "externalLink" => "https://en.wikipedia.org/wiki/David_Hume",
-       "firstName" => "David",
-       "internalLink" => "http://arsmagica.fr/polyphonies/hume-david-1711-1776",
-       "lastName" => "HUME", "uuid" => "person-1"},
-      %{:labels => ["Person"], :name => "Edmund HUSSERL", "firstName" => "Edmund",
-       "lastName" => "HUSSERL", "uuid" => "person-6"},
-      %{:end => "person-6", :start => "person-1", :type => "INFLUENCED",
-       "strength" => 2}]
+    iex> VinculiGraph.Format.Cytoscape.format(query_result)
+    [%{firstName: "Marcel", group: "nodes", labels: ["Person"], lastName: "MAUSS",
+       name: "Marcel MAUSS", uuid: "person-9"},
+     %{end: "person-9", group: "edges", start: "person-1", strength: 2,
+       type: "INFLUENCED"},
+     %{externalLink: "https://en.wikipedia.org/wiki/David_Hume", firstName: "David",
+       group: "nodes",
+       internalLink: "http://arsmagica.fr/polyphonies/hume-david-1711-1776",
+       labels: ["Person"], lastName: "HUME", name: "David HUME", uuid: "person-1"},
+     %{firstName: "Edmund", group: "nodes", labels: ["Person"], lastName: "HUSSERL",
+       name: "Edmund HUSSERL", uuid: "person-6"},
+     %{end: "person-6", group: "edges", start: "person-1", strength: 2,
+       type: "INFLUENCED"}]
   """
   def format(data) do
     flatten =
@@ -90,22 +89,25 @@ defmodule VinculiGraph.Format.Cytoscape do
       properties: %{"strength" => 3}, start: "person-1", type: "INFLUENCED"}
 
       iex> VinculiGraph.Format.Cytoscape.format_element(data)
-      %{:end => "person-3", :start => "person-1", :type => "INFLUENCED", "strength" => 3}
+      %{end: "person-3", group: "edges", start: "person-1", strength: 3,
+        type: "INFLUENCED"}
 
       iex> data = %Bolt.Sips.Types.Node{id: 2381, labels: ["Person"],
       properties: %{"firstName" => "Immanuel", "lastName" => "KANT",
         "uuid" => "person-3"}}
 
       iex> VinculiGraph.Format.Cytoscape.format_element(data)
-      %{:labels => ["Person"], :name => "Immanuel KANT",
-                 "firstName" => "Immanuel", "lastName" => "KANT", "uuid" => "person-3"}
+      %{firstName: "Immanuel", group: "nodes", labels: ["Person"], lastName: "KANT",
+        name: "Immanuel KANT", uuid: "person-3"}
   """
   def format_element(%Node{labels: labels, properties: properties} = node_data) do
-    Map.merge(properties, %{labels: labels})
+    Map.merge(properties, %{group: "nodes", labels: labels})
     |> Map.put(:name, VinculiGraph.Helpers.get_name(node_data))
+    |> Utils.Struct.to_atom_map()
   end
 
   def format_element(%Relationship{start: start_uid, end: end_uid, type: type, properties: properties}) do
-    Map.merge(properties, %{start: start_uid, end: end_uid, type: type})
+    Map.merge(properties, %{group: "edges", start: start_uid, end: end_uid, type: type})
+    |> Utils.Struct.to_atom_map()
   end
 end

@@ -83,30 +83,36 @@ defmodule VinculiGraph.TestNode do
       check_query_result(expected, res)
     end
 
-    test "Return cytoscape-formated rsult when asked to" do
+    test "Return cytoscape-formated result when asked to" do
       res = Node.get_local_graph("Publication", "publication-22", :cytoscape)
-      expected = [%{end: "publication-22", start: "person-9", type: "WROTE"},
-                   %{end: "language-3", start: "publication-22", type: "HAS_ORIGINAL_LANGUAGE"},
-                   %{end: "year-29", start: "publication-22", type: "WHEN_WRITTEN"},
-                   %{end: "domain-2", start: "publication-22", type: "IS_OF_DOMAIN"},
-                   %{:labels => ["Domain"], :name => "Anthropology", "name" => "Anthropology",
-                     "uuid" => "domain-2"},
-                   %{:labels => ["Language"], :name => "French", "name" => "French",
-                     "uuid" => "language-3"},
-                   %{:labels => ["Person"], :name => "Marcel MAUSS", "firstName" => "Marcel",
-                     "lastName" => "MAUSS", "uuid" => "person-9"},
-                   %{:labels => ["Publication"], :name => "",
-                     "title" => "Esquisse d'une théorie générale de la magie",
-                     "uuid" => "publication-22"},
-                   %{:labels => ["Year"], :name => "1902", "uuid" => "year-29", "value" => 1902}]
+      expected = [%{group: "nodes", labels: ["Domain"], name: "Anthropology", uuid: "domain-2"},
+                   %{end: "domain-2", group: "edges", start: "publication-22",
+                     type: "IS_OF_DOMAIN"},
+                   %{group: "nodes", labels: ["Publication"], name: "",
+                     title: "Esquisse d'une théorie générale de la magie",
+                     uuid: "publication-22"},
+                   %{group: "nodes", labels: ["Language"], name: "French", uuid: "language-3"},
+                   %{end: "language-3", group: "edges", start: "publication-22",
+                     type: "HAS_ORIGINAL_LANGUAGE"},
+                   %{group: "nodes", labels: ["Year"], name: "1902", uuid: "year-29",
+                     value: 1902},
+                   %{end: "year-29", group: "edges", start: "publication-22",
+                     type: "WHEN_WRITTEN"},
+                   %{firstName: "Marcel", group: "nodes", labels: ["Person"], lastName: "MAUSS",
+                     name: "Marcel MAUSS", uuid: "person-9"},
+                   %{end: "publication-22", group: "edges", start: "person-9", type: "WROTE"}]
 
+      valid? =
+        res
+        |> Enum.map(&(Enum.member? expected, &1))
+        |> Enum.all?(&(&1 == true))
 
-      assert Enum.count(expected) == Enum.count(res)
-      # assert expected == Enum.sort_by(res, fn x -> x["uuid"] end)
+      assert valid?
     end
 
     test "Return empty result for non-existing node" do
       assert [] == Node.get_local_graph("Person", "non-existing")
     end
+
   end
 end
