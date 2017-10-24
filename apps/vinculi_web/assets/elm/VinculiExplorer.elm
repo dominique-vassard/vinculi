@@ -1,15 +1,33 @@
 module Main exposing (..)
 
-import Html exposing (Html, button, div, text, span, input)
+import Html exposing (Html, button, div, form, input, li, span, text, ul)
 import Html.Attributes exposing (class, id)
-import Html.Events exposing (onClick, onInput)
-import Json.Decode exposing (string, decodeString)
+import Html.Events exposing (onClick, onInput, onSubmit)
+import Json.Encode exposing (Value, object, string)
+import Json.Decode exposing (field, decodeString, decodeValue, string)
 import Ports exposing (..)
+import Phoenix.Socket as PhxSocket
+    exposing
+        ( init
+        , join
+        , listen
+        , on
+        , push
+        , update
+        , withDebug
+        )
+import Phoenix.Channel as PhxChannel exposing (init)
+import Phoenix.Push as PhxPush exposing (init, onError, onOk, withPayload)
 
 
 main : Program Never Model Msg
 main =
-    Html.program { init = init, view = view, update = update, subscriptions = subscriptions }
+    Html.program
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        }
 
 
 
@@ -19,16 +37,34 @@ main =
 type alias Model =
     { number : Int
     , style : String
+    , phxSocket : PhxSocket.Socket Msg
+    , messageInProgress : String
+    , messages : List String
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { number = 1
-      , style = ""
-      }
-    , Cmd.none
-    )
+    let
+        channel =
+            PhxChannel.init "constellation:explore"
+
+        ( phxSocket, phxCmd ) =
+            PhxSocket.init "ws://localhost:4000/socket/websocket"
+                |> PhxSocket.withDebug
+                |> PhxSocket.on "shout"
+                    "constellation:explore"
+                    ReceiveMessage
+                |> PhxSocket.join channel
+    in
+        ( { number = 1
+          , style = ""
+          , phxSocket = phxSocket
+          , messageInProgress = ""
+          , messages = [ "Test messages" ]
+          }
+        , Cmd.map PhoenixMsg phxCmd
+        )
 
 
 
@@ -42,6 +78,11 @@ type Msg
     | ChangeStyle
     | CurrentStyle (Result String String)
     | ResetStyle (Result String String)
+    | PhoenixMsg (PhxSocket.Msg Msg)
+    | SetSocketMessage String
+    | SendMessage
+    | ReceiveMessage Json.Encode.Value
+    | HandleSendError Json.Encode.Value
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -71,6 +112,60 @@ update msg model =
         ResetStyle (Err err) ->
             ( model, Cmd.none )
 
+        PhoenixMsg msg ->
+            let
+                ( phxSocket, phxCmd ) =
+                    PhxSocket.update msg model.phxSocket
+            in
+                ( { model | phxSocket = phxSocket }
+                , Cmd.map PhoenixMsg phxCmd
+                )
+
+        SetSocketMessage msg ->
+            ( { model | messageInProgress = msg }, Cmd.none )
+
+        SendMessage ->
+            let
+                payload =
+                    Json.Encode.object
+                        [ ( "message"
+                          , Json.Encode.string model.messageInProgress
+                          )
+                        ]
+
+                phxPush =
+                    PhxPush.init "shout" "constellation:explore"
+                        |> PhxPush.withPayload payload
+                        |> PhxPush.onOk ReceiveMessage
+                        |> PhxPush.onError HandleSendError
+
+                ( phxSocket, phxCmd ) =
+                    PhxSocket.push phxPush model.phxSocket
+            in
+                ( { model | phxSocket = phxSocket }, Cmd.map PhoenixMsg phxCmd )
+
+        ReceiveMessage raw ->
+            let
+                messageDecoder =
+                    Json.Decode.field "message" Json.Decode.string
+
+                somePayload =
+                    Json.Decode.decodeValue messageDecoder raw
+            in
+                case somePayload of
+                    Ok message ->
+                        ( { model | messages = message :: model.messages }
+                        , Cmd.none
+                        )
+
+                    Err error ->
+                        ( model, Cmd.none )
+
+        HandleSendError _ ->
+            ( { model | messages = "Failed to send message." :: model.messages }
+            , Cmd.none
+            )
+
 
 
 --- SUBSCRIPTIONS
@@ -81,6 +176,7 @@ subscriptions model =
     Sub.batch
         [ Ports.currentStyle (decodeStyle >> CurrentStyle)
         , Ports.resetStyle (decodeStyle >> ResetStyle)
+        , PhxSocket.listen model.phxSocket PhoenixMsg
         ]
 
 
@@ -104,8 +200,32 @@ view model =
             , input [ onInput Change ] []
             , button [ onClick ChangeStyle ] [ text "change style" ]
             , button [ id "reset-style" ] [ text "reset style" ]
+            , viewSocketTest model
             , div [ class "row border border-primary cy-graph", id "cy" ]
                 []
             ]
-        , div [ class "col-lg-3 bg-gray rounded-right" ] [ span [] [ text "Control panel" ] ]
+        , div [ class "col-lg-3 bg-gray rounded-right" ]
+            [ span [] [ text "Control panel" ]
+            ]
+        ]
+
+
+viewSocketTest : Model -> Html Msg
+viewSocketTest model =
+    div [ class " border border-danger" ]
+        [ ul [] (model.messages |> List.map drawMessage)
+        , form [ onSubmit SendMessage ]
+            [ input [ onInput SetSocketMessage ]
+                []
+            , button []
+                [ text "Submit"
+                ]
+            ]
+        ]
+
+
+drawMessage : String -> Html Msg
+drawMessage message =
+    li []
+        [ text message
         ]

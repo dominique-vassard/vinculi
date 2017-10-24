@@ -4,6 +4,7 @@ defmodule VinculiWeb.UserSocket do
 
   ## Channels
   # channel "room:*", VinculiWeb.RoomChannel
+  channel "constellation:explore", VinculiWeb.ConstellationChannel, transport: :websocket
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
