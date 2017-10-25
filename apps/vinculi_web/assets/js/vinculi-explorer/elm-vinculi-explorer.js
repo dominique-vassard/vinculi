@@ -13893,9 +13893,14 @@ var _user$project$Main$drawMessage = function (message) {
 		});
 };
 var _user$project$Main$decodeStyle = _elm_lang$core$Json_Decode$decodeValue(_elm_lang$core$Json_Decode$string);
-var _user$project$Main$Model = F5(
-	function (a, b, c, d, e) {
-		return {number: a, style: b, phxSocket: c, messageInProgress: d, messages: e};
+var _user$project$Main$channelName = 'constellation:explore';
+var _user$project$Main$Flags = F2(
+	function (a, b) {
+		return {socket_url: a, source_node_uuid: b};
+	});
+var _user$project$Main$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {number: a, style: b, source_node_uuid: c, phxSocket: d, messageInProgress: e, messages: f};
 	});
 var _user$project$Main$HandleSendError = function (a) {
 	return {ctor: 'HandleSendError', _0: a};
@@ -13960,18 +13965,18 @@ var _user$project$Main$viewSocketTest = function (model) {
 var _user$project$Main$PhoenixMsg = function (a) {
 	return {ctor: 'PhoenixMsg', _0: a};
 };
-var _user$project$Main$init = function () {
-	var channel = _fbonetti$elm_phoenix_socket$Phoenix_Channel$init('constellation:explore');
+var _user$project$Main$init = function (flags) {
+	var channel = _fbonetti$elm_phoenix_socket$Phoenix_Channel$init(_user$project$Main$channelName);
 	var _p0 = A2(
 		_fbonetti$elm_phoenix_socket$Phoenix_Socket$join,
 		channel,
 		A4(
 			_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
 			'shout',
-			'constellation:explore',
+			_user$project$Main$channelName,
 			_user$project$Main$ReceiveMessage,
 			_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
-				_fbonetti$elm_phoenix_socket$Phoenix_Socket$init('ws://localhost:4000/socket/websocket'))));
+				_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(flags.socket_url))));
 	var phxSocket = _p0._0;
 	var phxCmd = _p0._1;
 	return {
@@ -13979,17 +13984,18 @@ var _user$project$Main$init = function () {
 		_0: {
 			number: 1,
 			style: '',
+			source_node_uuid: flags.source_node_uuid,
 			phxSocket: phxSocket,
 			messageInProgress: '',
 			messages: {
 				ctor: '::',
-				_0: 'Test messages! v',
+				_0: 'Test messages',
 				_1: {ctor: '[]'}
 			}
 		},
 		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PhoenixMsg, phxCmd)
 	};
-}();
+};
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p1 = msg;
@@ -14087,7 +14093,7 @@ var _user$project$Main$update = F2(
 						A2(
 							_fbonetti$elm_phoenix_socket$Phoenix_Push$withPayload,
 							payload,
-							A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'shout', 'constellation:explore'))));
+							A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'shout', _user$project$Main$channelName))));
 				var _p3 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
 				var phxSocket = _p3._0;
 				var phxCmd = _p3._1;
@@ -14319,8 +14325,20 @@ var _user$project$Main$view = function (model) {
 			}
 		});
 };
-var _user$project$Main$main = _elm_lang$html$Html$program(
-	{init: _user$project$Main$init, view: _user$project$Main$view, update: _user$project$Main$update, subscriptions: _user$project$Main$subscriptions})();
+var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
+	{init: _user$project$Main$init, view: _user$project$Main$view, update: _user$project$Main$update, subscriptions: _user$project$Main$subscriptions})(
+	A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (socket_url) {
+			return A2(
+				_elm_lang$core$Json_Decode$andThen,
+				function (source_node_uuid) {
+					return _elm_lang$core$Json_Decode$succeed(
+						{socket_url: socket_url, source_node_uuid: source_node_uuid});
+				},
+				A2(_elm_lang$core$Json_Decode$field, 'source_node_uuid', _elm_lang$core$Json_Decode$string));
+		},
+		A2(_elm_lang$core$Json_Decode$field, 'socket_url', _elm_lang$core$Json_Decode$string)));
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

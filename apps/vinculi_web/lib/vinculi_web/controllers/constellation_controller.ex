@@ -11,9 +11,11 @@ defmodule VinculiWeb.ConstellationController do
     render conn, "index.html", labels: labels, fields: [], results: []
   end
 
-  def explore(conn, params) do
+  def explore(conn, %{"node_uuid" => node_uuid} = params) do
     IO.puts inspect params
-    render conn, "explore.html", layout: {VinculiWeb.LayoutView, "app_light.html"}
+    render conn, "explore.html", layout: {VinculiWeb.LayoutView, "app_light.html"},
+                                 source_node_uuid: node_uuid,
+                                 socket_url: "ws://localhost:4000/socket/websocket"
   end
 
   # def search(conn, %{"search" => node_form_params}) do

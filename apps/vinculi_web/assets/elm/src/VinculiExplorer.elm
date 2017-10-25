@@ -20,9 +20,9 @@ import Phoenix.Channel as PhxChannel exposing (init)
 import Phoenix.Push as PhxPush exposing (init, onError, onOk, withPayload)
 
 
-main : Program Never Model Msg
+main : Program Flags Model Msg
 main =
-    Html.program
+    Html.programWithFlags
         { init = init
         , view = view
         , update = update
@@ -31,37 +31,52 @@ main =
 
 
 
+--- CONSTANT
+
+
+channelName : String
+channelName =
+    "constellation:explore"
+
+
+
 -- MODEL
+
+
+type alias Flags =
+    { socket_url : String
+    , source_node_uuid : String
+    }
 
 
 type alias Model =
     { number : Int
     , style : String
+    , source_node_uuid : String
     , phxSocket : PhxSocket.Socket Msg
     , messageInProgress : String
     , messages : List String
     }
 
 
-init : ( Model, Cmd Msg )
-init =
+init : Flags -> ( Model, Cmd Msg )
+init flags =
     let
         channel =
-            PhxChannel.init "constellation:explore"
+            PhxChannel.init channelName
 
         ( phxSocket, phxCmd ) =
-            PhxSocket.init "ws://localhost:4000/socket/websocket"
+            PhxSocket.init flags.socket_url
                 |> PhxSocket.withDebug
-                |> PhxSocket.on "shout"
-                    "constellation:explore"
-                    ReceiveMessage
+                |> PhxSocket.on "shout" channelName ReceiveMessage
                 |> PhxSocket.join channel
     in
         ( { number = 1
           , style = ""
+          , source_node_uuid = flags.source_node_uuid
           , phxSocket = phxSocket
           , messageInProgress = ""
-          , messages = [ "Test messages! v" ]
+          , messages = [ "Test messages" ]
           }
         , Cmd.map PhoenixMsg phxCmd
         )
@@ -134,7 +149,7 @@ update msg model =
                         ]
 
                 phxPush =
-                    PhxPush.init "shout" "constellation:explore"
+                    PhxPush.init "shout" channelName
                         |> PhxPush.withPayload payload
                         |> PhxPush.onOk ReceiveMessage
                         |> PhxPush.onError HandleSendError

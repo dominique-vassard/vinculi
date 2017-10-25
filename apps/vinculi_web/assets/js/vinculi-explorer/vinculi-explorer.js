@@ -2,7 +2,8 @@ import Elm from "./elm-vinculi-explorer.js"
 const elmDiv = document.getElementById("elm-vinculi-explorer")
 var elmApp
 if (elmDiv) {
-    elmApp = Elm.Main.embed(elmDiv)
+    elmApp = Elm.Main.embed(elmDiv, {socket_url: socket_url,
+                                     source_node_uuid: source_node_uuid})
 }
 
 var cytoscape = require('cytoscape');

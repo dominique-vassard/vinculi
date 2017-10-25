@@ -1,2 +1,6 @@
 <div id="elm-vinculi-explorer" class="container-fluid">
 </div>
+<script type="text/javascript">
+    const socket_url = "<%= @socket_url %>"
+    const source_node_uuid = "<%= @source_node_uuid %>"
+</script>
