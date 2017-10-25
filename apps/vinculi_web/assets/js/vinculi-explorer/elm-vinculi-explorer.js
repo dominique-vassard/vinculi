@@ -13983,7 +13983,7 @@ var _user$project$Main$init = function () {
 			messageInProgress: '',
 			messages: {
 				ctor: '::',
-				_0: 'Test messages',
+				_0: 'Test messages! v',
 				_1: {ctor: '[]'}
 			}
 		},

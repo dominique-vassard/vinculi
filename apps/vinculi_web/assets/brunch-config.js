@@ -60,7 +60,7 @@ exports.config = {
       elmFolder: "elm",
 
       executablePath: "../node_modules/elm/binwrappers",
-      mainModules: ["VinculiExplorer.elm"],
+      mainModules: ["src/VinculiExplorer.elm"],
       makeParameters: ["--debug"],
       outputFolder: "../js/vinculi-explorer",
       outputFile: "elm-vinculi-explorer.js"

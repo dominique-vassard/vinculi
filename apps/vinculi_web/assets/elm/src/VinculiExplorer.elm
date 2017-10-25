@@ -61,7 +61,7 @@ init =
           , style = ""
           , phxSocket = phxSocket
           , messageInProgress = ""
-          , messages = [ "Test messages" ]
+          , messages = [ "Test messages! v" ]
           }
         , Cmd.map PhoenixMsg phxCmd
         )
