@@ -28,17 +28,33 @@ var init_graph = function() {
 
     container: document.getElementById('cy'), // container to render in
 
-    elements: [ // list of graph elements to start with
-      { // node a
-        data: { id: 'a' }
-      },
-      { // node b
-        data: { id: 'b' }
-      },
-      { // edge ab
-        data: { id: 'ab', source: 'a', target: 'b' }
-      }
-    ],
+    // elements: [ // list of graph elements to start with
+    //   { // node a
+    //     data: { id: 'a' }
+    //   },
+    //   { // node b
+    //     data: { id: 'b' }
+    //   },
+    //   { // edge ab
+    //     data: { id: 'ab', source: 'a', target: 'b' }
+    //   }
+    // ],
+
+    elements : {
+      "nodes" : [
+        { // node a
+        data: { id: 'hello' }
+        },
+        { // node b
+          data: { id: 'you' }
+        }
+      ],
+      "edges": [
+        { // edge ab
+          data: { id: 'ab', source: 'hello', target: 'you' }
+        }
+      ]
+    },
 
     style: [ // the stylesheet for the graph
       {

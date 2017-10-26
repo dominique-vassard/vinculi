@@ -4,7 +4,8 @@ import Html exposing (Html, button, div, form, input, li, span, text, ul)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Json.Encode exposing (Value, object, string)
-import Json.Decode exposing (field, decodeString, decodeValue, string)
+import Json.Decode exposing (field, decodeString, decodeValue, string, Decoder)
+import Json.Decode.Pipeline exposing (decode, required, optional)
 import Ports exposing (..)
 import Phoenix.Socket as PhxSocket
     exposing
@@ -49,6 +50,28 @@ type alias Flags =
     }
 
 
+type alias Node =
+    { uuid : String
+    , labels : List String
+    , name : String
+    , groups : String
+    }
+
+
+type alias Edge =
+    { start : String
+    , end : String
+    , type_ : String
+    , group : String
+    }
+
+
+type alias Graph =
+    { nodes : List Node
+    , edges : List Edge
+    }
+
+
 type alias Model =
     { number : Int
     , style : String
@@ -56,6 +79,7 @@ type alias Model =
     , phxSocket : PhxSocket.Socket Msg
     , messageInProgress : String
     , messages : List String
+    , nodeLocalGraph : Node
     }
 
 
@@ -69,6 +93,9 @@ init flags =
             PhxSocket.init flags.socket_url
                 |> PhxSocket.withDebug
                 |> PhxSocket.on "shout" channelName ReceiveMessage
+                |> PhxSocket.on "node_local_graph"
+                    channelName
+                    ReceiveNodeLocalGraph
                 |> PhxSocket.join channel
     in
         ( { number = 1
@@ -77,6 +104,7 @@ init flags =
           , phxSocket = phxSocket
           , messageInProgress = ""
           , messages = [ "Test messages" ]
+          , nodeLocalGraph = Node "" [ "" ] "" ""
           }
         , Cmd.map PhoenixMsg phxCmd
         )
@@ -98,6 +126,8 @@ type Msg
     | SendMessage
     | ReceiveMessage Json.Encode.Value
     | HandleSendError Json.Encode.Value
+    | GetNodeLocalGraph
+    | ReceiveNodeLocalGraph Json.Encode.Value
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -176,10 +206,52 @@ update msg model =
                     Err error ->
                         ( model, Cmd.none )
 
+        GetNodeLocalGraph ->
+            let
+                payload =
+                    Json.Encode.object
+                        [ ( "node_uuid", Json.Encode.string model.source_node_uuid ) ]
+
+                phxPush =
+                    PhxPush.init "node_local_graph" channelName
+                        |> PhxPush.withPayload payload
+                        |> PhxPush.onOk ReceiveNodeLocalGraph
+                        |> PhxPush.onError HandleSendError
+
+                ( phxSocket, phxCmd ) =
+                    PhxSocket.push phxPush model.phxSocket
+            in
+                ( { model | phxSocket = phxSocket }, Cmd.map PhoenixMsg phxCmd )
+
+        ReceiveNodeLocalGraph raw ->
+            let
+                decodedNode =
+                    Json.Decode.decodeValue nodeDecoder raw
+            in
+                case decodedNode of
+                    Ok node ->
+                        ( { model | nodeLocalGraph = node }, Cmd.none )
+
+                    Err error ->
+                        ( { model | messages = "error when decodeing node" :: model.messages }, Cmd.none )
+
         HandleSendError _ ->
             ( { model | messages = "Failed to send message." :: model.messages }
             , Cmd.none
             )
+
+
+
+--- DECODERS
+
+
+nodeDecoder : Decoder Node
+nodeDecoder =
+    Json.Decode.Pipeline.decode Node
+        |> required "uuid" Json.Decode.string
+        |> required "labels" (Json.Decode.list Json.Decode.string)
+        |> required "name" Json.Decode.string
+        |> required "group" Json.Decode.string
 
 
 
@@ -216,6 +288,8 @@ view model =
             , button [ onClick ChangeStyle ] [ text "change style" ]
             , button [ id "reset-style" ] [ text "reset style" ]
             , viewSocketTest model
+            , button [ class "btn btn-primary", onClick GetNodeLocalGraph ]
+                [ text "Node Local Graph" ]
             , div [ class "row border border-primary cy-graph", id "cy" ]
                 []
             ]

@@ -5757,6 +5757,86 @@ var _elm_lang$core$Platform$Task = {ctor: 'Task'};
 var _elm_lang$core$Platform$ProcessId = {ctor: 'ProcessId'};
 var _elm_lang$core$Platform$Router = {ctor: 'Router'};
 
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode = _elm_lang$core$Json_Decode$succeed;
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$resolve = _elm_lang$core$Json_Decode$andThen(_elm_lang$core$Basics$identity);
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom = _elm_lang$core$Json_Decode$map2(
+	F2(
+		function (x, y) {
+			return y(x);
+		}));
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$hardcoded = function (_p0) {
+	return _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom(
+		_elm_lang$core$Json_Decode$succeed(_p0));
+};
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalDecoder = F3(
+	function (pathDecoder, valDecoder, fallback) {
+		var nullOr = function (decoder) {
+			return _elm_lang$core$Json_Decode$oneOf(
+				{
+					ctor: '::',
+					_0: decoder,
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Decode$null(fallback),
+						_1: {ctor: '[]'}
+					}
+				});
+		};
+		var handleResult = function (input) {
+			var _p1 = A2(_elm_lang$core$Json_Decode$decodeValue, pathDecoder, input);
+			if (_p1.ctor === 'Ok') {
+				var _p2 = A2(
+					_elm_lang$core$Json_Decode$decodeValue,
+					nullOr(valDecoder),
+					_p1._0);
+				if (_p2.ctor === 'Ok') {
+					return _elm_lang$core$Json_Decode$succeed(_p2._0);
+				} else {
+					return _elm_lang$core$Json_Decode$fail(_p2._0);
+				}
+			} else {
+				return _elm_lang$core$Json_Decode$succeed(fallback);
+			}
+		};
+		return A2(_elm_lang$core$Json_Decode$andThen, handleResult, _elm_lang$core$Json_Decode$value);
+	});
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalAt = F4(
+	function (path, valDecoder, fallback, decoder) {
+		return A2(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalDecoder,
+				A2(_elm_lang$core$Json_Decode$at, path, _elm_lang$core$Json_Decode$value),
+				valDecoder,
+				fallback),
+			decoder);
+	});
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional = F4(
+	function (key, valDecoder, fallback, decoder) {
+		return A2(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalDecoder,
+				A2(_elm_lang$core$Json_Decode$field, key, _elm_lang$core$Json_Decode$value),
+				valDecoder,
+				fallback),
+			decoder);
+	});
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$requiredAt = F3(
+	function (path, valDecoder, decoder) {
+		return A2(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom,
+			A2(_elm_lang$core$Json_Decode$at, path, valDecoder),
+			decoder);
+	});
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required = F3(
+	function (key, valDecoder, decoder) {
+		return A2(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom,
+			A2(_elm_lang$core$Json_Decode$field, key, valDecoder),
+			decoder);
+	});
+
 var _elm_lang$core$Task$onError = _elm_lang$core$Native_Scheduler.onError;
 var _elm_lang$core$Task$andThen = _elm_lang$core$Native_Scheduler.andThen;
 var _elm_lang$core$Task$spawnCmd = F2(
@@ -13898,10 +13978,43 @@ var _user$project$Main$Flags = F2(
 	function (a, b) {
 		return {socket_url: a, source_node_uuid: b};
 	});
-var _user$project$Main$Model = F6(
-	function (a, b, c, d, e, f) {
-		return {number: a, style: b, source_node_uuid: c, phxSocket: d, messageInProgress: e, messages: f};
+var _user$project$Main$Node = F4(
+	function (a, b, c, d) {
+		return {uuid: a, labels: b, name: c, groups: d};
 	});
+var _user$project$Main$nodeDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'group',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'name',
+		_elm_lang$core$Json_Decode$string,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'labels',
+			_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string),
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'uuid',
+				_elm_lang$core$Json_Decode$string,
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$Node)))));
+var _user$project$Main$Edge = F4(
+	function (a, b, c, d) {
+		return {start: a, end: b, type_: c, group: d};
+	});
+var _user$project$Main$Graph = F2(
+	function (a, b) {
+		return {nodes: a, edges: b};
+	});
+var _user$project$Main$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {number: a, style: b, source_node_uuid: c, phxSocket: d, messageInProgress: e, messages: f, nodeLocalGraph: g};
+	});
+var _user$project$Main$ReceiveNodeLocalGraph = function (a) {
+	return {ctor: 'ReceiveNodeLocalGraph', _0: a};
+};
+var _user$project$Main$GetNodeLocalGraph = {ctor: 'GetNodeLocalGraph'};
 var _user$project$Main$HandleSendError = function (a) {
 	return {ctor: 'HandleSendError', _0: a};
 };
@@ -13972,11 +14085,16 @@ var _user$project$Main$init = function (flags) {
 		channel,
 		A4(
 			_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
-			'shout',
+			'node_local_graph',
 			_user$project$Main$channelName,
-			_user$project$Main$ReceiveMessage,
-			_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
-				_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(flags.socket_url))));
+			_user$project$Main$ReceiveNodeLocalGraph,
+			A4(
+				_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
+				'shout',
+				_user$project$Main$channelName,
+				_user$project$Main$ReceiveMessage,
+				_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
+					_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(flags.socket_url)))));
 	var phxSocket = _p0._0;
 	var phxCmd = _p0._1;
 	return {
@@ -13991,7 +14109,17 @@ var _user$project$Main$init = function (flags) {
 				ctor: '::',
 				_0: 'Test messages',
 				_1: {ctor: '[]'}
-			}
+			},
+			nodeLocalGraph: A4(
+				_user$project$Main$Node,
+				'',
+				{
+					ctor: '::',
+					_0: '',
+					_1: {ctor: '[]'}
+				},
+				'',
+				'')
 		},
 		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PhoenixMsg, phxCmd)
 	};
@@ -14121,6 +14249,59 @@ var _user$project$Main$update = F2(
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
+			case 'GetNodeLocalGraph':
+				var payload = _elm_lang$core$Json_Encode$object(
+					{
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'node_uuid',
+							_1: _elm_lang$core$Json_Encode$string(model.source_node_uuid)
+						},
+						_1: {ctor: '[]'}
+					});
+				var phxPush = A2(
+					_fbonetti$elm_phoenix_socket$Phoenix_Push$onError,
+					_user$project$Main$HandleSendError,
+					A2(
+						_fbonetti$elm_phoenix_socket$Phoenix_Push$onOk,
+						_user$project$Main$ReceiveNodeLocalGraph,
+						A2(
+							_fbonetti$elm_phoenix_socket$Phoenix_Push$withPayload,
+							payload,
+							A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'node_local_graph', _user$project$Main$channelName))));
+				var _p5 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
+				var phxSocket = _p5._0;
+				var phxCmd = _p5._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{phxSocket: phxSocket}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PhoenixMsg, phxCmd)
+				};
+			case 'ReceiveNodeLocalGraph':
+				var decodedNode = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Main$nodeDecoder, _p1._0);
+				var _p6 = decodedNode;
+				if (_p6.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{nodeLocalGraph: _p6._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								messages: {ctor: '::', _0: 'error when decodeing node', _1: model.messages}
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
 			default:
 				return {
 					ctor: '_Tuple2',
@@ -14144,16 +14325,16 @@ var _user$project$Main$subscriptions = function (model) {
 		{
 			ctor: '::',
 			_0: _user$project$Ports$currentStyle(
-				function (_p5) {
+				function (_p7) {
 					return _user$project$Main$CurrentStyle(
-						_user$project$Main$decodeStyle(_p5));
+						_user$project$Main$decodeStyle(_p7));
 				}),
 			_1: {
 				ctor: '::',
 				_0: _user$project$Ports$resetStyle(
-					function (_p6) {
+					function (_p8) {
 						return _user$project$Main$ResetStyle(
-							_user$project$Main$decodeStyle(_p6));
+							_user$project$Main$decodeStyle(_p8));
 					}),
 				_1: {
 					ctor: '::',
@@ -14279,18 +14460,37 @@ var _user$project$Main$view = function (model) {
 												_1: {
 													ctor: '::',
 													_0: A2(
-														_elm_lang$html$Html$div,
+														_elm_lang$html$Html$button,
 														{
 															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$class('row border border-primary cy-graph'),
+															_0: _elm_lang$html$Html_Attributes$class('btn btn-primary'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$id('cy'),
+																_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$GetNodeLocalGraph),
 																_1: {ctor: '[]'}
 															}
 														},
-														{ctor: '[]'}),
-													_1: {ctor: '[]'}
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('Node Local Graph'),
+															_1: {ctor: '[]'}
+														}),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$div,
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$class('row border border-primary cy-graph'),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$id('cy'),
+																	_1: {ctor: '[]'}
+																}
+															},
+															{ctor: '[]'}),
+														_1: {ctor: '[]'}
+													}
 												}
 											}
 										}
@@ -14343,7 +14543,7 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Main.Msg":{"args":[],"tags":{"SetSocketMessage":["String"],"Decrement":[],"SendMessage":[],"ResetStyle":["Result.Result String String"],"ReceiveMessage":["Json.Encode.Value"],"HandleSendError":["Json.Encode.Value"],"Change":["String"],"CurrentStyle":["Result.Result String String"],"PhoenixMsg":["Phoenix.Socket.Msg Main.Msg"],"Increment":[],"ChangeStyle":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Time.Time":{"args":[],"type":"Float"}},"message":"Main.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Main.Msg":{"args":[],"tags":{"SetSocketMessage":["String"],"Decrement":[],"SendMessage":[],"GetNodeLocalGraph":[],"ResetStyle":["Result.Result String String"],"ReceiveMessage":["Json.Encode.Value"],"HandleSendError":["Json.Encode.Value"],"Change":["String"],"CurrentStyle":["Result.Result String String"],"PhoenixMsg":["Phoenix.Socket.Msg Main.Msg"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"Increment":[],"ChangeStyle":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Time.Time":{"args":[],"type":"Float"}},"message":"Main.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])
