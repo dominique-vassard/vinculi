@@ -50,20 +50,27 @@ type alias Flags =
     }
 
 
-type alias Node =
+type alias NodeData =
     { uuid : String
     , labels : List String
     , name : String
-    , groups : String
+    }
+
+
+type alias Node =
+    { data : NodeData
+    }
+
+
+type alias EdgeData =
+    { start : String
+    , end : String
+    , type_ : String
     }
 
 
 type alias Edge =
-    { start : String
-    , end : String
-    , type_ : String
-    , group : String
-    }
+    { data : EdgeData }
 
 
 type alias Graph =
@@ -79,7 +86,7 @@ type alias Model =
     , phxSocket : PhxSocket.Socket Msg
     , messageInProgress : String
     , messages : List String
-    , nodeLocalGraph : Node
+    , graph : Graph
     }
 
 
@@ -97,6 +104,9 @@ init flags =
                     channelName
                     ReceiveNodeLocalGraph
                 |> PhxSocket.join channel
+
+        nodeData =
+            NodeData "" [ "" ] ""
     in
         ( { number = 1
           , style = ""
@@ -104,7 +114,7 @@ init flags =
           , phxSocket = phxSocket
           , messageInProgress = ""
           , messages = [ "Test messages" ]
-          , nodeLocalGraph = Node "" [ "" ] "" ""
+          , graph = Graph [] []
           }
         , Cmd.map PhoenixMsg phxCmd
         )
@@ -225,15 +235,15 @@ update msg model =
 
         ReceiveNodeLocalGraph raw ->
             let
-                decodedNode =
-                    Json.Decode.decodeValue nodeDecoder raw
+                decodedGraph =
+                    Json.Decode.decodeValue graphDecoder raw
             in
-                case decodedNode of
-                    Ok node ->
-                        ( { model | nodeLocalGraph = node }, Cmd.none )
+                case decodedGraph of
+                    Ok graph ->
+                        ( { model | graph = graph }, Cmd.none )
 
                     Err error ->
-                        ( { model | messages = "error when decodeing node" :: model.messages }, Cmd.none )
+                        ( { model | messages = "error when decoding graph" :: model.messages }, Cmd.none )
 
         HandleSendError _ ->
             ( { model | messages = "Failed to send message." :: model.messages }
@@ -245,13 +255,39 @@ update msg model =
 --- DECODERS
 
 
+graphDecoder : Decoder Graph
+graphDecoder =
+    Json.Decode.Pipeline.decode Graph
+        |> required "nodes" (Json.Decode.list nodeDecoder)
+        |> required "edges" (Json.Decode.list edgeDecoder)
+
+
 nodeDecoder : Decoder Node
 nodeDecoder =
     Json.Decode.Pipeline.decode Node
+        |> required "data" nodeDataDecoder
+
+
+nodeDataDecoder : Decoder NodeData
+nodeDataDecoder =
+    Json.Decode.Pipeline.decode NodeData
         |> required "uuid" Json.Decode.string
         |> required "labels" (Json.Decode.list Json.Decode.string)
         |> required "name" Json.Decode.string
-        |> required "group" Json.Decode.string
+
+
+edgeDecoder : Decoder Edge
+edgeDecoder =
+    Json.Decode.Pipeline.decode Edge
+        |> required "data" edgeDataDecoder
+
+
+edgeDataDecoder : Decoder EdgeData
+edgeDataDecoder =
+    Json.Decode.Pipeline.decode EdgeData
+        |> required "start" Json.Decode.string
+        |> required "end" Json.Decode.string
+        |> required "type" Json.Decode.string
 
 
 

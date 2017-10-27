@@ -13978,38 +13978,72 @@ var _user$project$Main$Flags = F2(
 	function (a, b) {
 		return {socket_url: a, source_node_uuid: b};
 	});
-var _user$project$Main$Node = F4(
-	function (a, b, c, d) {
-		return {uuid: a, labels: b, name: c, groups: d};
+var _user$project$Main$NodeData = F3(
+	function (a, b, c) {
+		return {uuid: a, labels: b, name: c};
 	});
-var _user$project$Main$nodeDecoder = A3(
+var _user$project$Main$nodeDataDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'group',
+	'name',
 	_elm_lang$core$Json_Decode$string,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'name',
+		'labels',
+		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string),
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'uuid',
+			_elm_lang$core$Json_Decode$string,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$NodeData))));
+var _user$project$Main$Node = function (a) {
+	return {data: a};
+};
+var _user$project$Main$nodeDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'data',
+	_user$project$Main$nodeDataDecoder,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$Node));
+var _user$project$Main$EdgeData = F3(
+	function (a, b, c) {
+		return {start: a, end: b, type_: c};
+	});
+var _user$project$Main$edgeDataDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'type',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'end',
 		_elm_lang$core$Json_Decode$string,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'labels',
-			_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string),
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'uuid',
-				_elm_lang$core$Json_Decode$string,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$Node)))));
-var _user$project$Main$Edge = F4(
-	function (a, b, c, d) {
-		return {start: a, end: b, type_: c, group: d};
-	});
+			'start',
+			_elm_lang$core$Json_Decode$string,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$EdgeData))));
+var _user$project$Main$Edge = function (a) {
+	return {data: a};
+};
+var _user$project$Main$edgeDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'data',
+	_user$project$Main$edgeDataDecoder,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$Edge));
 var _user$project$Main$Graph = F2(
 	function (a, b) {
 		return {nodes: a, edges: b};
 	});
+var _user$project$Main$graphDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'edges',
+	_elm_lang$core$Json_Decode$list(_user$project$Main$edgeDecoder),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'nodes',
+		_elm_lang$core$Json_Decode$list(_user$project$Main$nodeDecoder),
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$Graph)));
 var _user$project$Main$Model = F7(
 	function (a, b, c, d, e, f, g) {
-		return {number: a, style: b, source_node_uuid: c, phxSocket: d, messageInProgress: e, messages: f, nodeLocalGraph: g};
+		return {number: a, style: b, source_node_uuid: c, phxSocket: d, messageInProgress: e, messages: f, graph: g};
 	});
 var _user$project$Main$ReceiveNodeLocalGraph = function (a) {
 	return {ctor: 'ReceiveNodeLocalGraph', _0: a};
@@ -14079,6 +14113,15 @@ var _user$project$Main$PhoenixMsg = function (a) {
 	return {ctor: 'PhoenixMsg', _0: a};
 };
 var _user$project$Main$init = function (flags) {
+	var nodeData = A3(
+		_user$project$Main$NodeData,
+		'',
+		{
+			ctor: '::',
+			_0: '',
+			_1: {ctor: '[]'}
+		},
+		'');
 	var channel = _fbonetti$elm_phoenix_socket$Phoenix_Channel$init(_user$project$Main$channelName);
 	var _p0 = A2(
 		_fbonetti$elm_phoenix_socket$Phoenix_Socket$join,
@@ -14110,16 +14153,10 @@ var _user$project$Main$init = function (flags) {
 				_0: 'Test messages',
 				_1: {ctor: '[]'}
 			},
-			nodeLocalGraph: A4(
-				_user$project$Main$Node,
-				'',
-				{
-					ctor: '::',
-					_0: '',
-					_1: {ctor: '[]'}
-				},
-				'',
-				'')
+			graph: A2(
+				_user$project$Main$Graph,
+				{ctor: '[]'},
+				{ctor: '[]'})
 		},
 		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PhoenixMsg, phxCmd)
 	};
@@ -14281,14 +14318,14 @@ var _user$project$Main$update = F2(
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PhoenixMsg, phxCmd)
 				};
 			case 'ReceiveNodeLocalGraph':
-				var decodedNode = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Main$nodeDecoder, _p1._0);
-				var _p6 = decodedNode;
+				var decodedGraph = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Main$graphDecoder, _p1._0);
+				var _p6 = decodedGraph;
 				if (_p6.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{nodeLocalGraph: _p6._0}),
+							{graph: _p6._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -14297,7 +14334,7 @@ var _user$project$Main$update = F2(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								messages: {ctor: '::', _0: 'error when decodeing node', _1: model.messages}
+								messages: {ctor: '::', _0: 'error when decoding graph', _1: model.messages}
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};

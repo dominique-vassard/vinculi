@@ -32,30 +32,28 @@ defmodule VinculiWeb.ConstellationChannel do
   # end
 
   def handle_in("node_local_graph", payload, socket) do
-    node = %{group: "nodes", labels: ["Domain"], name: "Anthropology", uuid: "domain-2"}
+    node = %{data: %{labels: ["Domain"], name: "Anthropology", uuid: "domain-2"}}
 
-    result = %{edges: [%{end: "publication-22", group: "edges", start: "person-9",
-           type: "WROTE"},
-         %{end: "year-29", group: "edges", start: "publication-22",
-           type: "WHEN_WRITTEN"},
-         %{end: "language-3", group: "edges", start: "publication-22",
-           type: "HAS_ORIGINAL_LANGUAGE"},
-         %{end: "domain-2", group: "edges", start: "publication-22",
-           type: "IS_OF_DOMAIN"}],
-        nodes: [%{firstName: "Marcel", group: "nodes", labels: ["Person"],
-           lastName: "MAUSS", name: "Marcel MAUSS", uuid: "person-9"},
-         %{group: "nodes", labels: ["Publication"], name: "",
-           title: "Esquisse d'une théorie générale de la magie",
-           uuid: "publication-22"},
-         %{group: "nodes", labels: ["Year"], name: "1902", uuid: "year-29",
-           value: 1902},
-         %{group: "nodes", labels: ["Language"], name: "French", uuid: "language-3"},
-         %{group: "nodes", labels: ["Domain"], name: "Anthropology",
-           uuid: "domain-2"}]}
+    result = %{edges: [%{data: %{end: "domain-2", start: "publication-22",
+             type: "IS_OF_DOMAIN"}},
+         %{data: %{end: "publication-22", start: "person-9", type: "WROTE"}},
+         %{data: %{end: "year-29", start: "publication-22", type: "WHEN_WRITTEN"}},
+         %{data: %{end: "language-3", start: "publication-22",
+             type: "HAS_ORIGINAL_LANGUAGE"}}],
+        nodes: [%{data: %{labels: ["Domain"], name: "Anthropology",
+             uuid: "domain-2"}},
+         %{data: %{labels: ["Publication"],
+          name: "Esquisse d'une théorie générale de la magie",
+             title: "Esquisse d'une théorie générale de la magie",
+             uuid: "publication-22"}},
+         %{data: %{firstName: "Marcel", labels: ["Person"], lastName: "MAUSS",
+             name: "Marcel MAUSS", uuid: "person-9"}},
+         %{data: %{labels: ["Year"], name: "1902", uuid: "year-29", value: 1902}},
+         %{data: %{labels: ["Language"], name: "French", uuid: "language-3"}}]}
 
     return = %{data: node}
     IO.puts inspect return
-    {:reply, {:ok, node}, socket}
+    {:reply, {:ok, result}, socket}
     # broadcast socket, "request for: #{payload}", payload
 
   end
