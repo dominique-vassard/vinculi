@@ -57,26 +57,26 @@ defmodule VinculiGraph.Format.TestCytoscape do
 
   describe "Test format/1:" do
     test "produces a valid json for cytoscape" do
-      expected = %{edges: [%{end: "person-9", group: "edges", start: "person-1",
-                 strength: 2, type: "INFLUENCED"},
-               %{end: "person-6", group: "edges", start: "person-1",
-                 strength: 2, type: "INFLUENCED"},
-               %{end: "person-3", group: "edges", start: "person-1",
-                 strength: 3, type: "INFLUENCED"}],
-              nodes: [%{firstName: "Marcel", group: "nodes", labels: ["Person"],
-                 lastName: "MAUSS", name: "Marcel MAUSS", uuid: "person-9"},
-               %{externalLink: "https://en.wikipedia.org/wiki/David_Hume",
-                 firstName: "David", group: "nodes",
-                 internalLink: "http://arsmagica.fr/polyphonies/hume-david-1711-1776",
-                 labels: ["Person"], lastName: "HUME", name: "David HUME",
-                 uuid: "person-1"},
-               %{firstName: "Edmund", group: "nodes", labels: ["Person"],
-                 lastName: "HUSSERL", name: "Edmund HUSSERL", uuid: "person-6"},
-               %{firstName: "Immanuel", group: "nodes", labels: ["Person"],
-                 lastName: "KANT", name: "Immanuel KANT", uuid: "person-3"}]}
-
+      expected = %{edges: [%{data: %{end: "person-9", start: "person-1", strength: 2,
+           type: "INFLUENCED"}},
+       %{data: %{end: "person-6", start: "person-1", strength: 2,
+           type: "INFLUENCED"}},
+       %{data: %{end: "person-3", start: "person-1", strength: 3,
+           type: "INFLUENCED"}}],
+      nodes: [%{data: %{firstName: "Marcel", labels: ["Person"], lastName: "MAUSS",
+           name: "Marcel MAUSS", uuid: "person-9"}},
+       %{data: %{externalLink: "https://en.wikipedia.org/wiki/David_Hume",
+           firstName: "David",
+           internalLink: "http://arsmagica.fr/polyphonies/hume-david-1711-1776",
+           labels: ["Person"], lastName: "HUME", name: "David HUME",
+           uuid: "person-1"}},
+       %{data: %{firstName: "Edmund", labels: ["Person"], lastName: "HUSSERL",
+           name: "Edmund HUSSERL", uuid: "person-6"}},
+       %{data: %{firstName: "Immanuel", labels: ["Person"], lastName: "KANT",
+           name: "Immanuel KANT", uuid: "person-3"}}]}
 
       res = Cytoscape.format(@query_result)
+
       assert expected == res
     end
   end
@@ -112,8 +112,8 @@ defmodule VinculiGraph.Format.TestCytoscape do
       data = %Bolt.Sips.Types.Relationship{end: "person-3", id: 1428,
         properties: %{"strength" => 3}, start: "person-1", type: "INFLUENCED"}
 
-      expected = %{end: "person-3", group: "edges", start: "person-1",
-                   strength: 3, type: "INFLUENCED"}
+      expected = %{data: %{end: "person-3", start: "person-1", strength: 3,
+                   type: "INFLUENCED"}}
       assert expected == Cytoscape.format_element(data)
     end
 
@@ -122,8 +122,8 @@ defmodule VinculiGraph.Format.TestCytoscape do
         properties: %{"firstName" => "Immanuel", "lastName" => "KANT",
           "uuid" => "person-3"}}
 
-      expected = %{firstName: "Immanuel", group: "nodes", labels: ["Person"],
-                   lastName: "KANT", name: "Immanuel KANT", uuid: "person-3"}
+      expected = %{data: %{firstName: "Immanuel", labels: ["Person"],
+                   lastName: "KANT", name: "Immanuel KANT", uuid: "person-3"}}
       assert expected == Cytoscape.format_element(data)
     end
   end
