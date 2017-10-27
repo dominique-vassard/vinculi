@@ -34,11 +34,11 @@ defmodule VinculiWeb.ConstellationChannel do
   def handle_in("node_local_graph", payload, socket) do
     node = %{data: %{labels: ["Domain"], name: "Anthropology", uuid: "domain-2"}}
 
-    result = %{edges: [%{data: %{end: "domain-2", start: "publication-22",
+    result = %{edges: [%{data: %{target: "domain-2", source: "publication-22",
              type: "IS_OF_DOMAIN"}},
-         %{data: %{end: "publication-22", start: "person-9", type: "WROTE"}},
-         %{data: %{end: "year-29", start: "publication-22", type: "WHEN_WRITTEN"}},
-         %{data: %{end: "language-3", start: "publication-22",
+         %{data: %{target: "publication-22", source: "person-9", type: "WROTE"}},
+         %{data: %{target: "year-29", source: "publication-22", type: "WHEN_WRITTEN"}},
+         %{data: %{target: "language-3", source: "publication-22",
              type: "HAS_ORIGINAL_LANGUAGE"}}],
         nodes: [%{data: %{labels: ["Domain"], name: "Anthropology",
              uuid: "domain-2"}},

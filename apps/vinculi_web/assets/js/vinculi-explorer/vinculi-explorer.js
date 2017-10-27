@@ -92,4 +92,9 @@ var ports_init = function(elmApp, cy) {
     cy.$("#a").style("background-color", newStyle)
   })
 
+  elmApp.ports.newGraph.subscribe(function(newGraph) {
+    console.log(JSON.stringify(newGraph));
+    cy.add(newGraph);
+  })
+
 }

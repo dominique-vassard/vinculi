@@ -51,7 +51,7 @@ type alias Flags =
 
 
 type alias NodeData =
-    { uuid : String
+    { id : String
     , labels : List String
     , name : String
     }
@@ -63,8 +63,8 @@ type alias Node =
 
 
 type alias EdgeData =
-    { start : String
-    , end : String
+    { source : String
+    , target : String
     , type_ : String
     }
 
@@ -138,6 +138,7 @@ type Msg
     | HandleSendError Json.Encode.Value
     | GetNodeLocalGraph
     | ReceiveNodeLocalGraph Json.Encode.Value
+    | SendGraph
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -245,6 +246,9 @@ update msg model =
                     Err error ->
                         ( { model | messages = "error when decoding graph" :: model.messages }, Cmd.none )
 
+        SendGraph ->
+            ( model, Ports.newGraph model.graph )
+
         HandleSendError _ ->
             ( { model | messages = "Failed to send message." :: model.messages }
             , Cmd.none
@@ -285,8 +289,8 @@ edgeDecoder =
 edgeDataDecoder : Decoder EdgeData
 edgeDataDecoder =
     Json.Decode.Pipeline.decode EdgeData
-        |> required "start" Json.Decode.string
-        |> required "end" Json.Decode.string
+        |> required "source" Json.Decode.string
+        |> required "target" Json.Decode.string
         |> required "type" Json.Decode.string
 
 
@@ -326,6 +330,7 @@ view model =
             , viewSocketTest model
             , button [ class "btn btn-primary", onClick GetNodeLocalGraph ]
                 [ text "Node Local Graph" ]
+            , button [ class "btn btn-secondary", onClick SendGraph ] [ text "Send!" ]
             , div [ class "row border border-primary cy-graph", id "cy" ]
                 []
             ]

@@ -13959,8 +13959,51 @@ var _user$project$Ports$changeStyle = _elm_lang$core$Native_Platform.outgoingPor
 	function (v) {
 		return v;
 	});
+var _user$project$Ports$newGraph = _elm_lang$core$Native_Platform.outgoingPort(
+	'newGraph',
+	function (v) {
+		return {
+			nodes: _elm_lang$core$Native_List.toArray(v.nodes).map(
+				function (v) {
+					return {
+						data: {
+							id: v.data.id,
+							labels: _elm_lang$core$Native_List.toArray(v.data.labels).map(
+								function (v) {
+									return v;
+								}),
+							name: v.data.name
+						}
+					};
+				}),
+			edges: _elm_lang$core$Native_List.toArray(v.edges).map(
+				function (v) {
+					return {
+						data: {source: v.data.source, target: v.data.target, type_: v.data.type_}
+					};
+				})
+		};
+	});
 var _user$project$Ports$currentStyle = _elm_lang$core$Native_Platform.incomingPort('currentStyle', _elm_lang$core$Json_Decode$value);
 var _user$project$Ports$resetStyle = _elm_lang$core$Native_Platform.incomingPort('resetStyle', _elm_lang$core$Json_Decode$value);
+var _user$project$Ports$NodeData = F3(
+	function (a, b, c) {
+		return {id: a, labels: b, name: c};
+	});
+var _user$project$Ports$Node = function (a) {
+	return {data: a};
+};
+var _user$project$Ports$EdgeData = F3(
+	function (a, b, c) {
+		return {source: a, target: b, type_: c};
+	});
+var _user$project$Ports$Edge = function (a) {
+	return {data: a};
+};
+var _user$project$Ports$Graph = F2(
+	function (a, b) {
+		return {nodes: a, edges: b};
+	});
 
 var _user$project$Main$drawMessage = function (message) {
 	return A2(
@@ -13980,7 +14023,7 @@ var _user$project$Main$Flags = F2(
 	});
 var _user$project$Main$NodeData = F3(
 	function (a, b, c) {
-		return {uuid: a, labels: b, name: c};
+		return {id: a, labels: b, name: c};
 	});
 var _user$project$Main$nodeDataDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -14005,7 +14048,7 @@ var _user$project$Main$nodeDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$Node));
 var _user$project$Main$EdgeData = F3(
 	function (a, b, c) {
-		return {start: a, end: b, type_: c};
+		return {source: a, target: b, type_: c};
 	});
 var _user$project$Main$edgeDataDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -14013,11 +14056,11 @@ var _user$project$Main$edgeDataDecoder = A3(
 	_elm_lang$core$Json_Decode$string,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'end',
+		'target',
 		_elm_lang$core$Json_Decode$string,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'start',
+			'source',
 			_elm_lang$core$Json_Decode$string,
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$EdgeData))));
 var _user$project$Main$Edge = function (a) {
@@ -14045,6 +14088,7 @@ var _user$project$Main$Model = F7(
 	function (a, b, c, d, e, f, g) {
 		return {number: a, style: b, source_node_uuid: c, phxSocket: d, messageInProgress: e, messages: f, graph: g};
 	});
+var _user$project$Main$SendGraph = {ctor: 'SendGraph'};
 var _user$project$Main$ReceiveNodeLocalGraph = function (a) {
 	return {ctor: 'ReceiveNodeLocalGraph', _0: a};
 };
@@ -14339,6 +14383,12 @@ var _user$project$Main$update = F2(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
+			case 'SendGraph':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Ports$newGraph(model.graph)
+				};
 			default:
 				return {
 					ctor: '_Tuple2',
@@ -14515,18 +14565,37 @@ var _user$project$Main$view = function (model) {
 													_1: {
 														ctor: '::',
 														_0: A2(
-															_elm_lang$html$Html$div,
+															_elm_lang$html$Html$button,
 															{
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$class('row border border-primary cy-graph'),
+																_0: _elm_lang$html$Html_Attributes$class('btn btn-secondary'),
 																_1: {
 																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$id('cy'),
+																	_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$SendGraph),
 																	_1: {ctor: '[]'}
 																}
 															},
-															{ctor: '[]'}),
-														_1: {ctor: '[]'}
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html$text('Send!'),
+																_1: {ctor: '[]'}
+															}),
+														_1: {
+															ctor: '::',
+															_0: A2(
+																_elm_lang$html$Html$div,
+																{
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$class('row border border-primary cy-graph'),
+																	_1: {
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Attributes$id('cy'),
+																		_1: {ctor: '[]'}
+																	}
+																},
+																{ctor: '[]'}),
+															_1: {ctor: '[]'}
+														}
 													}
 												}
 											}
@@ -14580,7 +14649,7 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Main.Msg":{"args":[],"tags":{"SetSocketMessage":["String"],"Decrement":[],"SendMessage":[],"GetNodeLocalGraph":[],"ResetStyle":["Result.Result String String"],"ReceiveMessage":["Json.Encode.Value"],"HandleSendError":["Json.Encode.Value"],"Change":["String"],"CurrentStyle":["Result.Result String String"],"PhoenixMsg":["Phoenix.Socket.Msg Main.Msg"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"Increment":[],"ChangeStyle":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Time.Time":{"args":[],"type":"Float"}},"message":"Main.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Main.Msg":{"args":[],"tags":{"SetSocketMessage":["String"],"Decrement":[],"SendMessage":[],"GetNodeLocalGraph":[],"ResetStyle":["Result.Result String String"],"ReceiveMessage":["Json.Encode.Value"],"HandleSendError":["Json.Encode.Value"],"Change":["String"],"CurrentStyle":["Result.Result String String"],"PhoenixMsg":["Phoenix.Socket.Msg Main.Msg"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"SendGraph":[],"Increment":[],"ChangeStyle":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Time.Time":{"args":[],"type":"Float"}},"message":"Main.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])
