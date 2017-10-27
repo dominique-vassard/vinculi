@@ -34,18 +34,24 @@ defmodule VinculiGraph.Format.Cytoscape do
         "lastName" => "HUME", "uuid" => "person-1"}}}]
 
     iex> VinculiGraph.Format.Cytoscape.format(query_result)
-    [%{firstName: "Marcel", group: "nodes", labels: ["Person"], lastName: "MAUSS",
-       name: "Marcel MAUSS", uuid: "person-9"},
-     %{end: "person-9", group: "edges", start: "person-1", strength: 2,
-       type: "INFLUENCED"},
-     %{externalLink: "https://en.wikipedia.org/wiki/David_Hume", firstName: "David",
-       group: "nodes",
-       internalLink: "http://arsmagica.fr/polyphonies/hume-david-1711-1776",
-       labels: ["Person"], lastName: "HUME", name: "David HUME", uuid: "person-1"},
-     %{firstName: "Edmund", group: "nodes", labels: ["Person"], lastName: "HUSSERL",
-       name: "Edmund HUSSERL", uuid: "person-6"},
-     %{end: "person-6", group: "edges", start: "person-1", strength: 2,
-       type: "INFLUENCED"}]
+        %{edges: [%{end: "person-9", group: "edges", start: "person-1",
+           strength: 2, type: "INFLUENCED"},
+         %{end: "person-6", group: "edges", start: "person-1",
+           strength: 2, type: "INFLUENCED"},
+         %{end: "person-3", group: "edges", start: "person-1",
+           strength: 3, type: "INFLUENCED"}],
+        nodes: [%{firstName: "Marcel", group: "nodes", labels: ["Person"],
+           lastName: "MAUSS", name: "Marcel MAUSS", uuid: "person-9"},
+         %{externalLink: "https://en.wikipedia.org/wiki/David_Hume",
+           firstName: "David", group: "nodes",
+           internalLink: "http://arsmagica.fr/polyphonies/hume-david-1711-1776",
+           labels: ["Person"], lastName: "HUME", name: "David HUME",
+           uuid: "person-1"},
+         %{firstName: "Edmund", group: "nodes", labels: ["Person"],
+           lastName: "HUSSERL", name: "Edmund HUSSERL", uuid: "person-6"},
+         %{firstName: "Immanuel", group: "nodes", labels: ["Person"],
+           lastName: "KANT", name: "Immanuel KANT", uuid: "person-3"}]}
+
   """
   def format(data) do
     flatten =
@@ -53,9 +59,17 @@ defmodule VinculiGraph.Format.Cytoscape do
       |> Enum.flat_map(fn val -> Enum.into(val, [], fn {_, v} -> v end) end)
       |> Enum.uniq_by(fn x -> x.id end)
 
-    flatten
-    |> (Enum.map(fn x -> update_relationships(x, flatten) end))
-    |> Enum.map(&format_element/1)
+    {nodes, relationships} =
+      flatten
+      |> Enum.split_with(fn x -> Map.has_key? x, :labels end)
+
+    %{
+      nodes: nodes
+              |> Enum.map(&format_element/1),
+      edges: relationships
+              |> Enum.map(fn x -> update_relationships(x, flatten) end)
+              |> Enum.map(&format_element/1)
+    }
   end
 
   @doc """

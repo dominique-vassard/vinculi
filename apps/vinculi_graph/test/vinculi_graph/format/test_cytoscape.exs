@@ -57,23 +57,24 @@ defmodule VinculiGraph.Format.TestCytoscape do
 
   describe "Test format/1:" do
     test "produces a valid json for cytoscape" do
-      expected = [
-        %{firstName: "Marcel", group: "nodes", labels: ["Person"], lastName: "MAUSS",
-         name: "Marcel MAUSS", uuid: "person-9"},
-        %{end: "person-9", group: "edges", start: "person-1", strength: 2,
-         type: "INFLUENCED"},
-        %{externalLink: "https://en.wikipedia.org/wiki/David_Hume", firstName: "David",
-         group: "nodes",
-         internalLink: "http://arsmagica.fr/polyphonies/hume-david-1711-1776",
-         labels: ["Person"], lastName: "HUME", name: "David HUME", uuid: "person-1"},
-        %{firstName: "Edmund", group: "nodes", labels: ["Person"], lastName: "HUSSERL",
-         name: "Edmund HUSSERL", uuid: "person-6"},
-        %{end: "person-6", group: "edges", start: "person-1", strength: 2,
-         type: "INFLUENCED"},
-        %{firstName: "Immanuel", group: "nodes", labels: ["Person"], lastName: "KANT",
-         name: "Immanuel KANT", uuid: "person-3"},
-        %{end: "person-3", group: "edges", start: "person-1", strength: 3,
-         type: "INFLUENCED"}]
+      expected = %{edges: [%{end: "person-9", group: "edges", start: "person-1",
+                 strength: 2, type: "INFLUENCED"},
+               %{end: "person-6", group: "edges", start: "person-1",
+                 strength: 2, type: "INFLUENCED"},
+               %{end: "person-3", group: "edges", start: "person-1",
+                 strength: 3, type: "INFLUENCED"}],
+              nodes: [%{firstName: "Marcel", group: "nodes", labels: ["Person"],
+                 lastName: "MAUSS", name: "Marcel MAUSS", uuid: "person-9"},
+               %{externalLink: "https://en.wikipedia.org/wiki/David_Hume",
+                 firstName: "David", group: "nodes",
+                 internalLink: "http://arsmagica.fr/polyphonies/hume-david-1711-1776",
+                 labels: ["Person"], lastName: "HUME", name: "David HUME",
+                 uuid: "person-1"},
+               %{firstName: "Edmund", group: "nodes", labels: ["Person"],
+                 lastName: "HUSSERL", name: "Edmund HUSSERL", uuid: "person-6"},
+               %{firstName: "Immanuel", group: "nodes", labels: ["Person"],
+                 lastName: "KANT", name: "Immanuel KANT", uuid: "person-3"}]}
+
 
       res = Cytoscape.format(@query_result)
       assert expected == res

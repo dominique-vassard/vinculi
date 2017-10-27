@@ -85,29 +85,37 @@ defmodule VinculiGraph.TestNode do
 
     test "Return cytoscape-formated result when asked to" do
       res = Node.get_local_graph("Publication", "publication-22", :cytoscape)
-      expected = [%{group: "nodes", labels: ["Domain"], name: "Anthropology", uuid: "domain-2"},
-                   %{end: "domain-2", group: "edges", start: "publication-22",
-                     type: "IS_OF_DOMAIN"},
-                   %{group: "nodes", labels: ["Publication"], name: "",
-                     title: "Esquisse d'une théorie générale de la magie",
-                     uuid: "publication-22"},
-                   %{group: "nodes", labels: ["Language"], name: "French", uuid: "language-3"},
-                   %{end: "language-3", group: "edges", start: "publication-22",
-                     type: "HAS_ORIGINAL_LANGUAGE"},
-                   %{group: "nodes", labels: ["Year"], name: "1902", uuid: "year-29",
-                     value: 1902},
-                   %{end: "year-29", group: "edges", start: "publication-22",
-                     type: "WHEN_WRITTEN"},
-                   %{firstName: "Marcel", group: "nodes", labels: ["Person"], lastName: "MAUSS",
-                     name: "Marcel MAUSS", uuid: "person-9"},
-                   %{end: "publication-22", group: "edges", start: "person-9", type: "WROTE"}]
+      expected = %{edges: [%{end: "publication-22", group: "edges", start: "person-9",
+           type: "WROTE"},
+         %{end: "year-29", group: "edges", start: "publication-22",
+           type: "WHEN_WRITTEN"},
+         %{end: "language-3", group: "edges", start: "publication-22",
+           type: "HAS_ORIGINAL_LANGUAGE"},
+         %{end: "domain-2", group: "edges", start: "publication-22",
+           type: "IS_OF_DOMAIN"}],
+        nodes: [%{firstName: "Marcel", group: "nodes", labels: ["Person"],
+           lastName: "MAUSS", name: "Marcel MAUSS", uuid: "person-9"},
+         %{group: "nodes", labels: ["Publication"], name: "",
+           title: "Esquisse d'une théorie générale de la magie",
+           uuid: "publication-22"},
+         %{group: "nodes", labels: ["Year"], name: "1902", uuid: "year-29",
+           value: 1902},
+         %{group: "nodes", labels: ["Language"], name: "French", uuid: "language-3"},
+         %{group: "nodes", labels: ["Domain"], name: "Anthropology",
+           uuid: "domain-2"}]}
 
-      valid? =
-        res
-        |> Enum.map(&(Enum.member? expected, &1))
+      valid_nodes? =
+        res.nodes
+        |> Enum.map(&(Enum.member? expected.nodes, &1))
         |> Enum.all?(&(&1 == true))
 
-      assert valid?
+      valid_relastionships? =
+        res.edges
+        |> Enum.map(&(Enum.member? expected.edges, &1))
+        |> Enum.all?(&(&1 == true))
+
+      assert valid_nodes?, "Invalid nodes"
+      assert valid_relastionships?, "Invalid relationships"
     end
 
     test "Return empty result for non-existing node" do
