@@ -118,14 +118,16 @@ defmodule VinculiGraph.Format.Cytoscape do
     data =
       Map.merge(properties, %{labels: labels})
       |> Map.put(:name, VinculiGraph.Helpers.get_name(node_data))
+      |> Map.put(:id, properties["uuid"])
       |> Utils.Struct.to_atom_map()
+      |> Map.drop([:uuid])
 
     %{data: data}
   end
 
   def format_element(%Relationship{start: start_uid, end: end_uid, type: type, properties: properties}) do
     data =
-      Map.merge(properties, %{start: start_uid, end: end_uid, type: type})
+      Map.merge(properties, %{source: start_uid, target: end_uid, type: type})
       |> Utils.Struct.to_atom_map()
 
     %{data: data}

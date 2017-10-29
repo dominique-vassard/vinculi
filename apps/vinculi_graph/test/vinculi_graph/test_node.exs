@@ -85,21 +85,21 @@ defmodule VinculiGraph.TestNode do
 
     test "Return cytoscape-formated result when asked to" do
       res = Node.get_local_graph("Publication", "publication-22", :cytoscape)
-      expected = %{edges: [%{data: %{end: "domain-2", start: "publication-22",
-             type: "IS_OF_DOMAIN"}},
-         %{data: %{end: "publication-22", start: "person-9", type: "WROTE"}},
-         %{data: %{end: "year-29", start: "publication-22", type: "WHEN_WRITTEN"}},
-         %{data: %{end: "language-3", start: "publication-22",
-             type: "HAS_ORIGINAL_LANGUAGE"}}],
-        nodes: [%{data: %{labels: ["Domain"], name: "Anthropology",
-             uuid: "domain-2"}},
-         %{data: %{labels: ["Publication"], name: "",
-             title: "Esquisse d'une théorie générale de la magie",
-             uuid: "publication-22"}},
-         %{data: %{firstName: "Marcel", labels: ["Person"], lastName: "MAUSS",
-             name: "Marcel MAUSS", uuid: "person-9"}},
-         %{data: %{labels: ["Year"], name: "1902", uuid: "year-29", value: 1902}},
-         %{data: %{labels: ["Language"], name: "French", uuid: "language-3"}}]}
+      expected = %{edges: [%{data: %{source: "person-9", target: "publication-22",
+             type: "WROTE"}},
+         %{data: %{source: "publication-22", target: "language-3",
+             type: "HAS_ORIGINAL_LANGUAGE"}},
+         %{data: %{source: "publication-22", target: "year-29",
+             type: "WHEN_WRITTEN"}},
+         %{data: %{source: "publication-22", target: "domain-2",
+             type: "IS_OF_DOMAIN"}}],
+        nodes: [%{data: %{firstName: "Marcel", id: "person-9", labels: ["Person"],
+             lastName: "MAUSS", name: "Marcel MAUSS"}},
+         %{data: %{id: "publication-22", labels: ["Publication"], name: "",
+             title: "Esquisse d'une théorie générale de la magie"}},
+         %{data: %{id: "language-3", labels: ["Language"], name: "French"}},
+         %{data: %{id: "year-29", labels: ["Year"], name: "1902", value: 1902}},
+         %{data: %{id: "domain-2", labels: ["Domain"], name: "Anthropology"}}]}
 
       valid_nodes? =
         res.nodes
