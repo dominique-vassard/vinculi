@@ -10,6 +10,11 @@ import Types exposing (..)
 port changeStyle : String -> Cmd msg
 
 
+
+-- Here is the next funny things to do to make it work:
+--   https://stackoverflow.com/questions/37999504/how-to-pass-union-types-through-elm-ports
+
+
 port newGraph : Graph -> Cmd msg
 
 

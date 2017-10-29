@@ -59,9 +59,6 @@ init flags =
                     channelName
                     ReceiveNodeLocalGraph
                 |> PhxSocket.join channel
-
-        nodeData =
-            NodeData "" [ "" ] ""
     in
         ( { number = 1
           , style = ""
@@ -182,11 +179,13 @@ update msg model =
                         ( { model | graph = graph }, Cmd.none )
 
                     Err error ->
-                        ( { model | messages = "error when decoding graph" :: model.messages }, Cmd.none )
+                        ( { model | messages = error :: model.messages }, Cmd.none )
 
         SendGraph ->
-            ( model, Ports.newGraph model.graph )
+            ( model, Cmd.none )
 
+        --Need some work to make it work
+        --( model, Ports.newGraph model.graph )
         HandleSendError _ ->
             ( { model | messages = "Failed to send message." :: model.messages }
             , Cmd.none
@@ -212,10 +211,87 @@ nodeDecoder =
 
 nodeDataDecoder : Decoder NodeData
 nodeDataDecoder =
-    Json.Decode.Pipeline.decode NodeData
+    Json.Decode.field "labels" (Json.Decode.list Json.Decode.string)
+        |> Json.Decode.andThen nodeDataDecoderHelper
+
+
+nodeDataDecoderHelper : List String -> Decoder NodeData
+nodeDataDecoderHelper labels =
+    case labels of
+        [ "Year" ] ->
+            valueDecoder
+
+        [ "Person" ] ->
+            personDecoder
+
+        [ "Publication" ] ->
+            publicationDecoder
+
+        _ ->
+            genericDecoder
+
+
+genericDecoder : Decoder NodeData
+genericDecoder =
+    genericNodeDataDecoder
+        |> Json.Decode.map Generic
+
+
+genericNodeDataDecoder : Decoder GenericNodeData
+genericNodeDataDecoder =
+    Json.Decode.Pipeline.decode GenericNodeData
         |> required "id" Json.Decode.string
         |> required "labels" (Json.Decode.list Json.Decode.string)
         |> required "name" Json.Decode.string
+
+
+personDecoder : Decoder NodeData
+personDecoder =
+    personNodeDataDecoder
+        |> Json.Decode.map Person
+
+
+personNodeDataDecoder : Decoder PersonNodeData
+personNodeDataDecoder =
+    Json.Decode.Pipeline.decode PersonNodeData
+        |> required "id" Json.Decode.string
+        |> required "labels" (Json.Decode.list Json.Decode.string)
+        |> required "name" Json.Decode.string
+        |> required "lastName" Json.Decode.string
+        |> required "firstName" Json.Decode.string
+        |> optional "aka" Json.Decode.string ""
+        |> optional "internalLink" Json.Decode.string ""
+        |> optional "externalLink" Json.Decode.string ""
+
+
+valueDecoder : Decoder NodeData
+valueDecoder =
+    valueNodeDataDecoder
+        |> Json.Decode.map ValueNode
+
+
+valueNodeDataDecoder : Decoder ValueNodeData
+valueNodeDataDecoder =
+    Json.Decode.Pipeline.decode ValueNodeData
+        |> required "id" Json.Decode.string
+        |> required "labels" (Json.Decode.list Json.Decode.string)
+        |> required "name" Json.Decode.string
+        |> required "value" Json.Decode.int
+
+
+publicationDecoder : Decoder NodeData
+publicationDecoder =
+    publicationNodeDataDecoder
+        |> Json.Decode.map Publication
+
+
+publicationNodeDataDecoder : Decoder PublicationNodeData
+publicationNodeDataDecoder =
+    Json.Decode.Pipeline.decode PublicationNodeData
+        |> required "id" Json.Decode.string
+        |> required "labels" (Json.Decode.list Json.Decode.string)
+        |> required "name" Json.Decode.string
+        |> required "title" Json.Decode.string
 
 
 edgeDecoder : Decoder Edge

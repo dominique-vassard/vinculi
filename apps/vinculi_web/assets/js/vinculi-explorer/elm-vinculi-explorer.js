@@ -13958,9 +13958,21 @@ var _user$project$Types$Flags = F2(
 	function (a, b) {
 		return {socket_url: a, source_node_uuid: b};
 	});
-var _user$project$Types$NodeData = F3(
+var _user$project$Types$GenericNodeData = F3(
 	function (a, b, c) {
 		return {id: a, labels: b, name: c};
+	});
+var _user$project$Types$PersonNodeData = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {id: a, labels: b, name: c, lastName: d, firstName: e, aka: f, internalLink: g, externalLink: h};
+	});
+var _user$project$Types$ValueNodeData = F4(
+	function (a, b, c, d) {
+		return {id: a, labels: b, name: c, value: d};
+	});
+var _user$project$Types$PublicationNodeData = F4(
+	function (a, b, c, d) {
+		return {id: a, labels: b, name: c, title: d};
 	});
 var _user$project$Types$Node = function (a) {
 	return {data: a};
@@ -13980,6 +13992,18 @@ var _user$project$Types$Model = F7(
 	function (a, b, c, d, e, f, g) {
 		return {number: a, style: b, source_node_uuid: c, phxSocket: d, messageInProgress: e, messages: f, graph: g};
 	});
+var _user$project$Types$ValueNode = function (a) {
+	return {ctor: 'ValueNode', _0: a};
+};
+var _user$project$Types$Publication = function (a) {
+	return {ctor: 'Publication', _0: a};
+};
+var _user$project$Types$Person = function (a) {
+	return {ctor: 'Person', _0: a};
+};
+var _user$project$Types$Generic = function (a) {
+	return {ctor: 'Generic', _0: a};
+};
 var _user$project$Types$SendGraph = {ctor: 'SendGraph'};
 var _user$project$Types$ReceiveNodeLocalGraph = function (a) {
 	return {ctor: 'ReceiveNodeLocalGraph', _0: a};
@@ -14015,31 +14039,6 @@ var _user$project$Ports$changeStyle = _elm_lang$core$Native_Platform.outgoingPor
 	'changeStyle',
 	function (v) {
 		return v;
-	});
-var _user$project$Ports$newGraph = _elm_lang$core$Native_Platform.outgoingPort(
-	'newGraph',
-	function (v) {
-		return {
-			nodes: _elm_lang$core$Native_List.toArray(v.nodes).map(
-				function (v) {
-					return {
-						data: {
-							id: v.data.id,
-							labels: _elm_lang$core$Native_List.toArray(v.data.labels).map(
-								function (v) {
-									return v;
-								}),
-							name: v.data.name
-						}
-					};
-				}),
-			edges: _elm_lang$core$Native_List.toArray(v.edges).map(
-				function (v) {
-					return {
-						data: {source: v.data.source, target: v.data.target, type_: v.data.type_}
-					};
-				})
-		};
 	});
 var _user$project$Ports$currentStyle = _elm_lang$core$Native_Platform.incomingPort('currentStyle', _elm_lang$core$Json_Decode$value);
 var _user$project$Ports$resetStyle = _elm_lang$core$Native_Platform.incomingPort('resetStyle', _elm_lang$core$Json_Decode$value);
@@ -14341,7 +14340,80 @@ var _user$project$Main$edgeDecoder = A3(
 	'data',
 	_user$project$Main$edgeDataDecoder,
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Edge));
-var _user$project$Main$nodeDataDecoder = A3(
+var _user$project$Main$publicationNodeDataDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'title',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'name',
+		_elm_lang$core$Json_Decode$string,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'labels',
+			_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string),
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'id',
+				_elm_lang$core$Json_Decode$string,
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$PublicationNodeData)))));
+var _user$project$Main$publicationDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$Publication, _user$project$Main$publicationNodeDataDecoder);
+var _user$project$Main$valueNodeDataDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'value',
+	_elm_lang$core$Json_Decode$int,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'name',
+		_elm_lang$core$Json_Decode$string,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'labels',
+			_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string),
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'id',
+				_elm_lang$core$Json_Decode$string,
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$ValueNodeData)))));
+var _user$project$Main$valueDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$ValueNode, _user$project$Main$valueNodeDataDecoder);
+var _user$project$Main$personNodeDataDecoder = A4(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+	'externalLink',
+	_elm_lang$core$Json_Decode$string,
+	'',
+	A4(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+		'internalLink',
+		_elm_lang$core$Json_Decode$string,
+		'',
+		A4(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+			'aka',
+			_elm_lang$core$Json_Decode$string,
+			'',
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'firstName',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'lastName',
+					_elm_lang$core$Json_Decode$string,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'name',
+						_elm_lang$core$Json_Decode$string,
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'labels',
+							_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string),
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'id',
+								_elm_lang$core$Json_Decode$string,
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$PersonNodeData)))))))));
+var _user$project$Main$personDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$Person, _user$project$Main$personNodeDataDecoder);
+var _user$project$Main$genericNodeDataDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'name',
 	_elm_lang$core$Json_Decode$string,
@@ -14353,7 +14425,36 @@ var _user$project$Main$nodeDataDecoder = A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 			'id',
 			_elm_lang$core$Json_Decode$string,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$NodeData))));
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$GenericNodeData))));
+var _user$project$Main$genericDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$Generic, _user$project$Main$genericNodeDataDecoder);
+var _user$project$Main$nodeDataDecoderHelper = function (labels) {
+	var _p2 = labels;
+	_v0_3:
+	do {
+		if ((_p2.ctor === '::') && (_p2._1.ctor === '[]')) {
+			switch (_p2._0) {
+				case 'Year':
+					return _user$project$Main$valueDecoder;
+				case 'Person':
+					return _user$project$Main$personDecoder;
+				case 'Publication':
+					return _user$project$Main$publicationDecoder;
+				default:
+					break _v0_3;
+			}
+		} else {
+			break _v0_3;
+		}
+	} while(false);
+	return _user$project$Main$genericDecoder;
+};
+var _user$project$Main$nodeDataDecoder = A2(
+	_elm_lang$core$Json_Decode$andThen,
+	_user$project$Main$nodeDataDecoderHelper,
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'labels',
+		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)));
 var _user$project$Main$nodeDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'data',
@@ -14370,17 +14471,8 @@ var _user$project$Main$graphDecoder = A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Graph)));
 var _user$project$Main$channelName = 'constellation:explore';
 var _user$project$Main$init = function (flags) {
-	var nodeData = A3(
-		_user$project$Types$NodeData,
-		'',
-		{
-			ctor: '::',
-			_0: '',
-			_1: {ctor: '[]'}
-		},
-		'');
 	var channel = _fbonetti$elm_phoenix_socket$Phoenix_Channel$init(_user$project$Main$channelName);
-	var _p2 = A2(
+	var _p3 = A2(
 		_fbonetti$elm_phoenix_socket$Phoenix_Socket$join,
 		channel,
 		A4(
@@ -14395,8 +14487,8 @@ var _user$project$Main$init = function (flags) {
 				_user$project$Types$ReceiveMessage,
 				_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
 					_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(flags.socket_url)))));
-	var phxSocket = _p2._0;
-	var phxCmd = _p2._1;
+	var phxSocket = _p3._0;
+	var phxCmd = _p3._1;
 	return {
 		ctor: '_Tuple2',
 		_0: {
@@ -14420,8 +14512,8 @@ var _user$project$Main$init = function (flags) {
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p3 = msg;
-		switch (_p3.ctor) {
+		var _p4 = msg;
+		switch (_p4.ctor) {
 			case 'Increment':
 				return {
 					ctor: '_Tuple2',
@@ -14443,7 +14535,7 @@ var _user$project$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{style: _p3._0}),
+						{style: _p4._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ChangeStyle':
@@ -14453,33 +14545,33 @@ var _user$project$Main$update = F2(
 					_1: _user$project$Ports$changeStyle(model.style)
 				};
 			case 'CurrentStyle':
-				if (_p3._0.ctor === 'Ok') {
+				if (_p4._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{style: _p3._0._0}),
+							{style: _p4._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'ResetStyle':
-				if (_p3._0.ctor === 'Ok') {
+				if (_p4._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{style: _p3._0._0}),
+							{style: _p4._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'PhoenixMsg':
-				var _p4 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$update, _p3._0, model.phxSocket);
-				var phxSocket = _p4._0;
-				var phxCmd = _p4._1;
+				var _p5 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$update, _p4._0, model.phxSocket);
+				var phxSocket = _p5._0;
+				var phxCmd = _p5._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -14492,7 +14584,7 @@ var _user$project$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{messageInProgress: _p3._0}),
+						{messageInProgress: _p4._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SendMessage':
@@ -14516,9 +14608,9 @@ var _user$project$Main$update = F2(
 							_fbonetti$elm_phoenix_socket$Phoenix_Push$withPayload,
 							payload,
 							A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'shout', _user$project$Main$channelName))));
-				var _p5 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
-				var phxSocket = _p5._0;
-				var phxCmd = _p5._1;
+				var _p6 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
+				var phxSocket = _p6._0;
+				var phxCmd = _p6._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -14528,15 +14620,15 @@ var _user$project$Main$update = F2(
 				};
 			case 'ReceiveMessage':
 				var messageDecoder = A2(_elm_lang$core$Json_Decode$field, 'message', _elm_lang$core$Json_Decode$string);
-				var somePayload = A2(_elm_lang$core$Json_Decode$decodeValue, messageDecoder, _p3._0);
-				var _p6 = somePayload;
-				if (_p6.ctor === 'Ok') {
+				var somePayload = A2(_elm_lang$core$Json_Decode$decodeValue, messageDecoder, _p4._0);
+				var _p7 = somePayload;
+				if (_p7.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								messages: {ctor: '::', _0: _p6._0, _1: model.messages}
+								messages: {ctor: '::', _0: _p7._0, _1: model.messages}
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -14564,9 +14656,9 @@ var _user$project$Main$update = F2(
 							_fbonetti$elm_phoenix_socket$Phoenix_Push$withPayload,
 							payload,
 							A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'node_local_graph', _user$project$Main$channelName))));
-				var _p7 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
-				var phxSocket = _p7._0;
-				var phxCmd = _p7._1;
+				var _p8 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
+				var phxSocket = _p8._0;
+				var phxCmd = _p8._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -14575,14 +14667,14 @@ var _user$project$Main$update = F2(
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Types$PhoenixMsg, phxCmd)
 				};
 			case 'ReceiveNodeLocalGraph':
-				var decodedGraph = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Main$graphDecoder, _p3._0);
-				var _p8 = decodedGraph;
-				if (_p8.ctor === 'Ok') {
+				var decodedGraph = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Main$graphDecoder, _p4._0);
+				var _p9 = decodedGraph;
+				if (_p9.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{graph: _p8._0}),
+							{graph: _p9._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -14591,17 +14683,13 @@ var _user$project$Main$update = F2(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								messages: {ctor: '::', _0: 'error when decoding graph', _1: model.messages}
+								messages: {ctor: '::', _0: _p9._0, _1: model.messages}
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
 			case 'SendGraph':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Ports$newGraph(model.graph)
-				};
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			default:
 				return {
 					ctor: '_Tuple2',

@@ -10,11 +10,54 @@ type alias Flags =
     }
 
 
-type alias NodeData =
+
+--type alias NodeData =
+--    { id : String
+--    , labels : List String
+--    , name : String
+--    }
+
+
+type alias GenericNodeData =
     { id : String
     , labels : List String
     , name : String
     }
+
+
+type alias PersonNodeData =
+    { id : String
+    , labels : List String
+    , name : String
+    , lastName : String
+    , firstName : String
+    , aka : String
+    , internalLink : String
+    , externalLink : String
+    }
+
+
+type alias ValueNodeData =
+    { id : String
+    , labels : List String
+    , name : String
+    , value : Int
+    }
+
+
+type alias PublicationNodeData =
+    { id : String
+    , labels : List String
+    , name : String
+    , title : String
+    }
+
+
+type NodeData
+    = Generic GenericNodeData
+    | Person PersonNodeData
+    | Publication PublicationNodeData
+    | ValueNode ValueNodeData
 
 
 type alias Node =
