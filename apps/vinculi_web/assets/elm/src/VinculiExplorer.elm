@@ -182,10 +182,8 @@ update msg model =
                         ( { model | messages = error :: model.messages }, Cmd.none )
 
         SendGraph ->
-            ( model, Cmd.none )
+            ( model, Ports.newGraph (graphEncoder model.graph) )
 
-        --Need some work to make it work
-        --( model, Ports.newGraph model.graph )
         HandleSendError _ ->
             ( { model | messages = "Failed to send message." :: model.messages }
             , Cmd.none
@@ -306,6 +304,101 @@ edgeDataDecoder =
         |> required "source" Json.Decode.string
         |> required "target" Json.Decode.string
         |> required "type" Json.Decode.string
+
+
+
+--- ENCODERS
+
+
+graphEncoder : Graph -> Json.Encode.Value
+graphEncoder graph =
+    Json.Encode.object
+        [ ( "nodes", Json.Encode.list (List.map nodeEncoder graph.nodes) )
+        , ( "edges", Json.Encode.list (List.map edgeEncoder graph.edges) )
+        ]
+
+
+nodeEncoder : Node -> Json.Encode.Value
+nodeEncoder node =
+    Json.Encode.object
+        [ ( "data", nodeDataEncoder node.data )
+        ]
+
+
+nodeDataEncoder : NodeData -> Json.Encode.Value
+nodeDataEncoder nodeData =
+    case nodeData of
+        Person personData ->
+            personEncoder personData
+
+        Generic genericData ->
+            genericEncoder genericData
+
+        Publication publicationData ->
+            publicationEncoder publicationData
+
+        ValueNode valueData ->
+            valueEncoder valueData
+
+
+
+--genericEncoder data
+
+
+personEncoder : PersonNodeData -> Json.Encode.Value
+personEncoder personData =
+    Json.Encode.object
+        [ ( "id", Json.Encode.string personData.id )
+        , ( "labels", Json.Encode.list (List.map Json.Encode.string personData.labels) )
+        , ( "name", Json.Encode.string personData.name )
+        , ( "firstName", Json.Encode.string personData.firstName )
+        , ( "lastName", Json.Encode.string personData.lastName )
+        ]
+
+
+genericEncoder : GenericNodeData -> Json.Encode.Value
+genericEncoder genericData =
+    Json.Encode.object
+        [ ( "id", Json.Encode.string genericData.id )
+        , ( "labels", Json.Encode.list (List.map Json.Encode.string genericData.labels) )
+        , ( "name", Json.Encode.string genericData.name )
+        ]
+
+
+valueEncoder : ValueNodeData -> Json.Encode.Value
+valueEncoder valueData =
+    Json.Encode.object
+        [ ( "id", Json.Encode.string valueData.id )
+        , ( "labels", Json.Encode.list (List.map Json.Encode.string valueData.labels) )
+        , ( "name", Json.Encode.string valueData.name )
+        , ( "value", Json.Encode.int valueData.value )
+        ]
+
+
+publicationEncoder : PublicationNodeData -> Json.Encode.Value
+publicationEncoder publicationData =
+    Json.Encode.object
+        [ ( "id", Json.Encode.string publicationData.id )
+        , ( "labels", Json.Encode.list (List.map Json.Encode.string publicationData.labels) )
+        , ( "name", Json.Encode.string publicationData.name )
+        , ( "title", Json.Encode.string publicationData.title )
+        ]
+
+
+edgeEncoder : Edge -> Json.Encode.Value
+edgeEncoder edge =
+    Json.Encode.object
+        [ ( "data", edgeDataEncoder edge.data )
+        ]
+
+
+edgeDataEncoder : EdgeData -> Json.Encode.Value
+edgeDataEncoder edgeData =
+    Json.Encode.object
+        [ ( "source", Json.Encode.string edgeData.source )
+        , ( "target", Json.Encode.string edgeData.target )
+        , ( "type", Json.Encode.string edgeData.type_ )
+        ]
 
 
 
