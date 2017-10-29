@@ -34,22 +34,21 @@ defmodule VinculiWeb.ConstellationChannel do
   def handle_in("node_local_graph", payload, socket) do
     node = %{data: %{labels: ["Domain"], name: "Anthropology", uuid: "domain-2"}}
 
-    result = %{edges: [%{data: %{target: "domain-2", source: "publication-22",
-             type: "IS_OF_DOMAIN"}},
-         %{data: %{target: "publication-22", source: "person-9", type: "WROTE"}},
-         %{data: %{target: "year-29", source: "publication-22", type: "WHEN_WRITTEN"}},
-         %{data: %{target: "language-3", source: "publication-22",
-             type: "HAS_ORIGINAL_LANGUAGE"}}],
-        nodes: [%{data: %{labels: ["Domain"], name: "Anthropology",
-             uuid: "domain-2"}},
-         %{data: %{labels: ["Publication"],
-          name: "Esquisse d'une théorie générale de la magie",
-             title: "Esquisse d'une théorie générale de la magie",
-             uuid: "publication-22"}},
-         %{data: %{firstName: "Marcel", labels: ["Person"], lastName: "MAUSS",
-             name: "Marcel MAUSS", uuid: "person-9"}},
-         %{data: %{labels: ["Year"], name: "1902", uuid: "year-29", value: 1902}},
-         %{data: %{labels: ["Language"], name: "French", uuid: "language-3"}}]}
+    result = %{edges: [%{data: %{source: "person-9", target: "publication-22",
+       type: "WROTE"}},
+   %{data: %{source: "publication-22", target: "language-3",
+       type: "HAS_ORIGINAL_LANGUAGE"}},
+   %{data: %{source: "publication-22", target: "year-29",
+       type: "WHEN_WRITTEN"}},
+   %{data: %{source: "publication-22", target: "domain-2",
+       type: "IS_OF_DOMAIN"}}],
+  nodes: [%{data: %{firstName: "Marcel", id: "person-9", labels: ["Person"],
+       lastName: "MAUSS", name: "Marcel MAUSS"}},
+   %{data: %{id: "publication-22", labels: ["Publication"], name: "",
+       title: "Esquisse d'une théorie générale de la magie"}},
+   %{data: %{id: "language-3", labels: ["Language"], name: "French"}},
+   %{data: %{id: "year-29", labels: ["Year"], name: "1902", value: 1902}},
+   %{data: %{id: "domain-2", labels: ["Domain"], name: "Anthropology"}}]}
 
     return = %{data: node}
     IO.puts inspect return

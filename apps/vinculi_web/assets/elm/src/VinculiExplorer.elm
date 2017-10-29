@@ -19,6 +19,7 @@ import Phoenix.Socket as PhxSocket
         )
 import Phoenix.Channel as PhxChannel exposing (init)
 import Phoenix.Push as PhxPush exposing (init, onError, onOk, withPayload)
+import Types exposing (..)
 
 
 main : Program Flags Model Msg
@@ -42,52 +43,6 @@ channelName =
 
 
 -- MODEL
-
-
-type alias Flags =
-    { socket_url : String
-    , source_node_uuid : String
-    }
-
-
-type alias NodeData =
-    { id : String
-    , labels : List String
-    , name : String
-    }
-
-
-type alias Node =
-    { data : NodeData
-    }
-
-
-type alias EdgeData =
-    { source : String
-    , target : String
-    , type_ : String
-    }
-
-
-type alias Edge =
-    { data : EdgeData }
-
-
-type alias Graph =
-    { nodes : List Node
-    , edges : List Edge
-    }
-
-
-type alias Model =
-    { number : Int
-    , style : String
-    , source_node_uuid : String
-    , phxSocket : PhxSocket.Socket Msg
-    , messageInProgress : String
-    , messages : List String
-    , graph : Graph
-    }
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -122,23 +77,6 @@ init flags =
 
 
 -- UPDATE
-
-
-type Msg
-    = Increment
-    | Decrement
-    | Change String
-    | ChangeStyle
-    | CurrentStyle (Result String String)
-    | ResetStyle (Result String String)
-    | PhoenixMsg (PhxSocket.Msg Msg)
-    | SetSocketMessage String
-    | SendMessage
-    | ReceiveMessage Json.Encode.Value
-    | HandleSendError Json.Encode.Value
-    | GetNodeLocalGraph
-    | ReceiveNodeLocalGraph Json.Encode.Value
-    | SendGraph
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -275,7 +213,7 @@ nodeDecoder =
 nodeDataDecoder : Decoder NodeData
 nodeDataDecoder =
     Json.Decode.Pipeline.decode NodeData
-        |> required "uuid" Json.Decode.string
+        |> required "id" Json.Decode.string
         |> required "labels" (Json.Decode.list Json.Decode.string)
         |> required "name" Json.Decode.string
 

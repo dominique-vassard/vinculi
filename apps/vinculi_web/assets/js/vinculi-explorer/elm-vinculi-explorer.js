@@ -13954,6 +13954,63 @@ var _fbonetti$elm_phoenix_socket$Phoenix_Socket$listen = F2(
 			});
 	});
 
+var _user$project$Types$Flags = F2(
+	function (a, b) {
+		return {socket_url: a, source_node_uuid: b};
+	});
+var _user$project$Types$NodeData = F3(
+	function (a, b, c) {
+		return {id: a, labels: b, name: c};
+	});
+var _user$project$Types$Node = function (a) {
+	return {data: a};
+};
+var _user$project$Types$EdgeData = F3(
+	function (a, b, c) {
+		return {source: a, target: b, type_: c};
+	});
+var _user$project$Types$Edge = function (a) {
+	return {data: a};
+};
+var _user$project$Types$Graph = F2(
+	function (a, b) {
+		return {nodes: a, edges: b};
+	});
+var _user$project$Types$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {number: a, style: b, source_node_uuid: c, phxSocket: d, messageInProgress: e, messages: f, graph: g};
+	});
+var _user$project$Types$SendGraph = {ctor: 'SendGraph'};
+var _user$project$Types$ReceiveNodeLocalGraph = function (a) {
+	return {ctor: 'ReceiveNodeLocalGraph', _0: a};
+};
+var _user$project$Types$GetNodeLocalGraph = {ctor: 'GetNodeLocalGraph'};
+var _user$project$Types$HandleSendError = function (a) {
+	return {ctor: 'HandleSendError', _0: a};
+};
+var _user$project$Types$ReceiveMessage = function (a) {
+	return {ctor: 'ReceiveMessage', _0: a};
+};
+var _user$project$Types$SendMessage = {ctor: 'SendMessage'};
+var _user$project$Types$SetSocketMessage = function (a) {
+	return {ctor: 'SetSocketMessage', _0: a};
+};
+var _user$project$Types$PhoenixMsg = function (a) {
+	return {ctor: 'PhoenixMsg', _0: a};
+};
+var _user$project$Types$ResetStyle = function (a) {
+	return {ctor: 'ResetStyle', _0: a};
+};
+var _user$project$Types$CurrentStyle = function (a) {
+	return {ctor: 'CurrentStyle', _0: a};
+};
+var _user$project$Types$ChangeStyle = {ctor: 'ChangeStyle'};
+var _user$project$Types$Change = function (a) {
+	return {ctor: 'Change', _0: a};
+};
+var _user$project$Types$Decrement = {ctor: 'Decrement'};
+var _user$project$Types$Increment = {ctor: 'Increment'};
+
 var _user$project$Ports$changeStyle = _elm_lang$core$Native_Platform.outgoingPort(
 	'changeStyle',
 	function (v) {
@@ -13986,24 +14043,6 @@ var _user$project$Ports$newGraph = _elm_lang$core$Native_Platform.outgoingPort(
 	});
 var _user$project$Ports$currentStyle = _elm_lang$core$Native_Platform.incomingPort('currentStyle', _elm_lang$core$Json_Decode$value);
 var _user$project$Ports$resetStyle = _elm_lang$core$Native_Platform.incomingPort('resetStyle', _elm_lang$core$Json_Decode$value);
-var _user$project$Ports$NodeData = F3(
-	function (a, b, c) {
-		return {id: a, labels: b, name: c};
-	});
-var _user$project$Ports$Node = function (a) {
-	return {data: a};
-};
-var _user$project$Ports$EdgeData = F3(
-	function (a, b, c) {
-		return {source: a, target: b, type_: c};
-	});
-var _user$project$Ports$Edge = function (a) {
-	return {data: a};
-};
-var _user$project$Ports$Graph = F2(
-	function (a, b) {
-		return {nodes: a, edges: b};
-	});
 
 var _user$project$Main$drawMessage = function (message) {
 	return A2(
@@ -14014,94 +14053,6 @@ var _user$project$Main$drawMessage = function (message) {
 			_0: _elm_lang$html$Html$text(message),
 			_1: {ctor: '[]'}
 		});
-};
-var _user$project$Main$decodeStyle = _elm_lang$core$Json_Decode$decodeValue(_elm_lang$core$Json_Decode$string);
-var _user$project$Main$channelName = 'constellation:explore';
-var _user$project$Main$Flags = F2(
-	function (a, b) {
-		return {socket_url: a, source_node_uuid: b};
-	});
-var _user$project$Main$NodeData = F3(
-	function (a, b, c) {
-		return {id: a, labels: b, name: c};
-	});
-var _user$project$Main$nodeDataDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'name',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'labels',
-		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string),
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'uuid',
-			_elm_lang$core$Json_Decode$string,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$NodeData))));
-var _user$project$Main$Node = function (a) {
-	return {data: a};
-};
-var _user$project$Main$nodeDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'data',
-	_user$project$Main$nodeDataDecoder,
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$Node));
-var _user$project$Main$EdgeData = F3(
-	function (a, b, c) {
-		return {source: a, target: b, type_: c};
-	});
-var _user$project$Main$edgeDataDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'type',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'target',
-		_elm_lang$core$Json_Decode$string,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'source',
-			_elm_lang$core$Json_Decode$string,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$EdgeData))));
-var _user$project$Main$Edge = function (a) {
-	return {data: a};
-};
-var _user$project$Main$edgeDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'data',
-	_user$project$Main$edgeDataDecoder,
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$Edge));
-var _user$project$Main$Graph = F2(
-	function (a, b) {
-		return {nodes: a, edges: b};
-	});
-var _user$project$Main$graphDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'edges',
-	_elm_lang$core$Json_Decode$list(_user$project$Main$edgeDecoder),
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'nodes',
-		_elm_lang$core$Json_Decode$list(_user$project$Main$nodeDecoder),
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$Graph)));
-var _user$project$Main$Model = F7(
-	function (a, b, c, d, e, f, g) {
-		return {number: a, style: b, source_node_uuid: c, phxSocket: d, messageInProgress: e, messages: f, graph: g};
-	});
-var _user$project$Main$SendGraph = {ctor: 'SendGraph'};
-var _user$project$Main$ReceiveNodeLocalGraph = function (a) {
-	return {ctor: 'ReceiveNodeLocalGraph', _0: a};
-};
-var _user$project$Main$GetNodeLocalGraph = {ctor: 'GetNodeLocalGraph'};
-var _user$project$Main$HandleSendError = function (a) {
-	return {ctor: 'HandleSendError', _0: a};
-};
-var _user$project$Main$ReceiveMessage = function (a) {
-	return {ctor: 'ReceiveMessage', _0: a};
-};
-var _user$project$Main$SendMessage = {ctor: 'SendMessage'};
-var _user$project$Main$SetSocketMessage = function (a) {
-	return {ctor: 'SetSocketMessage', _0: a};
 };
 var _user$project$Main$viewSocketTest = function (model) {
 	return A2(
@@ -14123,7 +14074,7 @@ var _user$project$Main$viewSocketTest = function (model) {
 					_elm_lang$html$Html$form,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onSubmit(_user$project$Main$SendMessage),
+						_0: _elm_lang$html$Html_Events$onSubmit(_user$project$Types$SendMessage),
 						_1: {ctor: '[]'}
 					},
 					{
@@ -14132,7 +14083,7 @@ var _user$project$Main$viewSocketTest = function (model) {
 							_elm_lang$html$Html$input,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$SetSocketMessage),
+								_0: _elm_lang$html$Html_Events$onInput(_user$project$Types$SetSocketMessage),
 								_1: {ctor: '[]'}
 							},
 							{ctor: '[]'}),
@@ -14153,290 +14104,6 @@ var _user$project$Main$viewSocketTest = function (model) {
 			}
 		});
 };
-var _user$project$Main$PhoenixMsg = function (a) {
-	return {ctor: 'PhoenixMsg', _0: a};
-};
-var _user$project$Main$init = function (flags) {
-	var nodeData = A3(
-		_user$project$Main$NodeData,
-		'',
-		{
-			ctor: '::',
-			_0: '',
-			_1: {ctor: '[]'}
-		},
-		'');
-	var channel = _fbonetti$elm_phoenix_socket$Phoenix_Channel$init(_user$project$Main$channelName);
-	var _p0 = A2(
-		_fbonetti$elm_phoenix_socket$Phoenix_Socket$join,
-		channel,
-		A4(
-			_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
-			'node_local_graph',
-			_user$project$Main$channelName,
-			_user$project$Main$ReceiveNodeLocalGraph,
-			A4(
-				_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
-				'shout',
-				_user$project$Main$channelName,
-				_user$project$Main$ReceiveMessage,
-				_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
-					_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(flags.socket_url)))));
-	var phxSocket = _p0._0;
-	var phxCmd = _p0._1;
-	return {
-		ctor: '_Tuple2',
-		_0: {
-			number: 1,
-			style: '',
-			source_node_uuid: flags.source_node_uuid,
-			phxSocket: phxSocket,
-			messageInProgress: '',
-			messages: {
-				ctor: '::',
-				_0: 'Test messages',
-				_1: {ctor: '[]'}
-			},
-			graph: A2(
-				_user$project$Main$Graph,
-				{ctor: '[]'},
-				{ctor: '[]'})
-		},
-		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PhoenixMsg, phxCmd)
-	};
-};
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
-			case 'Increment':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{number: model.number + 1}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'Decrement':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{number: model.number - 1}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'Change':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{style: _p1._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'ChangeStyle':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Ports$changeStyle(model.style)
-				};
-			case 'CurrentStyle':
-				if (_p1._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{style: _p1._0._0}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'ResetStyle':
-				if (_p1._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{style: _p1._0._0}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'PhoenixMsg':
-				var _p2 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$update, _p1._0, model.phxSocket);
-				var phxSocket = _p2._0;
-				var phxCmd = _p2._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{phxSocket: phxSocket}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PhoenixMsg, phxCmd)
-				};
-			case 'SetSocketMessage':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{messageInProgress: _p1._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'SendMessage':
-				var payload = _elm_lang$core$Json_Encode$object(
-					{
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'message',
-							_1: _elm_lang$core$Json_Encode$string(model.messageInProgress)
-						},
-						_1: {ctor: '[]'}
-					});
-				var phxPush = A2(
-					_fbonetti$elm_phoenix_socket$Phoenix_Push$onError,
-					_user$project$Main$HandleSendError,
-					A2(
-						_fbonetti$elm_phoenix_socket$Phoenix_Push$onOk,
-						_user$project$Main$ReceiveMessage,
-						A2(
-							_fbonetti$elm_phoenix_socket$Phoenix_Push$withPayload,
-							payload,
-							A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'shout', _user$project$Main$channelName))));
-				var _p3 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
-				var phxSocket = _p3._0;
-				var phxCmd = _p3._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{phxSocket: phxSocket}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PhoenixMsg, phxCmd)
-				};
-			case 'ReceiveMessage':
-				var messageDecoder = A2(_elm_lang$core$Json_Decode$field, 'message', _elm_lang$core$Json_Decode$string);
-				var somePayload = A2(_elm_lang$core$Json_Decode$decodeValue, messageDecoder, _p1._0);
-				var _p4 = somePayload;
-				if (_p4.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								messages: {ctor: '::', _0: _p4._0, _1: model.messages}
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'GetNodeLocalGraph':
-				var payload = _elm_lang$core$Json_Encode$object(
-					{
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'node_uuid',
-							_1: _elm_lang$core$Json_Encode$string(model.source_node_uuid)
-						},
-						_1: {ctor: '[]'}
-					});
-				var phxPush = A2(
-					_fbonetti$elm_phoenix_socket$Phoenix_Push$onError,
-					_user$project$Main$HandleSendError,
-					A2(
-						_fbonetti$elm_phoenix_socket$Phoenix_Push$onOk,
-						_user$project$Main$ReceiveNodeLocalGraph,
-						A2(
-							_fbonetti$elm_phoenix_socket$Phoenix_Push$withPayload,
-							payload,
-							A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'node_local_graph', _user$project$Main$channelName))));
-				var _p5 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
-				var phxSocket = _p5._0;
-				var phxCmd = _p5._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{phxSocket: phxSocket}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$PhoenixMsg, phxCmd)
-				};
-			case 'ReceiveNodeLocalGraph':
-				var decodedGraph = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Main$graphDecoder, _p1._0);
-				var _p6 = decodedGraph;
-				if (_p6.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{graph: _p6._0}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								messages: {ctor: '::', _0: 'error when decoding graph', _1: model.messages}
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				}
-			case 'SendGraph':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Ports$newGraph(model.graph)
-				};
-			default:
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							messages: {ctor: '::', _0: 'Failed to send message.', _1: model.messages}
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-		}
-	});
-var _user$project$Main$ResetStyle = function (a) {
-	return {ctor: 'ResetStyle', _0: a};
-};
-var _user$project$Main$CurrentStyle = function (a) {
-	return {ctor: 'CurrentStyle', _0: a};
-};
-var _user$project$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$batch(
-		{
-			ctor: '::',
-			_0: _user$project$Ports$currentStyle(
-				function (_p7) {
-					return _user$project$Main$CurrentStyle(
-						_user$project$Main$decodeStyle(_p7));
-				}),
-			_1: {
-				ctor: '::',
-				_0: _user$project$Ports$resetStyle(
-					function (_p8) {
-						return _user$project$Main$ResetStyle(
-							_user$project$Main$decodeStyle(_p8));
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$listen, model.phxSocket, _user$project$Main$PhoenixMsg),
-					_1: {ctor: '[]'}
-				}
-			}
-		});
-};
-var _user$project$Main$ChangeStyle = {ctor: 'ChangeStyle'};
-var _user$project$Main$Change = function (a) {
-	return {ctor: 'Change', _0: a};
-};
-var _user$project$Main$Decrement = {ctor: 'Decrement'};
-var _user$project$Main$Increment = {ctor: 'Increment'};
 var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -14460,7 +14127,7 @@ var _user$project$Main$view = function (model) {
 						_elm_lang$html$Html$button,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Decrement),
+							_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$Decrement),
 							_1: {ctor: '[]'}
 						},
 						{
@@ -14485,7 +14152,7 @@ var _user$project$Main$view = function (model) {
 								_elm_lang$html$Html$button,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Increment),
+									_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$Increment),
 									_1: {ctor: '[]'}
 								},
 								{
@@ -14509,7 +14176,7 @@ var _user$project$Main$view = function (model) {
 										_elm_lang$html$Html$input,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$Change),
+											_0: _elm_lang$html$Html_Events$onInput(_user$project$Types$Change),
 											_1: {ctor: '[]'}
 										},
 										{ctor: '[]'}),
@@ -14519,7 +14186,7 @@ var _user$project$Main$view = function (model) {
 											_elm_lang$html$Html$button,
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$ChangeStyle),
+												_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$ChangeStyle),
 												_1: {ctor: '[]'}
 											},
 											{
@@ -14553,7 +14220,7 @@ var _user$project$Main$view = function (model) {
 															_0: _elm_lang$html$Html_Attributes$class('btn btn-primary'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$GetNodeLocalGraph),
+																_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$GetNodeLocalGraph),
 																_1: {ctor: '[]'}
 															}
 														},
@@ -14571,7 +14238,7 @@ var _user$project$Main$view = function (model) {
 																_0: _elm_lang$html$Html_Attributes$class('btn btn-secondary'),
 																_1: {
 																	ctor: '::',
-																	_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$SendGraph),
+																	_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$SendGraph),
 																	_1: {ctor: '[]'}
 																}
 															},
@@ -14631,6 +14298,322 @@ var _user$project$Main$view = function (model) {
 			}
 		});
 };
+var _user$project$Main$decodeStyle = _elm_lang$core$Json_Decode$decodeValue(_elm_lang$core$Json_Decode$string);
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$batch(
+		{
+			ctor: '::',
+			_0: _user$project$Ports$currentStyle(
+				function (_p0) {
+					return _user$project$Types$CurrentStyle(
+						_user$project$Main$decodeStyle(_p0));
+				}),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Ports$resetStyle(
+					function (_p1) {
+						return _user$project$Types$ResetStyle(
+							_user$project$Main$decodeStyle(_p1));
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$listen, model.phxSocket, _user$project$Types$PhoenixMsg),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$Main$edgeDataDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'type',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'target',
+		_elm_lang$core$Json_Decode$string,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'source',
+			_elm_lang$core$Json_Decode$string,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$EdgeData))));
+var _user$project$Main$edgeDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'data',
+	_user$project$Main$edgeDataDecoder,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Edge));
+var _user$project$Main$nodeDataDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'name',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'labels',
+		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string),
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'id',
+			_elm_lang$core$Json_Decode$string,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$NodeData))));
+var _user$project$Main$nodeDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'data',
+	_user$project$Main$nodeDataDecoder,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Node));
+var _user$project$Main$graphDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'edges',
+	_elm_lang$core$Json_Decode$list(_user$project$Main$edgeDecoder),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'nodes',
+		_elm_lang$core$Json_Decode$list(_user$project$Main$nodeDecoder),
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Graph)));
+var _user$project$Main$channelName = 'constellation:explore';
+var _user$project$Main$init = function (flags) {
+	var nodeData = A3(
+		_user$project$Types$NodeData,
+		'',
+		{
+			ctor: '::',
+			_0: '',
+			_1: {ctor: '[]'}
+		},
+		'');
+	var channel = _fbonetti$elm_phoenix_socket$Phoenix_Channel$init(_user$project$Main$channelName);
+	var _p2 = A2(
+		_fbonetti$elm_phoenix_socket$Phoenix_Socket$join,
+		channel,
+		A4(
+			_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
+			'node_local_graph',
+			_user$project$Main$channelName,
+			_user$project$Types$ReceiveNodeLocalGraph,
+			A4(
+				_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
+				'shout',
+				_user$project$Main$channelName,
+				_user$project$Types$ReceiveMessage,
+				_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
+					_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(flags.socket_url)))));
+	var phxSocket = _p2._0;
+	var phxCmd = _p2._1;
+	return {
+		ctor: '_Tuple2',
+		_0: {
+			number: 1,
+			style: '',
+			source_node_uuid: flags.source_node_uuid,
+			phxSocket: phxSocket,
+			messageInProgress: '',
+			messages: {
+				ctor: '::',
+				_0: 'Test messages',
+				_1: {ctor: '[]'}
+			},
+			graph: A2(
+				_user$project$Types$Graph,
+				{ctor: '[]'},
+				{ctor: '[]'})
+		},
+		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Types$PhoenixMsg, phxCmd)
+	};
+};
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p3 = msg;
+		switch (_p3.ctor) {
+			case 'Increment':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{number: model.number + 1}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Decrement':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{number: model.number - 1}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Change':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{style: _p3._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ChangeStyle':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Ports$changeStyle(model.style)
+				};
+			case 'CurrentStyle':
+				if (_p3._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{style: _p3._0._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'ResetStyle':
+				if (_p3._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{style: _p3._0._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'PhoenixMsg':
+				var _p4 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$update, _p3._0, model.phxSocket);
+				var phxSocket = _p4._0;
+				var phxCmd = _p4._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{phxSocket: phxSocket}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Types$PhoenixMsg, phxCmd)
+				};
+			case 'SetSocketMessage':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{messageInProgress: _p3._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SendMessage':
+				var payload = _elm_lang$core$Json_Encode$object(
+					{
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'message',
+							_1: _elm_lang$core$Json_Encode$string(model.messageInProgress)
+						},
+						_1: {ctor: '[]'}
+					});
+				var phxPush = A2(
+					_fbonetti$elm_phoenix_socket$Phoenix_Push$onError,
+					_user$project$Types$HandleSendError,
+					A2(
+						_fbonetti$elm_phoenix_socket$Phoenix_Push$onOk,
+						_user$project$Types$ReceiveMessage,
+						A2(
+							_fbonetti$elm_phoenix_socket$Phoenix_Push$withPayload,
+							payload,
+							A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'shout', _user$project$Main$channelName))));
+				var _p5 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
+				var phxSocket = _p5._0;
+				var phxCmd = _p5._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{phxSocket: phxSocket}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Types$PhoenixMsg, phxCmd)
+				};
+			case 'ReceiveMessage':
+				var messageDecoder = A2(_elm_lang$core$Json_Decode$field, 'message', _elm_lang$core$Json_Decode$string);
+				var somePayload = A2(_elm_lang$core$Json_Decode$decodeValue, messageDecoder, _p3._0);
+				var _p6 = somePayload;
+				if (_p6.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								messages: {ctor: '::', _0: _p6._0, _1: model.messages}
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'GetNodeLocalGraph':
+				var payload = _elm_lang$core$Json_Encode$object(
+					{
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'node_uuid',
+							_1: _elm_lang$core$Json_Encode$string(model.source_node_uuid)
+						},
+						_1: {ctor: '[]'}
+					});
+				var phxPush = A2(
+					_fbonetti$elm_phoenix_socket$Phoenix_Push$onError,
+					_user$project$Types$HandleSendError,
+					A2(
+						_fbonetti$elm_phoenix_socket$Phoenix_Push$onOk,
+						_user$project$Types$ReceiveNodeLocalGraph,
+						A2(
+							_fbonetti$elm_phoenix_socket$Phoenix_Push$withPayload,
+							payload,
+							A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'node_local_graph', _user$project$Main$channelName))));
+				var _p7 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
+				var phxSocket = _p7._0;
+				var phxCmd = _p7._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{phxSocket: phxSocket}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Types$PhoenixMsg, phxCmd)
+				};
+			case 'ReceiveNodeLocalGraph':
+				var decodedGraph = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Main$graphDecoder, _p3._0);
+				var _p8 = decodedGraph;
+				if (_p8.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{graph: _p8._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								messages: {ctor: '::', _0: 'error when decoding graph', _1: model.messages}
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
+			case 'SendGraph':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Ports$newGraph(model.graph)
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							messages: {ctor: '::', _0: 'Failed to send message.', _1: model.messages}
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+		}
+	});
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 	{init: _user$project$Main$init, view: _user$project$Main$view, update: _user$project$Main$update, subscriptions: _user$project$Main$subscriptions})(
 	A2(
@@ -14649,7 +14632,7 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Main.Msg":{"args":[],"tags":{"SetSocketMessage":["String"],"Decrement":[],"SendMessage":[],"GetNodeLocalGraph":[],"ResetStyle":["Result.Result String String"],"ReceiveMessage":["Json.Encode.Value"],"HandleSendError":["Json.Encode.Value"],"Change":["String"],"CurrentStyle":["Result.Result String String"],"PhoenixMsg":["Phoenix.Socket.Msg Main.Msg"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"SendGraph":[],"Increment":[],"ChangeStyle":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Time.Time":{"args":[],"type":"Float"}},"message":"Main.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Types.Msg":{"args":[],"tags":{"SetSocketMessage":["String"],"Decrement":[],"SendMessage":[],"GetNodeLocalGraph":[],"ResetStyle":["Result.Result String String"],"ReceiveMessage":["Json.Encode.Value"],"HandleSendError":["Json.Encode.Value"],"Change":["String"],"CurrentStyle":["Result.Result String String"],"PhoenixMsg":["Phoenix.Socket.Msg Types.Msg"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"SendGraph":[],"Increment":[],"ChangeStyle":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Time.Time":{"args":[],"type":"Float"}},"message":"Types.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])
