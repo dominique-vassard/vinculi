@@ -94,6 +94,7 @@ var ports_init = function(elmApp, cy) {
 
   elmApp.ports.newGraph.subscribe(function(newGraph) {
     console.log(JSON.stringify(newGraph));
+    console.log(newGraph);
     cy.add(newGraph);
   })
 

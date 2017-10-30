@@ -10,18 +10,18 @@ type alias Flags =
     }
 
 
-
---type alias NodeData =
---    { id : String
---    , labels : List String
---    , name : String
---    }
-
-
 type alias GenericNodeData =
     { id : String
     , labels : List String
     , name : String
+    }
+
+
+type alias GenericData a =
+    { a
+        | id : String
+        , labels : List String
+        , name : String
     }
 
 
