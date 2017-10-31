@@ -5,7 +5,7 @@ import Json.Decode as Decode exposing (Decoder, andThen, list, map, string)
 import Types
     exposing
         ( Node
-        , NodeData(Generic, Person, Publication, ValueNode)
+        , NodeData(GenericNode, PersonNode, PublicationNode, ValueNode)
         , GenericNodeData
         , PersonNodeData
         , PublicationNodeData
@@ -53,7 +53,7 @@ commonDataDecoder dataType =
 genericDecoder : Decoder NodeData
 genericDecoder =
     genericDataDecoder
-        |> Decode.map Generic
+        |> Decode.map GenericNode
 
 
 genericDataDecoder : Decoder GenericNodeData
@@ -64,7 +64,7 @@ genericDataDecoder =
 personDecoder : Decoder NodeData
 personDecoder =
     personDataDecoder
-        |> Decode.map Person
+        |> Decode.map PersonNode
 
 
 personDataDecoder : Decoder PersonNodeData
@@ -80,7 +80,7 @@ personDataDecoder =
 publicationDecoder : Decoder NodeData
 publicationDecoder =
     publicationDataDecoder
-        |> Decode.map Publication
+        |> Decode.map PublicationNode
 
 
 publicationDataDecoder : Decoder PublicationNodeData

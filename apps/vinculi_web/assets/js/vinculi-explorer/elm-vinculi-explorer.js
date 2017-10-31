@@ -14000,14 +14000,14 @@ var _user$project$Types$Model = F7(
 var _user$project$Types$ValueNode = function (a) {
 	return {ctor: 'ValueNode', _0: a};
 };
-var _user$project$Types$Publication = function (a) {
-	return {ctor: 'Publication', _0: a};
+var _user$project$Types$PublicationNode = function (a) {
+	return {ctor: 'PublicationNode', _0: a};
 };
-var _user$project$Types$Person = function (a) {
-	return {ctor: 'Person', _0: a};
+var _user$project$Types$PersonNode = function (a) {
+	return {ctor: 'PersonNode', _0: a};
 };
-var _user$project$Types$Generic = function (a) {
-	return {ctor: 'Generic', _0: a};
+var _user$project$Types$GenericNode = function (a) {
+	return {ctor: 'GenericNode', _0: a};
 };
 var _user$project$Types$InfluencedEdge = function (a) {
 	return {ctor: 'InfluencedEdge', _0: a};
@@ -14049,12 +14049,12 @@ var _user$project$Types$Increment = {ctor: 'Increment'};
 var _user$project$Accessors_Node$getGenericData = function (node) {
 	var _p0 = node.data;
 	switch (_p0.ctor) {
-		case 'Person':
+		case 'PersonNode':
 			var _p1 = _p0._0;
 			return A3(_user$project$Types$GenericNodeData, _p1.id, _p1.labels, _p1.name);
-		case 'Generic':
+		case 'GenericNode':
 			return _p0._0;
-		case 'Publication':
+		case 'PublicationNode':
 			var _p2 = _p0._0;
 			return A3(_user$project$Types$GenericNodeData, _p2.id, _p2.labels, _p2.name);
 		default:
@@ -14125,7 +14125,7 @@ var _user$project$Decoders_Node$commonDataDecoder = function (dataType) {
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(dataType))));
 };
 var _user$project$Decoders_Node$genericDataDecoder = _user$project$Decoders_Node$commonDataDecoder(_user$project$Types$GenericNodeData);
-var _user$project$Decoders_Node$genericDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$Generic, _user$project$Decoders_Node$genericDataDecoder);
+var _user$project$Decoders_Node$genericDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$GenericNode, _user$project$Decoders_Node$genericDataDecoder);
 var _user$project$Decoders_Node$personDataDecoder = A4(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
 	'externalLink',
@@ -14150,13 +14150,13 @@ var _user$project$Decoders_Node$personDataDecoder = A4(
 					'lastName',
 					_elm_lang$core$Json_Decode$string,
 					_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$PersonNodeData))))));
-var _user$project$Decoders_Node$personDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$Person, _user$project$Decoders_Node$personDataDecoder);
+var _user$project$Decoders_Node$personDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$PersonNode, _user$project$Decoders_Node$personDataDecoder);
 var _user$project$Decoders_Node$publicationDataDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'title',
 	_elm_lang$core$Json_Decode$string,
 	_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$PublicationNodeData));
-var _user$project$Decoders_Node$publicationDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$Publication, _user$project$Decoders_Node$publicationDataDecoder);
+var _user$project$Decoders_Node$publicationDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$PublicationNode, _user$project$Decoders_Node$publicationDataDecoder);
 var _user$project$Decoders_Node$valueDataDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'value',
@@ -14367,11 +14367,11 @@ var _user$project$Encoders_Node$valueEncoder = function (valueData) {
 var _user$project$Encoders_Node$dataEncoder = function (nodeData) {
 	var _p0 = nodeData;
 	switch (_p0.ctor) {
-		case 'Person':
+		case 'PersonNode':
 			return _user$project$Encoders_Node$personEncoder(_p0._0);
-		case 'Generic':
+		case 'GenericNode':
 			return _user$project$Encoders_Node$genericEncoder(_p0._0);
-		case 'Publication':
+		case 'PublicationNode':
 			return _user$project$Encoders_Node$publicationEncoder(_p0._0);
 		default:
 			return _user$project$Encoders_Node$valueEncoder(_p0._0);

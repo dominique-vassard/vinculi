@@ -1,6 +1,11 @@
 module Accessors.Node exposing (getLabels)
 
-import Types exposing (..)
+import Types
+    exposing
+        ( Node
+        , NodeData(GenericNode, PersonNode, PublicationNode, ValueNode)
+        , GenericNodeData
+        )
 
 
 getLabels : Node -> List String
@@ -15,13 +20,13 @@ getLabels node =
 getGenericData : Node -> GenericNodeData
 getGenericData node =
     case node.data of
-        Person data ->
+        PersonNode data ->
             GenericNodeData data.id data.labels data.name
 
-        Generic data ->
+        GenericNode data ->
             data
 
-        Publication data ->
+        PublicationNode data ->
             GenericNodeData data.id data.labels data.name
 
         ValueNode data ->

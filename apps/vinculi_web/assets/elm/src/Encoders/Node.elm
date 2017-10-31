@@ -4,7 +4,7 @@ import Json.Encode as Encode exposing (Value, int, object, string)
 import Types
     exposing
         ( Node
-        , NodeData(Generic, Person, Publication, ValueNode)
+        , NodeData(GenericNode, PersonNode, PublicationNode, ValueNode)
         , CommonNodeData
         , GenericNodeData
         , PersonNodeData
@@ -24,13 +24,13 @@ encoder node =
 dataEncoder : NodeData -> Value
 dataEncoder nodeData =
     case nodeData of
-        Person personData ->
+        PersonNode personData ->
             personEncoder personData
 
-        Generic genericData ->
+        GenericNode genericData ->
             genericEncoder genericData
 
-        Publication publicationData ->
+        PublicationNode publicationData ->
             publicationEncoder publicationData
 
         ValueNode valueData ->

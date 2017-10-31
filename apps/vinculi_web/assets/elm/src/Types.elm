@@ -61,9 +61,9 @@ type alias PublicationNodeData =
 
 
 type NodeData
-    = Generic GenericNodeData
-    | Person PersonNodeData
-    | Publication PublicationNodeData
+    = GenericNode GenericNodeData
+    | PersonNode PersonNodeData
+    | PublicationNode PublicationNodeData
     | ValueNode ValueNodeData
 
 
