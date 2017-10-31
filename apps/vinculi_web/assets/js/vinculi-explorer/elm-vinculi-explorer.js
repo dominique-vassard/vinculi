@@ -13980,7 +13980,7 @@ var _user$project$Types$Node = F2(
 	});
 var _user$project$Types$EdgeData = F3(
 	function (a, b, c) {
-		return {source: a, target: b, type_: c};
+		return {source: a, target: b, edge_type: c};
 	});
 var _user$project$Types$Edge = function (a) {
 	return {data: a};
@@ -14058,7 +14058,7 @@ var _user$project$Accessors_Node$getLabels = function (node) {
 	return labels;
 };
 
-var _user$project$Decoders$edgeDataDecoder = A3(
+var _user$project$Decoders_Edge$dataDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'type',
 	_elm_lang$core$Json_Decode$string,
@@ -14071,12 +14071,13 @@ var _user$project$Decoders$edgeDataDecoder = A3(
 			'source',
 			_elm_lang$core$Json_Decode$string,
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$EdgeData))));
-var _user$project$Decoders$edgeDecoder = A3(
+var _user$project$Decoders_Edge$decoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'data',
-	_user$project$Decoders$edgeDataDecoder,
+	_user$project$Decoders_Edge$dataDecoder,
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Edge));
-var _user$project$Decoders$genericDataDecoder = function (dataType) {
+
+var _user$project$Decoders_Node$commonDataDecoder = function (dataType) {
 	return A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'name',
@@ -14091,7 +14092,9 @@ var _user$project$Decoders$genericDataDecoder = function (dataType) {
 				_elm_lang$core$Json_Decode$string,
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(dataType))));
 };
-var _user$project$Decoders$personNodeDataDecoder = A4(
+var _user$project$Decoders_Node$genericDataDecoder = _user$project$Decoders_Node$commonDataDecoder(_user$project$Types$GenericNodeData);
+var _user$project$Decoders_Node$genericDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$Generic, _user$project$Decoders_Node$genericDataDecoder);
+var _user$project$Decoders_Node$personDataDecoder = A4(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
 	'externalLink',
 	_elm_lang$core$Json_Decode$string,
@@ -14114,34 +14117,32 @@ var _user$project$Decoders$personNodeDataDecoder = A4(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 					'lastName',
 					_elm_lang$core$Json_Decode$string,
-					_user$project$Decoders$genericDataDecoder(_user$project$Types$PersonNodeData))))));
-var _user$project$Decoders$personDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$Person, _user$project$Decoders$personNodeDataDecoder);
-var _user$project$Decoders$valueNodeDataDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'value',
-	_elm_lang$core$Json_Decode$int,
-	_user$project$Decoders$genericDataDecoder(_user$project$Types$ValueNodeData));
-var _user$project$Decoders$valueDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$ValueNode, _user$project$Decoders$valueNodeDataDecoder);
-var _user$project$Decoders$publicationNodeDataDecoder = A3(
+					_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$PersonNodeData))))));
+var _user$project$Decoders_Node$personDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$Person, _user$project$Decoders_Node$personDataDecoder);
+var _user$project$Decoders_Node$publicationDataDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'title',
 	_elm_lang$core$Json_Decode$string,
-	_user$project$Decoders$genericDataDecoder(_user$project$Types$PublicationNodeData));
-var _user$project$Decoders$publicationDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$Publication, _user$project$Decoders$publicationNodeDataDecoder);
-var _user$project$Decoders$genericNodeDataDecoder = _user$project$Decoders$genericDataDecoder(_user$project$Types$GenericNodeData);
-var _user$project$Decoders$genericDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$Generic, _user$project$Decoders$genericNodeDataDecoder);
-var _user$project$Decoders$nodeDataDecoderHelper = function (labels) {
+	_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$PublicationNodeData));
+var _user$project$Decoders_Node$publicationDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$Publication, _user$project$Decoders_Node$publicationDataDecoder);
+var _user$project$Decoders_Node$valueDataDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'value',
+	_elm_lang$core$Json_Decode$int,
+	_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$ValueNodeData));
+var _user$project$Decoders_Node$valueDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$ValueNode, _user$project$Decoders_Node$valueDataDecoder);
+var _user$project$Decoders_Node$dataDecoderHelper = function (labels) {
 	var _p0 = labels;
 	_v0_3:
 	do {
 		if ((_p0.ctor === '::') && (_p0._1.ctor === '[]')) {
 			switch (_p0._0) {
 				case 'Year':
-					return _user$project$Decoders$valueDecoder;
+					return _user$project$Decoders_Node$valueDecoder;
 				case 'Person':
-					return _user$project$Decoders$personDecoder;
+					return _user$project$Decoders_Node$personDecoder;
 				case 'Publication':
-					return _user$project$Decoders$publicationDecoder;
+					return _user$project$Decoders_Node$publicationDecoder;
 				default:
 					break _v0_3;
 			}
@@ -14149,16 +14150,16 @@ var _user$project$Decoders$nodeDataDecoderHelper = function (labels) {
 			break _v0_3;
 		}
 	} while(false);
-	return _user$project$Decoders$genericDecoder;
+	return _user$project$Decoders_Node$genericDecoder;
 };
-var _user$project$Decoders$nodeDataDecoder = A2(
+var _user$project$Decoders_Node$dataDecoder = A2(
 	_elm_lang$core$Json_Decode$andThen,
-	_user$project$Decoders$nodeDataDecoderHelper,
+	_user$project$Decoders_Node$dataDecoderHelper,
 	A2(
 		_elm_lang$core$Json_Decode$field,
 		'labels',
 		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)));
-var _user$project$Decoders$nodeDecoder = A4(
+var _user$project$Decoders_Node$decoder = A4(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
 	'classes',
 	_elm_lang$core$Json_Decode$string,
@@ -14166,59 +14167,61 @@ var _user$project$Decoders$nodeDecoder = A4(
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'data',
-		_user$project$Decoders$nodeDataDecoder,
+		_user$project$Decoders_Node$dataDecoder,
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Node)));
-var _user$project$Decoders$graphDecoder = A3(
+
+var _user$project$Decoders_Graph$decoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'edges',
-	_elm_lang$core$Json_Decode$list(_user$project$Decoders$edgeDecoder),
+	_elm_lang$core$Json_Decode$list(_user$project$Decoders_Edge$decoder),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'nodes',
-		_elm_lang$core$Json_Decode$list(_user$project$Decoders$nodeDecoder),
+		_elm_lang$core$Json_Decode$list(_user$project$Decoders_Node$decoder),
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Graph)));
 
-var _user$project$Encoders$edgeDataEncoder = function (edgeData) {
+var _user$project$Encoders_Edge$dataEncoder = function (data) {
 	return _elm_lang$core$Json_Encode$object(
 		{
 			ctor: '::',
 			_0: {
 				ctor: '_Tuple2',
 				_0: 'source',
-				_1: _elm_lang$core$Json_Encode$string(edgeData.source)
+				_1: _elm_lang$core$Json_Encode$string(data.source)
 			},
 			_1: {
 				ctor: '::',
 				_0: {
 					ctor: '_Tuple2',
 					_0: 'target',
-					_1: _elm_lang$core$Json_Encode$string(edgeData.target)
+					_1: _elm_lang$core$Json_Encode$string(data.target)
 				},
 				_1: {
 					ctor: '::',
 					_0: {
 						ctor: '_Tuple2',
 						_0: 'type',
-						_1: _elm_lang$core$Json_Encode$string(edgeData.type_)
+						_1: _elm_lang$core$Json_Encode$string(data.edge_type)
 					},
 					_1: {ctor: '[]'}
 				}
 			}
 		});
 };
-var _user$project$Encoders$edgeEncoder = function (edge) {
+var _user$project$Encoders_Edge$encoder = function (edge) {
 	return _elm_lang$core$Json_Encode$object(
 		{
 			ctor: '::',
 			_0: {
 				ctor: '_Tuple2',
 				_0: 'data',
-				_1: _user$project$Encoders$edgeDataEncoder(edge.data)
+				_1: _user$project$Encoders_Edge$dataEncoder(edge.data)
 			},
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Encoders$genericDataEncoder = function (data) {
+
+var _user$project$Encoders_Node$commonEncoder = function (data) {
 	return {
 		ctor: '::',
 		_0: {
@@ -14246,45 +14249,15 @@ var _user$project$Encoders$genericDataEncoder = function (data) {
 		}
 	};
 };
-var _user$project$Encoders$valueEncoder = function (valueData) {
+var _user$project$Encoders_Node$genericEncoder = function (genericData) {
+	return _elm_lang$core$Json_Encode$object(
+		_user$project$Encoders_Node$commonEncoder(genericData));
+};
+var _user$project$Encoders_Node$personEncoder = function (personData) {
 	return _elm_lang$core$Json_Encode$object(
 		A2(
 			_elm_lang$core$Basics_ops['++'],
-			_user$project$Encoders$genericDataEncoder(valueData),
-			{
-				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'value',
-					_1: _elm_lang$core$Json_Encode$int(valueData.value)
-				},
-				_1: {ctor: '[]'}
-			}));
-};
-var _user$project$Encoders$publicationEncoder = function (publicationData) {
-	return _elm_lang$core$Json_Encode$object(
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			_user$project$Encoders$genericDataEncoder(publicationData),
-			{
-				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'title',
-					_1: _elm_lang$core$Json_Encode$string(publicationData.title)
-				},
-				_1: {ctor: '[]'}
-			}));
-};
-var _user$project$Encoders$genericEncoder = function (genericData) {
-	return _elm_lang$core$Json_Encode$object(
-		_user$project$Encoders$genericDataEncoder(genericData));
-};
-var _user$project$Encoders$personEncoder = function (personData) {
-	return _elm_lang$core$Json_Encode$object(
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			_user$project$Encoders$genericDataEncoder(personData),
+			_user$project$Encoders_Node$commonEncoder(personData),
 			{
 				ctor: '::',
 				_0: {
@@ -14303,42 +14276,57 @@ var _user$project$Encoders$personEncoder = function (personData) {
 				}
 			}));
 };
-var _user$project$Encoders$nodeDataEncoder = function (nodeData) {
+var _user$project$Encoders_Node$publicationEncoder = function (publicationData) {
+	return _elm_lang$core$Json_Encode$object(
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_user$project$Encoders_Node$commonEncoder(publicationData),
+			{
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'title',
+					_1: _elm_lang$core$Json_Encode$string(publicationData.title)
+				},
+				_1: {ctor: '[]'}
+			}));
+};
+var _user$project$Encoders_Node$valueEncoder = function (valueData) {
+	return _elm_lang$core$Json_Encode$object(
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_user$project$Encoders_Node$commonEncoder(valueData),
+			{
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'value',
+					_1: _elm_lang$core$Json_Encode$int(valueData.value)
+				},
+				_1: {ctor: '[]'}
+			}));
+};
+var _user$project$Encoders_Node$dataEncoder = function (nodeData) {
 	var _p0 = nodeData;
 	switch (_p0.ctor) {
 		case 'Person':
-			return _user$project$Encoders$personEncoder(_p0._0);
+			return _user$project$Encoders_Node$personEncoder(_p0._0);
 		case 'Generic':
-			return _user$project$Encoders$genericEncoder(_p0._0);
+			return _user$project$Encoders_Node$genericEncoder(_p0._0);
 		case 'Publication':
-			return _user$project$Encoders$publicationEncoder(_p0._0);
+			return _user$project$Encoders_Node$publicationEncoder(_p0._0);
 		default:
-			return _user$project$Encoders$valueEncoder(_p0._0);
+			return _user$project$Encoders_Node$valueEncoder(_p0._0);
 	}
 };
-var _user$project$Encoders$nodeEncoder = function (node) {
-	var labels = function () {
-		var _p1 = node.data;
-		switch (_p1.ctor) {
-			case 'Person':
-				return _p1._0.labels;
-			case 'Generic':
-				return _p1._0.labels;
-			case 'Publication':
-				return _p1._0.labels;
-			default:
-				return _p1._0.labels;
-		}
-	}();
-	var $class = _elm_lang$core$String$toLower(
-		A2(_elm_lang$core$String$join, ' ', labels));
+var _user$project$Encoders_Node$encoder = function (node) {
 	return _elm_lang$core$Json_Encode$object(
 		{
 			ctor: '::',
 			_0: {
 				ctor: '_Tuple2',
 				_0: 'data',
-				_1: _user$project$Encoders$nodeDataEncoder(node.data)
+				_1: _user$project$Encoders_Node$dataEncoder(node.data)
 			},
 			_1: {
 				ctor: '::',
@@ -14351,7 +14339,8 @@ var _user$project$Encoders$nodeEncoder = function (node) {
 			}
 		});
 };
-var _user$project$Encoders$graphEncoder = function (graph) {
+
+var _user$project$Encoders_Graph$encoder = function (graph) {
 	return _elm_lang$core$Json_Encode$object(
 		{
 			ctor: '::',
@@ -14359,7 +14348,7 @@ var _user$project$Encoders$graphEncoder = function (graph) {
 				ctor: '_Tuple2',
 				_0: 'nodes',
 				_1: _elm_lang$core$Json_Encode$list(
-					A2(_elm_lang$core$List$map, _user$project$Encoders$nodeEncoder, graph.nodes))
+					A2(_elm_lang$core$List$map, _user$project$Encoders_Node$encoder, graph.nodes))
 			},
 			_1: {
 				ctor: '::',
@@ -14367,7 +14356,7 @@ var _user$project$Encoders$graphEncoder = function (graph) {
 					ctor: '_Tuple2',
 					_0: 'edges',
 					_1: _elm_lang$core$Json_Encode$list(
-						A2(_elm_lang$core$List$map, _user$project$Encoders$edgeEncoder, graph.edges))
+						A2(_elm_lang$core$List$map, _user$project$Encoders_Edge$encoder, graph.edges))
 				},
 				_1: {ctor: '[]'}
 			}
@@ -14885,7 +14874,7 @@ var _user$project$Main$update = F2(
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Types$PhoenixMsg, phxCmd)
 				};
 			case 'ReceiveNodeLocalGraph':
-				var decodedGraph = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders$graphDecoder, _p3._0);
+				var decodedGraph = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Graph$decoder, _p3._0);
 				var _p8 = decodedGraph;
 				if (_p8.ctor === 'Ok') {
 					return {
@@ -14913,7 +14902,7 @@ var _user$project$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: model,
 					_1: _user$project$Ports$newGraph(
-						_user$project$Encoders$graphEncoder(model.graph))
+						_user$project$Encoders_Graph$encoder(model.graph))
 				};
 			default:
 				return {

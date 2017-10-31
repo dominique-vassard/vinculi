@@ -17,7 +17,7 @@ type alias GenericNodeData =
     }
 
 
-type alias GenericData a =
+type alias CommonNodeData a =
     { a
         | id : String
         , labels : List String
@@ -69,7 +69,7 @@ type alias Node =
 type alias EdgeData =
     { source : String
     , target : String
-    , type_ : String
+    , edge_type : String
     }
 
 

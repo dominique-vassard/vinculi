@@ -19,8 +19,8 @@ import Phoenix.Socket as PhxSocket
 import Phoenix.Channel as PhxChannel exposing (init)
 import Phoenix.Push as PhxPush exposing (init, onError, onOk, withPayload)
 import Types exposing (..)
-import Decoders exposing (graphDecoder)
-import Encoders exposing (graphEncoder)
+import Decoders.Graph as GraphDecode exposing (decoder)
+import Encoders.Graph as GraphEncode exposing (encoder)
 import Accessors.Node as Node exposing (..)
 
 
@@ -174,7 +174,7 @@ update msg model =
         ReceiveNodeLocalGraph raw ->
             let
                 decodedGraph =
-                    Json.Decode.decodeValue graphDecoder raw
+                    Json.Decode.decodeValue GraphDecode.decoder raw
             in
                 case decodedGraph of
                     Ok graph ->
@@ -184,7 +184,7 @@ update msg model =
                         ( { model | messages = error :: model.messages }, Cmd.none )
 
         SendGraph ->
-            ( model, Ports.newGraph (graphEncoder model.graph) )
+            ( model, Ports.newGraph (GraphEncode.encoder model.graph) )
 
         HandleSendError _ ->
             ( { model | messages = "Failed to send message." :: model.messages }
