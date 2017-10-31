@@ -4,10 +4,17 @@ import Phoenix.Socket as PhxSocket exposing (Socket)
 import Json.Encode exposing (Value)
 
 
+--- FLAGS
+
+
 type alias Flags =
     { socket_url : String
     , source_node_uuid : String
     }
+
+
+
+--- NODES
 
 
 type alias GenericNodeData =
@@ -66,15 +73,44 @@ type alias Node =
     }
 
 
-type alias EdgeData =
+
+-- EDGES
+
+
+type alias Edge =
+    { data : EdgeData }
+
+
+type EdgeData
+    = GenericEdge GenericEdgeData
+    | InfluencedEdge InfluencedEdgeData
+
+
+type alias CommonEdgeData a =
+    { a
+        | source : String
+        , target : String
+        , edge_type : String
+    }
+
+
+type alias GenericEdgeData =
     { source : String
     , target : String
     , edge_type : String
     }
 
 
-type alias Edge =
-    { data : EdgeData }
+type alias InfluencedEdgeData =
+    { source : String
+    , target : String
+    , edge_type : String
+    , strength : Int
+    }
+
+
+
+--- GRAPH
 
 
 type alias Graph =

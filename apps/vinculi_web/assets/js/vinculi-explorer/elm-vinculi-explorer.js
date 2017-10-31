@@ -13978,13 +13978,17 @@ var _user$project$Types$Node = F2(
 	function (a, b) {
 		return {data: a, classes: b};
 	});
-var _user$project$Types$EdgeData = F3(
-	function (a, b, c) {
-		return {source: a, target: b, edge_type: c};
-	});
 var _user$project$Types$Edge = function (a) {
 	return {data: a};
 };
+var _user$project$Types$GenericEdgeData = F3(
+	function (a, b, c) {
+		return {source: a, target: b, edge_type: c};
+	});
+var _user$project$Types$InfluencedEdgeData = F4(
+	function (a, b, c, d) {
+		return {source: a, target: b, edge_type: c, strength: d};
+	});
 var _user$project$Types$Graph = F2(
 	function (a, b) {
 		return {nodes: a, edges: b};
@@ -14004,6 +14008,12 @@ var _user$project$Types$Person = function (a) {
 };
 var _user$project$Types$Generic = function (a) {
 	return {ctor: 'Generic', _0: a};
+};
+var _user$project$Types$InfluencedEdge = function (a) {
+	return {ctor: 'InfluencedEdge', _0: a};
+};
+var _user$project$Types$GenericEdge = function (a) {
+	return {ctor: 'GenericEdge', _0: a};
 };
 var _user$project$Types$SendGraph = {ctor: 'SendGraph'};
 var _user$project$Types$ReceiveNodeLocalGraph = function (a) {
@@ -14058,19 +14068,41 @@ var _user$project$Accessors_Node$getLabels = function (node) {
 	return labels;
 };
 
-var _user$project$Decoders_Edge$dataDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'type',
-	_elm_lang$core$Json_Decode$string,
-	A3(
+var _user$project$Decoders_Edge$commonDataDecoder = function (dataType) {
+	return A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'target',
+		'type',
 		_elm_lang$core$Json_Decode$string,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'source',
+			'target',
 			_elm_lang$core$Json_Decode$string,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$EdgeData))));
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'source',
+				_elm_lang$core$Json_Decode$string,
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(dataType))));
+};
+var _user$project$Decoders_Edge$genericDataDecoder = _user$project$Decoders_Edge$commonDataDecoder(_user$project$Types$GenericEdgeData);
+var _user$project$Decoders_Edge$genericDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$GenericEdge, _user$project$Decoders_Edge$genericDataDecoder);
+var _user$project$Decoders_Edge$influencedDataDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'strength',
+	_elm_lang$core$Json_Decode$int,
+	_user$project$Decoders_Edge$commonDataDecoder(_user$project$Types$InfluencedEdgeData));
+var _user$project$Decoders_Edge$influencedDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$InfluencedEdge, _user$project$Decoders_Edge$influencedDataDecoder);
+var _user$project$Decoders_Edge$dataDecoderHelper = function (edge_type) {
+	var _p0 = edge_type;
+	if (_p0 === 'INFLUENCED') {
+		return _user$project$Decoders_Edge$influencedDecoder;
+	} else {
+		return _user$project$Decoders_Edge$genericDecoder;
+	}
+};
+var _user$project$Decoders_Edge$dataDecoder = A2(
+	_elm_lang$core$Json_Decode$andThen,
+	_user$project$Decoders_Edge$dataDecoderHelper,
+	A2(_elm_lang$core$Json_Decode$field, 'type', _elm_lang$core$Json_Decode$string));
 var _user$project$Decoders_Edge$decoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'data',
@@ -14180,33 +14212,59 @@ var _user$project$Decoders_Graph$decoder = A3(
 		_elm_lang$core$Json_Decode$list(_user$project$Decoders_Node$decoder),
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Graph)));
 
-var _user$project$Encoders_Edge$dataEncoder = function (data) {
-	return _elm_lang$core$Json_Encode$object(
-		{
+var _user$project$Encoders_Edge$commonEncoder = function (data) {
+	return {
+		ctor: '::',
+		_0: {
+			ctor: '_Tuple2',
+			_0: 'source',
+			_1: _elm_lang$core$Json_Encode$string(data.source)
+		},
+		_1: {
 			ctor: '::',
 			_0: {
 				ctor: '_Tuple2',
-				_0: 'source',
-				_1: _elm_lang$core$Json_Encode$string(data.source)
+				_0: 'target',
+				_1: _elm_lang$core$Json_Encode$string(data.target)
 			},
 			_1: {
 				ctor: '::',
 				_0: {
 					ctor: '_Tuple2',
-					_0: 'target',
-					_1: _elm_lang$core$Json_Encode$string(data.target)
+					_0: 'type',
+					_1: _elm_lang$core$Json_Encode$string(data.edge_type)
 				},
-				_1: {
-					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'type',
-						_1: _elm_lang$core$Json_Encode$string(data.edge_type)
-					},
-					_1: {ctor: '[]'}
-				}
+				_1: {ctor: '[]'}
 			}
-		});
+		}
+	};
+};
+var _user$project$Encoders_Edge$genericEncoder = function (data) {
+	return _elm_lang$core$Json_Encode$object(
+		_user$project$Encoders_Edge$commonEncoder(data));
+};
+var _user$project$Encoders_Edge$influencedEncoder = function (data) {
+	return _elm_lang$core$Json_Encode$object(
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_user$project$Encoders_Edge$commonEncoder(data),
+			{
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'strength',
+					_1: _elm_lang$core$Json_Encode$int(data.strength)
+				},
+				_1: {ctor: '[]'}
+			}));
+};
+var _user$project$Encoders_Edge$dataEncoder = function (data) {
+	var _p0 = data;
+	if (_p0.ctor === 'InfluencedEdge') {
+		return _user$project$Encoders_Edge$influencedEncoder(_p0._0);
+	} else {
+		return _user$project$Encoders_Edge$genericEncoder(_p0._0);
+	}
 };
 var _user$project$Encoders_Edge$encoder = function (edge) {
 	return _elm_lang$core$Json_Encode$object(
