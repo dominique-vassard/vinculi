@@ -78,7 +78,9 @@ type alias Node =
 
 
 type alias Edge =
-    { data : EdgeData }
+    { data : EdgeData
+    , classes : String
+    }
 
 
 type EdgeData

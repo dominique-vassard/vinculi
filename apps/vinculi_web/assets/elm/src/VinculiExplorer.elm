@@ -22,6 +22,7 @@ import Types exposing (..)
 import Decoders.Graph as GraphDecode exposing (decoder)
 import Encoders.Graph as GraphEncode exposing (encoder)
 import Accessors.Node as Node exposing (..)
+import Accessors.Edge as Edge exposing (..)
 
 
 main : Program Flags Model Msg
@@ -196,13 +197,17 @@ manageMetaData : Graph -> Graph
 manageMetaData graph =
     let
         nodes =
-            List.map (\x -> addClass x) graph.nodes
+            List.map (\x -> addNodeClasses x) graph.nodes
+
+        edges =
+            graph.edges
+                |> List.map (\edge -> addEdgeClasses edge)
     in
-        { graph | nodes = nodes }
+        { graph | nodes = nodes, edges = edges }
 
 
-addClass : Node -> Node
-addClass node =
+addNodeClasses : Node -> Node
+addNodeClasses node =
     let
         classes =
             Node.getLabels node
@@ -210,6 +215,17 @@ addClass node =
                 |> String.toLower
     in
         { node | classes = classes }
+
+
+addEdgeClasses : Edge -> Edge
+addEdgeClasses edge =
+    let
+        classes =
+            edge
+                |> Edge.getType
+                |> String.toLower
+    in
+        { edge | classes = classes }
 
 
 

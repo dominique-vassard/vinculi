@@ -1,6 +1,6 @@
 module Decoders.Edge exposing (decoder)
 
-import Json.Decode.Pipeline exposing (decode, required)
+import Json.Decode.Pipeline exposing (decode, optional, required)
 import Json.Decode as Decode exposing (Decoder, string)
 import Types
     exposing
@@ -15,6 +15,7 @@ decoder : Decoder Edge
 decoder =
     Json.Decode.Pipeline.decode Edge
         |> required "data" dataDecoder
+        |> optional "classes" Decode.string ""
 
 
 dataDecoder : Decoder EdgeData

@@ -15,6 +15,7 @@ encoder : Edge -> Value
 encoder edge =
     Encode.object
         [ ( "data", dataEncoder edge.data )
+        , ( "classes", Encode.string edge.classes )
         ]
 
 

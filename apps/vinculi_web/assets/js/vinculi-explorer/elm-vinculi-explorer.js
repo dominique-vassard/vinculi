@@ -13978,9 +13978,10 @@ var _user$project$Types$Node = F2(
 	function (a, b) {
 		return {data: a, classes: b};
 	});
-var _user$project$Types$Edge = function (a) {
-	return {data: a};
-};
+var _user$project$Types$Edge = F2(
+	function (a, b) {
+		return {data: a, classes: b};
+	});
 var _user$project$Types$GenericEdgeData = F3(
 	function (a, b, c) {
 		return {source: a, target: b, edge_type: c};
@@ -14046,6 +14047,21 @@ var _user$project$Types$Change = function (a) {
 var _user$project$Types$Decrement = {ctor: 'Decrement'};
 var _user$project$Types$Increment = {ctor: 'Increment'};
 
+var _user$project$Accessors_Edge$getGenericEdgeData = function (edge) {
+	var _p0 = edge.data;
+	if (_p0.ctor === 'InfluencedEdge') {
+		var _p1 = _p0._0;
+		return A3(_user$project$Types$GenericEdgeData, _p1.source, _p1.target, _p1.edge_type);
+	} else {
+		return _p0._0;
+	}
+};
+var _user$project$Accessors_Edge$getType = function (edge) {
+	var _p2 = _user$project$Accessors_Edge$getGenericEdgeData(edge);
+	var edge_type = _p2.edge_type;
+	return edge_type;
+};
+
 var _user$project$Accessors_Node$getGenericData = function (node) {
 	var _p0 = node.data;
 	switch (_p0.ctor) {
@@ -14103,11 +14119,16 @@ var _user$project$Decoders_Edge$dataDecoder = A2(
 	_elm_lang$core$Json_Decode$andThen,
 	_user$project$Decoders_Edge$dataDecoderHelper,
 	A2(_elm_lang$core$Json_Decode$field, 'type', _elm_lang$core$Json_Decode$string));
-var _user$project$Decoders_Edge$decoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'data',
-	_user$project$Decoders_Edge$dataDecoder,
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Edge));
+var _user$project$Decoders_Edge$decoder = A4(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+	'classes',
+	_elm_lang$core$Json_Decode$string,
+	'',
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'data',
+		_user$project$Decoders_Edge$dataDecoder,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Edge)));
 
 var _user$project$Decoders_Node$commonDataDecoder = function (dataType) {
 	return A3(
@@ -14275,7 +14296,15 @@ var _user$project$Encoders_Edge$encoder = function (edge) {
 				_0: 'data',
 				_1: _user$project$Encoders_Edge$dataEncoder(edge.data)
 			},
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'classes',
+					_1: _elm_lang$core$Json_Encode$string(edge.classes)
+				},
+				_1: {ctor: '[]'}
+			}
 		});
 };
 
@@ -14713,7 +14742,14 @@ var _user$project$Main$subscriptions = function (model) {
 			}
 		});
 };
-var _user$project$Main$addClass = function (node) {
+var _user$project$Main$addEdgeClasses = function (edge) {
+	var classes = _elm_lang$core$String$toLower(
+		_user$project$Accessors_Edge$getType(edge));
+	return _elm_lang$core$Native_Utils.update(
+		edge,
+		{classes: classes});
+};
+var _user$project$Main$addNodeClasses = function (node) {
 	var classes = _elm_lang$core$String$toLower(
 		A2(
 			_elm_lang$core$String$join,
@@ -14724,15 +14760,21 @@ var _user$project$Main$addClass = function (node) {
 		{classes: classes});
 };
 var _user$project$Main$manageMetaData = function (graph) {
+	var edges = A2(
+		_elm_lang$core$List$map,
+		function (edge) {
+			return _user$project$Main$addEdgeClasses(edge);
+		},
+		graph.edges);
 	var nodes = A2(
 		_elm_lang$core$List$map,
 		function (x) {
-			return _user$project$Main$addClass(x);
+			return _user$project$Main$addNodeClasses(x);
 		},
 		graph.nodes);
 	return _elm_lang$core$Native_Utils.update(
 		graph,
-		{nodes: nodes});
+		{nodes: nodes, edges: edges});
 };
 var _user$project$Main$channelName = 'constellation:explore';
 var _user$project$Main$init = function (flags) {
