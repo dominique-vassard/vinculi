@@ -16,6 +16,7 @@ nodeDecoder : Decoder Node
 nodeDecoder =
     Json.Decode.Pipeline.decode Node
         |> required "data" nodeDataDecoder
+        |> optional "classes" Json.Decode.string ""
 
 
 nodeDataDecoder : Decoder NodeData

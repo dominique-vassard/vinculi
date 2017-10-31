@@ -14,9 +14,30 @@ graphEncoder graph =
 
 nodeEncoder : Node -> Json.Encode.Value
 nodeEncoder node =
-    Json.Encode.object
-        [ ( "data", nodeDataEncoder node.data )
-        ]
+    let
+        labels =
+            case node.data of
+                Person data ->
+                    data.labels
+
+                Generic data ->
+                    data.labels
+
+                Publication data ->
+                    data.labels
+
+                ValueNode data ->
+                    data.labels
+
+        class =
+            labels
+                |> String.join " "
+                |> String.toLower
+    in
+        Json.Encode.object
+            [ ( "data", nodeDataEncoder node.data )
+            , ( "classes", Json.Encode.string node.classes )
+            ]
 
 
 nodeDataEncoder : NodeData -> Json.Encode.Value

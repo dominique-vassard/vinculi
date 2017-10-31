@@ -21,6 +21,7 @@ import Phoenix.Push as PhxPush exposing (init, onError, onOk, withPayload)
 import Types exposing (..)
 import Decoders exposing (graphDecoder)
 import Encoders exposing (graphEncoder)
+import Accessors.Node as Node exposing (..)
 
 
 main : Program Flags Model Msg
@@ -177,7 +178,7 @@ update msg model =
             in
                 case decodedGraph of
                     Ok graph ->
-                        ( { model | graph = graph }, Cmd.none )
+                        ( { model | graph = manageMetaData graph }, Cmd.none )
 
                     Err error ->
                         ( { model | messages = error :: model.messages }, Cmd.none )
@@ -189,6 +190,26 @@ update msg model =
             ( { model | messages = "Failed to send message." :: model.messages }
             , Cmd.none
             )
+
+
+manageMetaData : Graph -> Graph
+manageMetaData graph =
+    let
+        nodes =
+            List.map (\x -> addClass x) graph.nodes
+    in
+        { graph | nodes = nodes }
+
+
+addClass : Node -> Node
+addClass node =
+    let
+        classes =
+            Node.getLabels node
+                |> String.join ""
+                |> String.toLower
+    in
+        { node | classes = classes }
 
 
 

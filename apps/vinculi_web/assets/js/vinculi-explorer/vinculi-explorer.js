@@ -9,21 +9,35 @@ if (elmDiv) {
 var cytoscape = require('cytoscape');
 
 $( document ).ready(function() {
-  var cy = init_graph()
-  cy.$("#a").style("background-color", "#EE4444")
-
-  elmApp.ports.currentStyle.send(cy.$("#a").style("background-color"))
-
-  $("#reset-style").click(function() {
-
-    elmApp.ports.resetStyle.send({obj: "#11FF22"})
+  //Loading style and init graph
+  $.ajax({
+      url: 'http://localhost:4000/css/graph.css',
+      type: 'GET',
+      dataType: 'text',
+      // async: false //ASync then we can wait for the treatment to be done in code process
   })
+  .done(function(styleString) {
+      // init(styleString);
+      var cy = init_graph(styleString)
+      cy.$("#a").style("background-color", "#EE4444")
 
-  ports_init(elmApp, cy);
+      elmApp.ports.currentStyle.send(cy.$("#a").style("background-color"))
+
+      $("#reset-style").click(function() {
+
+        elmApp.ports.resetStyle.send({obj: "#11FF22"})
+      })
+
+      ports_init(elmApp, cy);
+  })
+  .fail(function(json) {
+      throw "Can't retrieve style string from file";
+  });
+
 });
 
 
-var init_graph = function() {
+var init_graph = function(styleString) {
   var cy = cytoscape({
 
     container: document.getElementById('cy'), // container to render in
@@ -44,6 +58,7 @@ var init_graph = function() {
       "nodes" : [
         { // node a
         data: { id: 'hello' }
+        , classes: 'person'
         },
         { // node b
           data: { id: 'you' }
@@ -51,38 +66,41 @@ var init_graph = function() {
       ],
       "edges": [
         { // edge ab
-          data: { id: 'ab', source: 'hello', target: 'you' }
+          data: { id: 'ab', source: 'hello', target: 'you', classes: "employed_to" }
         }
       ]
     },
+    style: styleString,
+    // style: [ // the stylesheet for the graph
+    //   {
+    //     selector: 'node',
+    //     style: {
+    //       'background-color': '#666',
+    //       'label': 'data(id)'
+    //     }
+    //   },
 
-    style: [ // the stylesheet for the graph
-      {
-        selector: 'node',
-        style: {
-          'background-color': '#666',
-          'label': 'data(id)'
-        }
-      },
-
-      {
-        selector: 'edge',
-        style: {
-          'width': 3,
-          'line-color': '#ccc',
-          'target-arrow-color': '#ccc',
-          'target-arrow-shape': 'triangle'
-        }
-      }
-    ],
+    //   {
+    //     selector: 'edge',
+    //     style: {
+    //       'width': 3,
+    //       'line-color': '#ccc',
+    //       'target-arrow-color': '#ccc',
+    //       'target-arrow-shape': 'triangle'
+    //     }
+    //   }
+    // ],
 
     layout: {
-      name: 'grid',
-      rows: 1
-    }
+        name: 'concentric',
+        animate: true,
+        avoidOverlap: true
+    },
 
   });
 
+  // cy.$("#hello").addClass("person")
+  console.log(cy.$("#hello"))
   return cy;
 }
 

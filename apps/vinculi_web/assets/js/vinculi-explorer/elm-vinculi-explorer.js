@@ -13974,9 +13974,10 @@ var _user$project$Types$PublicationNodeData = F4(
 	function (a, b, c, d) {
 		return {id: a, labels: b, name: c, title: d};
 	});
-var _user$project$Types$Node = function (a) {
-	return {data: a};
-};
+var _user$project$Types$Node = F2(
+	function (a, b) {
+		return {data: a, classes: b};
+	});
 var _user$project$Types$EdgeData = F3(
 	function (a, b, c) {
 		return {source: a, target: b, type_: c};
@@ -14034,6 +14035,28 @@ var _user$project$Types$Change = function (a) {
 };
 var _user$project$Types$Decrement = {ctor: 'Decrement'};
 var _user$project$Types$Increment = {ctor: 'Increment'};
+
+var _user$project$Accessors_Node$getGenericData = function (node) {
+	var _p0 = node.data;
+	switch (_p0.ctor) {
+		case 'Person':
+			var _p1 = _p0._0;
+			return A3(_user$project$Types$GenericNodeData, _p1.id, _p1.labels, _p1.name);
+		case 'Generic':
+			return _p0._0;
+		case 'Publication':
+			var _p2 = _p0._0;
+			return A3(_user$project$Types$GenericNodeData, _p2.id, _p2.labels, _p2.name);
+		default:
+			var _p3 = _p0._0;
+			return A3(_user$project$Types$GenericNodeData, _p3.id, _p3.labels, _p3.name);
+	}
+};
+var _user$project$Accessors_Node$getLabels = function (node) {
+	var _p4 = _user$project$Accessors_Node$getGenericData(node);
+	var labels = _p4.labels;
+	return labels;
+};
 
 var _user$project$Decoders$edgeDataDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -14135,11 +14158,16 @@ var _user$project$Decoders$nodeDataDecoder = A2(
 		_elm_lang$core$Json_Decode$field,
 		'labels',
 		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)));
-var _user$project$Decoders$nodeDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'data',
-	_user$project$Decoders$nodeDataDecoder,
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Node));
+var _user$project$Decoders$nodeDecoder = A4(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+	'classes',
+	_elm_lang$core$Json_Decode$string,
+	'',
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'data',
+		_user$project$Decoders$nodeDataDecoder,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Node)));
 var _user$project$Decoders$graphDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'edges',
@@ -14289,6 +14317,21 @@ var _user$project$Encoders$nodeDataEncoder = function (nodeData) {
 	}
 };
 var _user$project$Encoders$nodeEncoder = function (node) {
+	var labels = function () {
+		var _p1 = node.data;
+		switch (_p1.ctor) {
+			case 'Person':
+				return _p1._0.labels;
+			case 'Generic':
+				return _p1._0.labels;
+			case 'Publication':
+				return _p1._0.labels;
+			default:
+				return _p1._0.labels;
+		}
+	}();
+	var $class = _elm_lang$core$String$toLower(
+		A2(_elm_lang$core$String$join, ' ', labels));
 	return _elm_lang$core$Json_Encode$object(
 		{
 			ctor: '::',
@@ -14297,7 +14340,15 @@ var _user$project$Encoders$nodeEncoder = function (node) {
 				_0: 'data',
 				_1: _user$project$Encoders$nodeDataEncoder(node.data)
 			},
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'classes',
+					_1: _elm_lang$core$Json_Encode$string(node.classes)
+				},
+				_1: {ctor: '[]'}
+			}
 		});
 };
 var _user$project$Encoders$graphEncoder = function (graph) {
@@ -14615,6 +14666,27 @@ var _user$project$Main$subscriptions = function (model) {
 			}
 		});
 };
+var _user$project$Main$addClass = function (node) {
+	var classes = _elm_lang$core$String$toLower(
+		A2(
+			_elm_lang$core$String$join,
+			'',
+			_user$project$Accessors_Node$getLabels(node)));
+	return _elm_lang$core$Native_Utils.update(
+		node,
+		{classes: classes});
+};
+var _user$project$Main$manageMetaData = function (graph) {
+	var nodes = A2(
+		_elm_lang$core$List$map,
+		function (x) {
+			return _user$project$Main$addClass(x);
+		},
+		graph.nodes);
+	return _elm_lang$core$Native_Utils.update(
+		graph,
+		{nodes: nodes});
+};
 var _user$project$Main$channelName = 'constellation:explore';
 var _user$project$Main$init = function (flags) {
 	var channel = _fbonetti$elm_phoenix_socket$Phoenix_Channel$init(_user$project$Main$channelName);
@@ -14820,7 +14892,9 @@ var _user$project$Main$update = F2(
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{graph: _p8._0}),
+							{
+								graph: _user$project$Main$manageMetaData(_p8._0)
+							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
