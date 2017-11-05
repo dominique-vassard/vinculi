@@ -8,9 +8,9 @@ import Json.Encode exposing (Value)
 
 
 type alias Flags =
-    { socket_url : String
-    , source_node_uuid : String
-    , source_node_labels : List String
+    { socketUrl : String
+    , originNodeUuid : String
+    , originNodeLabels : List String
     }
 
 
@@ -123,16 +123,12 @@ type alias Graph =
 
 
 type alias Model =
-    { number : Int
-    , style : String
-    , source_node_uuid : String
-    , phxSocket : PhxSocket.Socket Msg
-    , messageInProgress : String
-    , messages : List String
+    { phxSocket : PhxSocket.Socket Msg
     , graph : Graph
-    , socket_url : String
+    , socketUrl : String
     , initGraph : Bool
     , searchNode : Maybe SearchNode
+    , errorMessage : Maybe String
     }
 
 
@@ -143,22 +139,11 @@ type alias SearchNode =
 
 
 type Msg
-    = Increment
-    | Decrement
-    | Change String
-    | ChangeStyle
-    | CurrentStyle (Result String String)
-    | ResetStyle (Result String String)
-    | PhoenixMsg (PhxSocket.Msg Msg)
-    | SetSocketMessage String
-    | SendMessage
-    | ReceiveMessage Json.Encode.Value
+    = PhoenixMsg (PhxSocket.Msg Msg)
     | HandleSendError Json.Encode.Value
     | GetNodeLocalGraph
     | ReceiveNodeLocalGraph Json.Encode.Value
     | InitGraph
     | SendGraph
     | Join
-    | ShowJoinedMessage
-    | SetNewNode
     | SetSearchNode (Result String SearchNode)
