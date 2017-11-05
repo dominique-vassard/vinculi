@@ -1,0 +1,241 @@
+/**********************************
+
+NODES STYLES
+
+**********************************/
+
+/* General */
+node {
+    content: data(name);
+    width: 42;
+    height: 42;
+    background-width: 32px;
+    background-height: 32px;
+}
+
+node.node_selected {
+    border-color: #FF0000;
+    border-width: 2px;
+}
+
+node.node_end {
+    shape: roundrectangle;
+}
+
+/* Location & Language */
+node.continent {
+    background-color: #2F55ED;
+    background-width: 32px;
+    background-height: 32px;
+    background-image : ../../../graph_style/images/node_icons/location.png;
+}
+node.country {
+    background-color: #2FB4ED;
+    background-width: 32px;
+    background-height: 32px;
+    background-image : ../../../graph_style/images/node_icons/location.png;
+}
+node.town {
+    background-color : #7DC8E8;
+    background-width: 32px;
+    background-height: 32px;
+    background-image : ../../../graph_style/images/node_icons/location.png;
+}
+node.language {
+    background-color : #E87DC3;
+    background-image : ../../../graph_style/images/node_icons/language.png;
+}
+
+/* Domain and schools */
+node.domain {
+    background-color : #EBE975;
+    background-image : ../../../graph_style/images/node_icons/domain.png;
+}
+node.school {
+    background-color : #D6D576;
+    background-image : ../../../graph_style/images/node_icons/school.png;
+}
+
+/* Person */
+node.person {
+    width: 50;
+    height: 50;
+    background-width: 40px;
+    background-height: 40px;
+    background-color : #E34522;
+    background-image : ../../../graph_style/images/node_icons/person.png;
+    /*background-image : ../../../graph_style/images/node_icons/node_icons/person.png;*/
+}
+
+node.profession {
+    background-color : #E8B97D;
+    background-image : ../../../graph_style/images/node_icons/profession.png;
+}
+
+/* Institution & degrees */
+node.institution {
+    background-color : #BFCC6A;
+    background-width: 30px;
+    background-height: 30px;
+    background-image : ../../../graph_style/images/node_icons/institution.png;
+}
+node.degree {
+    background-color : #D6D187;
+    background-image : ../../../graph_style/images/node_icons/diploma.png;
+}
+
+/* Publication */
+node.publication {
+    background-color : #20A84F;
+    background-image : ../../../graph_style/images/node_icons/publication.png;
+}
+node.translation {
+    background-color : #78B56E;
+    background-width: 30px;
+    background-height: 30px;
+    background-image : ../../../graph_style/images/node_icons/translation.png;
+}
+
+/* Time */
+node.year {
+    background-color : #B87DE8;
+    background-width: 30px;
+    background-height: 30px;
+    background-image : ../../../graph_style/images/node_icons/time.png;
+}
+
+/**********************************
+
+EDGES STYLES
+
+**********************************/
+
+/* General */
+edge {
+    curve-style: bezier;
+    target-arrow-shape: triangle;
+    edge-text-rotation: autorotate;
+    label: data(type);
+    line-color: #000000;
+    target-arrow-color: #000000;
+    width : 5;
+}
+edge.edge_selected {
+    line-style: dashed;
+    width : 10;
+}
+
+/* Date edges */
+edge.employed_from {
+    line-color: #B87DE8;
+    target-arrow-color: #B87DE8;
+}
+edge.employed_to {
+    line-color: #B87DE8;
+    target-arrow-color: #B87DE8;
+}
+edge.when_born {
+    line-color: #B87DE8;
+    target-arrow-color: #B87DE8;
+}
+edge.when_died {
+    line-color: #B87DE8;
+    target-arrow-color: #B87DE8;
+}
+edge.when_written {
+    line-color: #B87DE8;
+    target-arrow-color: #B87DE8;
+}
+edge.when_translated {
+    line-color: #B87DE8;
+    target-arrow-color: #B87DE8;
+}
+
+/* Location */
+edge.where_born {
+    line-color: #7DC8E8;
+    target-arrow-color: #7DC8E8;
+}
+edge.where_died {
+    line-color: #7DC8E8;
+    target-arrow-color: #7DC8E8;
+}
+edge.is_in_continent {
+    line-color: #2F55ED;
+    target-arrow-color: #2F55ED;
+}
+edge.is_in_country {
+    line-color: #2FB4ED;
+    target-arrow-color: #2FB4ED;
+}
+
+/* Language */
+edge.has_original_language {
+    line-color: #E87DC3;
+    target-arrow-color: #E87DC3;
+}
+edge.translated_in_language {
+    line-color: #E87DC3;
+    target-arrow-color: #E87DC3;
+}
+
+/* Person */
+edge.influenced {
+    width: mapData(properties.strength, 1, 5, 5, 20);
+    line-color: #E34522;
+    target-arrow-color: #E34522;
+}
+edge.has_profession {
+    line-color: #E8B97D;
+    target-arrow-color: #E8B97D;
+}
+
+/* Institution */
+edge.degree_from {
+    line-color: #BFCC6A;
+    target-arrow-color: #BFCC6A;
+}
+edge.employed_by {
+    line-color: #BFCC6A;
+    target-arrow-color: #BFCC6A;
+}
+edge.has_degree {
+    line-color: #D6D187;
+    target-arrow-color: #D6D187;
+}
+
+/* Publication */
+edge.wrote {
+    line-color: #20A84F;
+    target-arrow-color: #20A84F;
+}
+edge.co_wrote {
+    line-color: #20A84F;
+    target-arrow-color: #20A84F;
+}
+edge.translated {
+    line-color: #78B56E;
+    target-arrow-color: #78B56E;
+}
+
+/* Domain & school */
+edge.is_of_domain {
+    line-color: #EBE975;
+    target-arrow-color: #EBE975;
+}
+edge.is_of_school {
+    line-color: #D6D576;
+    target-arrow-color: #D6D576;
+}
+
+
+/**********************************
+
+        GENERAL STYLES
+
+**********************************/
+
+.faded {
+    opacity: 0.25;
+    text-opacity: 0;
+}
