@@ -79,6 +79,22 @@ defmodule VinculiGraph.Format.TestCytoscape do
 
       assert expected == res
     end
+
+    test "produces valid json for cytoscape with confusing node/rel ids" do
+      query_result = [%{"neighbour" => %Bolt.Sips.Types.Node{id: 13, labels: ["Country"],
+        properties: %{"name" => "Scotland", "uuid" => "country-1"}},
+       "relation" => %Bolt.Sips.Types.Relationship{end: 13, id: 1, properties: %{},
+        start: 1, type: "IS_IN_COUNTRY"},
+       "source" => %Bolt.Sips.Types.Node{id: 1, labels: ["Town"],
+        properties: %{"name" => "Kirkcaldy", "uuid" => "town-2"}}}]
+
+      expected = %{edges: [%{data: %{source: "town-2", target: "country-1",
+           type: "IS_IN_COUNTRY"}}],
+      nodes: [%{data: %{id: "country-1", labels: ["Country"], name: "Scotland"}},
+       %{data: %{id: "town-2", labels: ["Town"], name: "Kirkcaldy"}}]}
+
+      assert expected == Cytoscape.format(query_result)
+    end
   end
 
   describe "Test update_relationships/2:" do

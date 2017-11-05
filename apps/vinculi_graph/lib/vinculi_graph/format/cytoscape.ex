@@ -54,22 +54,27 @@ defmodule VinculiGraph.Format.Cytoscape do
 
   """
   def format(data) do
-    flatten =
+    {nodes, relationships} =
       data
       |> Enum.flat_map(fn val -> Enum.into(val, [], fn {_, v} -> v end) end)
-      |> Enum.uniq_by(fn x -> x.id end)
-
-    {nodes, relationships} =
-      flatten
-      |> Enum.split_with(fn x -> Map.has_key? x, :labels end)
+      |> Enum.uniq_by(fn x -> identifier_for(x) end)
+      |> Enum.split_with(fn x -> Map.has_key? x, :labels end) # Only nodes ahave labels
 
     %{
       nodes: nodes
               |> Enum.map(&format_element/1),
       edges: relationships
-              |> Enum.map(fn x -> update_relationships(x, flatten) end)
+              |> Enum.map(fn x -> update_relationships(x, nodes) end)
               |> Enum.map(&format_element/1)
     }
+  end
+
+  defp identifier_for(%Node{id: id}) do
+    "node-#{id}"
+  end
+
+  defp identifier_for(%Relationship{id: id}) do
+    "rel-#{id}"
   end
 
   @doc """
