@@ -26,6 +26,6 @@
 <h2><%= dgettext "constellation", "results" %></h2>
 <div>
     <%= for result <- @results do %>
-    <%= link result.name, to: constellation_path(@conn, :explore, result.uuid), class: "btn btn-secondary btn-lg btn-block mb-1" %>
+    <%= link result.name, to: constellation_path(@conn, :explore, Enum.join(result.labels, "+"), result.uuid), class: "btn btn-secondary btn-lg btn-block mb-1" %>
     <% end %>
 </div>

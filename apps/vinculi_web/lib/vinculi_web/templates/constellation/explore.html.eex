@@ -2,5 +2,6 @@
 </div>
 <script type="text/javascript">
     const socket_url = "<%= @socket_url %>"
-    const source_node_uuid = "<%= @source_node_uuid %>"
+    const node_uuid = "<%= @node_uuid %>"
+    let node_labels = "<%= @node_labels %>".split("+")
 </script>

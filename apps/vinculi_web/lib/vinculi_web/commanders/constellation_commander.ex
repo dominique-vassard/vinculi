@@ -33,11 +33,13 @@ defmodule VinculiWeb.ConstellationCommander do
       nb_changes >= 1 ->
         Node.get_fuzzy_by(Utils.Struct.to_atom_map node_form_params)
         |> Enum.map(fn node -> %{uuid: node.properties["uuid"],
+                                 labels: node.labels,
                                  name: VinculiGraph.Helpers.get_name(node)} end)
         |> Enum.sort_by(&(&1.name |> String.normalize(:nfd)))
        true ->
         []
     end
+    IO.puts inspect results, pretty: true
     poke socket, results: results
   end
 end
