@@ -16,13 +16,15 @@ import Phoenix.Socket as PhxSocket
         , update
         , withDebug
         )
-import Phoenix.Channel as PhxChannel exposing (init)
+import Phoenix.Channel as PhxChannel exposing (init, onJoin)
 import Phoenix.Push as PhxPush exposing (init, onError, onOk, withPayload)
 import Types exposing (..)
 import Decoders.Graph as GraphDecode exposing (decoder)
+import Decoders.Port as PortDecoder exposing (localGraphDecoder)
 import Encoders.Graph as GraphEncode exposing (encoder)
 import Accessors.Node as Node exposing (..)
 import Accessors.Edge as Edge exposing (..)
+import Task
 
 
 main : Program Flags Model Msg
@@ -50,29 +52,28 @@ channelName =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    let
-        channel =
-            PhxChannel.init channelName
+    ( { number = 1
+      , style = ""
+      , source_node_uuid = flags.source_node_uuid
+      , phxSocket = PhxSocket.init flags.socket_url
+      , messageInProgress = ""
+      , messages = [ "Test messages" ]
+      , graph = Graph [] []
+      , socket_url = flags.socket_url
+      , initGraph = True
+      , searchNode =
+            Just
+                { uuid = flags.source_node_uuid
+                , labels = flags.source_node_labels
+                }
+      }
+    , joinChannel
+    )
 
-        ( phxSocket, phxCmd ) =
-            PhxSocket.init flags.socket_url
-                |> PhxSocket.withDebug
-                |> PhxSocket.on "shout" channelName ReceiveMessage
-                |> PhxSocket.on "node_local_graph"
-                    channelName
-                    ReceiveNodeLocalGraph
-                |> PhxSocket.join channel
-    in
-        ( { number = 1
-          , style = ""
-          , source_node_uuid = flags.source_node_uuid
-          , phxSocket = phxSocket
-          , messageInProgress = ""
-          , messages = [ "Test messages" ]
-          , graph = Graph [] []
-          }
-        , Cmd.map PhoenixMsg phxCmd
-        )
+
+joinChannel : Cmd Msg
+joinChannel =
+    Task.perform (always Join) (Task.succeed ())
 
 
 
@@ -110,6 +111,9 @@ update msg model =
             let
                 ( phxSocket, phxCmd ) =
                     PhxSocket.update msg model.phxSocket
+
+                t =
+                    Debug.log "In PhoenixMsg: " phxCmd
             in
                 ( { model | phxSocket = phxSocket }
                 , Cmd.map PhoenixMsg phxCmd
@@ -156,41 +160,104 @@ update msg model =
                         ( model, Cmd.none )
 
         GetNodeLocalGraph ->
-            let
-                payload =
-                    Json.Encode.object
-                        [ ( "node_uuid", Json.Encode.string model.source_node_uuid ) ]
+            case model.searchNode of
+                Nothing ->
+                    ( model, Cmd.none )
 
-                phxPush =
-                    PhxPush.init "node_local_graph" channelName
-                        |> PhxPush.withPayload payload
-                        |> PhxPush.onOk ReceiveNodeLocalGraph
-                        |> PhxPush.onError HandleSendError
+                Just searchNode ->
+                    let
+                        payload =
+                            Json.Encode.object
+                                [ ( "uuid", Json.Encode.string searchNode.uuid )
+                                , ( "labels"
+                                  , Json.Encode.list
+                                        (List.map
+                                            Json.Encode.string
+                                            searchNode.labels
+                                        )
+                                  )
+                                ]
 
-                ( phxSocket, phxCmd ) =
-                    PhxSocket.push phxPush model.phxSocket
-            in
-                ( { model | phxSocket = phxSocket }, Cmd.map PhoenixMsg phxCmd )
+                        phxPush =
+                            PhxPush.init "node_local_graph" channelName
+                                |> PhxPush.withPayload payload
+                                |> PhxPush.onOk ReceiveNodeLocalGraph
+                                |> PhxPush.onError HandleSendError
+
+                        ( phxSocket, phxCmd ) =
+                            PhxSocket.push phxPush model.phxSocket
+                    in
+                        ( { model | phxSocket = phxSocket }, Cmd.map PhoenixMsg phxCmd )
 
         ReceiveNodeLocalGraph raw ->
             let
                 decodedGraph =
                     Json.Decode.decodeValue GraphDecode.decoder raw
+
+                localGraphCmd =
+                    case model.initGraph of
+                        True ->
+                            Task.perform (always InitGraph) (Task.succeed ())
+
+                        False ->
+                            Task.perform (always SendGraph) (Task.succeed ())
             in
                 case decodedGraph of
                     Ok graph ->
-                        ( { model | graph = manageMetaData graph }, Cmd.none )
+                        ( { model
+                            | graph = manageMetaData graph
+                            , initGraph = False
+                          }
+                        , localGraphCmd
+                        )
 
                     Err error ->
                         ( { model | messages = error :: model.messages }, Cmd.none )
 
         SendGraph ->
-            ( model, Ports.newGraph (GraphEncode.encoder model.graph) )
+            ( model, Ports.addToGraph (GraphEncode.encoder model.graph) )
+
+        InitGraph ->
+            ( model, Ports.initGraph (GraphEncode.encoder model.graph) )
 
         HandleSendError _ ->
             ( { model | messages = "Failed to send message." :: model.messages }
             , Cmd.none
             )
+
+        Join ->
+            let
+                t =
+                    Debug.log "In update: " "Join"
+
+                channel =
+                    PhxChannel.init channelName
+                        |> PhxChannel.onJoin (always GetNodeLocalGraph)
+
+                ( phxSocket, phxCmd ) =
+                    PhxSocket.init model.socket_url
+                        |> PhxSocket.withDebug
+                        |> PhxSocket.on "shout" channelName ReceiveMessage
+                        |> PhxSocket.on "node_local_graph"
+                            channelName
+                            ReceiveNodeLocalGraph
+                        |> PhxSocket.join channel
+            in
+                ( { model | phxSocket = phxSocket }
+                , Cmd.map PhoenixMsg phxCmd
+                )
+
+        ShowJoinedMessage ->
+            ( { model | messages = "Join Channel" :: model.messages }, Cmd.none )
+
+        SetNewNode ->
+            ( { model | source_node_uuid = "town-1" }, Cmd.none )
+
+        SetSearchNode (Ok searchNode) ->
+            ( { model | searchNode = Just searchNode }, Task.perform (always GetNodeLocalGraph) (Task.succeed ()) )
+
+        SetSearchNode (Err searchNode) ->
+            ( model, Cmd.none )
 
 
 manageMetaData : Graph -> Graph
@@ -237,6 +304,11 @@ subscriptions model =
     Sub.batch
         [ Ports.currentStyle (decodeStyle >> CurrentStyle)
         , Ports.resetStyle (decodeStyle >> ResetStyle)
+        , Ports.getLocalGraph
+            (Json.Decode.decodeValue
+                PortDecoder.localGraphDecoder
+                >> SetSearchNode
+            )
         , PhxSocket.listen model.phxSocket PhoenixMsg
         ]
 
@@ -262,6 +334,8 @@ view model =
             , button [ onClick ChangeStyle ] [ text "change style" ]
             , button [ id "reset-style" ] [ text "reset style" ]
             , viewSocketTest model
+            , button [ class "btn btn-warning", onClick SetNewNode ]
+                [ text "New node" ]
             , button [ class "btn btn-primary", onClick GetNodeLocalGraph ]
                 [ text "Node Local Graph" ]
             , button [ class "btn btn-secondary", onClick SendGraph ] [ text "Send!" ]

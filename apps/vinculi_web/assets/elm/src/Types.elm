@@ -10,6 +10,7 @@ import Json.Encode exposing (Value)
 type alias Flags =
     { socket_url : String
     , source_node_uuid : String
+    , source_node_labels : List String
     }
 
 
@@ -129,6 +130,15 @@ type alias Model =
     , messageInProgress : String
     , messages : List String
     , graph : Graph
+    , socket_url : String
+    , initGraph : Bool
+    , searchNode : Maybe SearchNode
+    }
+
+
+type alias SearchNode =
+    { uuid : String
+    , labels : List String
     }
 
 
@@ -146,4 +156,9 @@ type Msg
     | HandleSendError Json.Encode.Value
     | GetNodeLocalGraph
     | ReceiveNodeLocalGraph Json.Encode.Value
+    | InitGraph
     | SendGraph
+    | Join
+    | ShowJoinedMessage
+    | SetNewNode
+    | SetSearchNode (Result String SearchNode)
