@@ -58,15 +58,17 @@ defmodule VinculiGraph.Format.Cytoscape do
       data
       |> Enum.flat_map(fn val -> Enum.into(val, [], fn {_, v} -> v end) end)
       |> Enum.uniq_by(fn x -> identifier_for(x) end)
-      |> Enum.split_with(fn x -> Map.has_key? x, :labels end) # Only nodes ahave labels
+      |> Enum.split_with(fn x -> Map.has_key? x, :labels end) # Only nodes have labels
 
-    %{
-      nodes: nodes
-              |> Enum.map(&format_element/1),
-      edges: relationships
+    result_nodes = nodes
+      |> Enum.map(&format_element/1)
+
+    result_relationships =
+    relationships
               |> Enum.map(fn x -> update_relationships(x, nodes) end)
               |> Enum.map(&format_element/1)
-    }
+
+    result_nodes ++ result_relationships
   end
 
   defp identifier_for(%Node{id: id}) do
@@ -127,7 +129,7 @@ defmodule VinculiGraph.Format.Cytoscape do
       |> Utils.Struct.to_atom_map()
       |> Map.drop([:uuid])
 
-    %{data: data}
+    %{group: "nodes", data: data}
   end
 
   def format_element(%Relationship{start: start_uid, end: end_uid, type: type, properties: properties}) do
@@ -135,6 +137,6 @@ defmodule VinculiGraph.Format.Cytoscape do
       Map.merge(properties, %{source: start_uid, target: end_uid, type: type})
       |> Utils.Struct.to_atom_map()
 
-    %{data: data}
+    %{group: "edges", data: data}
   end
 end

@@ -85,34 +85,27 @@ defmodule VinculiGraph.TestNode do
 
     test "Return cytoscape-formated result when asked to" do
       res = Node.get_local_graph("Publication", "publication-22", :cytoscape)
-      expected = %{edges: [%{data: %{source: "person-9", target: "publication-22",
-             type: "WROTE"}},
-         %{data: %{source: "publication-22", target: "language-3",
-             type: "HAS_ORIGINAL_LANGUAGE"}},
-         %{data: %{source: "publication-22", target: "year-29",
-             type: "WHEN_WRITTEN"}},
-         %{data: %{source: "publication-22", target: "domain-2",
-             type: "IS_OF_DOMAIN"}}],
-        nodes: [%{data: %{firstName: "Marcel", id: "person-9", labels: ["Person"],
-             lastName: "MAUSS", name: "Marcel MAUSS"}},
-         %{data: %{id: "publication-22", labels: ["Publication"], name: "",
-             title: "Esquisse d'une théorie générale de la magie"}},
-         %{data: %{id: "language-3", labels: ["Language"], name: "French"}},
-         %{data: %{id: "year-29", labels: ["Year"], name: "1902", value: 1902}},
-         %{data: %{id: "domain-2", labels: ["Domain"], name: "Anthropology"}}]}
+      expected = [%{data: %{id: "domain-2", labels: ["Domain"],
+                 name: "Anthropology"}, group: "nodes"},
+             %{data: %{id: "publication-22", labels: ["Publication"], name: "",
+                 title: "Esquisse d'une théorie générale de la magie"},
+               group: "nodes"},
+             %{data: %{firstName: "Marcel", id: "person-9", labels: ["Person"],
+                 lastName: "MAUSS", name: "Marcel MAUSS"}, group: "nodes"},
+             %{data: %{id: "language-3", labels: ["Language"], name: "French"},
+               group: "nodes"},
+             %{data: %{id: "year-29", labels: ["Year"], name: "1902",
+                 value: 1902}, group: "nodes"},
+             %{data: %{source: "publication-22", target: "domain-2",
+                 type: "IS_OF_DOMAIN"}, group: "edges"},
+             %{data: %{source: "person-9", target: "publication-22",
+                 type: "WROTE"}, group: "edges"},
+             %{data: %{source: "publication-22", target: "language-3",
+                 type: "HAS_ORIGINAL_LANGUAGE"}, group: "edges"},
+             %{data: %{source: "publication-22", target: "year-29",
+                 type: "WHEN_WRITTEN"}, group: "edges"}]
 
-      valid_nodes? =
-        res.nodes
-        |> Enum.map(&(Enum.member? expected.nodes, &1))
-        |> Enum.all?(&(&1 == true))
-
-      valid_relastionships? =
-        res.edges
-        |> Enum.map(&(Enum.member? expected.edges, &1))
-        |> Enum.all?(&(&1 == true))
-
-      assert valid_nodes?, "Invalid nodes"
-      assert valid_relastionships?, "Invalid relationships"
+      assert Enum.sort(expected) == Enum.sort(res)
     end
 
     test "Return empty result for non-existing node" do
