@@ -55,7 +55,7 @@ channelName =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( { phxSocket = PhxSocket.init flags.socketUrl
-      , graph = Graph [] []
+      , graph = []
       , socketUrl = flags.socketUrl
       , initGraph = True
       , searchNode =
@@ -194,7 +194,7 @@ update msg model =
                     Err error ->
                         ( { model
                             | errorMessage =
-                                Just "Cannot decode received graph."
+                                Just ("Cannot decode received graph. -[" ++ error ++ "]")
                           }
                         , Cmd.none
                         )
@@ -202,18 +202,20 @@ update msg model =
 
 manageMetaData : Graph -> Graph
 manageMetaData graph =
-    let
-        nodes =
-            List.map (\x -> addNodeClasses x) graph.nodes
-
-        edges =
-            graph.edges
-                |> List.map (\edge -> addEdgeClasses edge)
-    in
-        { graph | nodes = nodes, edges = edges }
+    List.map addClass graph
 
 
-addNodeClasses : Node -> Node
+addClass : Element -> Element
+addClass element =
+    case element of
+        Node node ->
+            addNodeClasses node
+
+        Edge edge ->
+            addEdgeClasses edge
+
+
+addNodeClasses : NodeType -> Element
 addNodeClasses node =
     let
         classes =
@@ -221,10 +223,10 @@ addNodeClasses node =
                 |> String.join ""
                 |> String.toLower
     in
-        { node | classes = classes }
+        Node { node | classes = classes }
 
 
-addEdgeClasses : Edge -> Edge
+addEdgeClasses : EdgeType -> Element
 addEdgeClasses edge =
     let
         classes =
@@ -232,7 +234,7 @@ addEdgeClasses edge =
                 |> Edge.getType
                 |> String.toLower
     in
-        { edge | classes = classes }
+        Edge { edge | classes = classes }
 
 
 

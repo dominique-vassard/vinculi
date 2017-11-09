@@ -3,19 +3,27 @@ module Encoders.Edge exposing (encoder)
 import Json.Encode as Encode exposing (Value, object, string)
 import Types
     exposing
-        ( Edge
+        ( EdgeType
         , EdgeData(GenericEdge, InfluencedEdge)
         , CommonEdgeData
         , GenericEdgeData
         , InfluencedEdgeData
         )
+import Encoders.Common exposing (nothingEncoder)
 
 
-encoder : Edge -> Value
+encoder : EdgeType -> Value
 encoder edge =
     Encode.object
-        [ ( "data", dataEncoder edge.data )
+        [ ( "group", Encode.string edge.group )
+        , ( "data", dataEncoder edge.data )
         , ( "classes", Encode.string edge.classes )
+        , ( "position", nothingEncoder )
+        , ( "grabbable", Encode.bool edge.grabbable )
+        , ( "locked", Encode.bool edge.locked )
+        , ( "removed", Encode.bool edge.removed )
+        , ( "selectable", Encode.bool edge.selectable )
+        , ( "selected", Encode.bool edge.selected )
         ]
 
 

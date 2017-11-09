@@ -2,22 +2,31 @@ module Decoders.Node exposing (decoder)
 
 import Json.Decode.Pipeline exposing (decode, optional, required)
 import Json.Decode as Decode exposing (Decoder, andThen, list, map, string)
+import Decoders.Common exposing (positionDecoder)
 import Types
     exposing
-        ( Node
+        ( NodeType
         , NodeData(GenericNode, PersonNode, PublicationNode, ValueNode)
         , GenericNodeData
         , PersonNodeData
         , PublicationNodeData
         , ValueNodeData
+        , Position
         )
 
 
-decoder : Decoder Node
+decoder : Decoder NodeType
 decoder =
-    Json.Decode.Pipeline.decode Node
+    Json.Decode.Pipeline.decode NodeType
+        |> required "group" Decode.string
         |> required "data" dataDecoder
         |> optional "classes" Decode.string ""
+        |> optional "position" positionDecoder (Position 0 0)
+        |> optional "grabbable" Decode.bool True
+        |> optional "locked" Decode.bool False
+        |> optional "removed" Decode.bool False
+        |> optional "selectable" Decode.bool True
+        |> optional "selected" Decode.bool False
 
 
 dataDecoder : Decoder NodeData

@@ -33,6 +33,10 @@ type alias CommonNodeData a =
     }
 
 
+type alias CommonElementData a =
+    { a | classes : String }
+
+
 type alias PersonNodeData =
     { id : String
     , labels : List String
@@ -68,9 +72,22 @@ type NodeData
     | ValueNode ValueNodeData
 
 
-type alias Node =
-    { data : NodeData
+type alias Position =
+    { x : Float
+    , y : Float
+    }
+
+
+type alias NodeType =
+    { group : String
+    , data : NodeData
     , classes : String
+    , position : Position
+    , grabbable : Bool
+    , locked : Bool
+    , removed : Bool
+    , selectable : Bool
+    , selected : Bool
     }
 
 
@@ -78,9 +95,16 @@ type alias Node =
 -- EDGES
 
 
-type alias Edge =
-    { data : EdgeData
+type alias EdgeType =
+    { group : String
+    , data : EdgeData
     , classes : String
+    , position : Maybe Position
+    , grabbable : Bool
+    , locked : Bool
+    , removed : Bool
+    , selectable : Bool
+    , selected : Bool
     }
 
 
@@ -116,10 +140,13 @@ type alias InfluencedEdgeData =
 --- GRAPH
 
 
+type Element
+    = Node NodeType
+    | Edge EdgeType
+
+
 type alias Graph =
-    { nodes : List Node
-    , edges : List Edge
-    }
+    List Element
 
 
 type alias Model =

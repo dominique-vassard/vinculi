@@ -46,6 +46,7 @@ class GraphManager {
        "animate": true}
        console.log(layout_config)
     this.cy.add(graphData).layout(layout_config).run()
+    console.log(this.cy.elements().jsons())
   }
 
   getBoundingBox() {

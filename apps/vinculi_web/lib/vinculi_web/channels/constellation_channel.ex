@@ -34,9 +34,8 @@ defmodule VinculiWeb.ConstellationChannel do
   # end
 
   def handle_in("node_local_graph", %{"uuid" => uuid, "labels" => labels}, socket) do
-    {:reply,
-     {:ok, Node.get_local_graph(List.first(labels), uuid, :cytoscape)},
-      socket}
+    data = Node.get_local_graph(List.first(labels), uuid, :cytoscape)
+    {:reply, {:ok, %{data: data}}, socket}
   end
 
   # Add authorization logic here as required.

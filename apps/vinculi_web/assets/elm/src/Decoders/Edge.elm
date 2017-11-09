@@ -1,21 +1,29 @@
 module Decoders.Edge exposing (decoder)
 
-import Json.Decode.Pipeline exposing (decode, optional, required)
-import Json.Decode as Decode exposing (Decoder, string)
+import Json.Decode.Pipeline exposing (decode, optional, required, hardcoded)
+import Json.Decode as Decode exposing (Decoder, nullable, string)
 import Types
     exposing
-        ( Edge
+        ( EdgeType
         , EdgeData(GenericEdge, InfluencedEdge)
         , GenericEdgeData
         , InfluencedEdgeData
+        , Position
         )
 
 
-decoder : Decoder Edge
+decoder : Decoder EdgeType
 decoder =
-    Json.Decode.Pipeline.decode Edge
+    Json.Decode.Pipeline.decode EdgeType
+        |> required "group" Decode.string
         |> required "data" dataDecoder
         |> optional "classes" Decode.string ""
+        |> hardcoded Nothing
+        |> optional "grabbable" Decode.bool True
+        |> optional "locked" Decode.bool False
+        |> optional "removed" Decode.bool False
+        |> optional "selectable" Decode.bool True
+        |> optional "selected" Decode.bool False
 
 
 dataDecoder : Decoder EdgeData

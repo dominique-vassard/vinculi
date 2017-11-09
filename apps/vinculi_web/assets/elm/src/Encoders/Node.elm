@@ -1,9 +1,9 @@
 module Encoders.Node exposing (encoder)
 
-import Json.Encode as Encode exposing (Value, int, object, string)
+import Json.Encode as Encode exposing (Value, bool, int, object, string)
 import Types
     exposing
-        ( Node
+        ( NodeType
         , NodeData(GenericNode, PersonNode, PublicationNode, ValueNode)
         , CommonNodeData
         , GenericNodeData
@@ -11,13 +11,21 @@ import Types
         , PublicationNodeData
         , ValueNodeData
         )
+import Encoders.Common exposing (positionEncoder)
 
 
-encoder : Node -> Value
+encoder : NodeType -> Value
 encoder node =
     Encode.object
-        [ ( "data", dataEncoder node.data )
+        [ ( "group", Encode.string node.group )
+        , ( "data", dataEncoder node.data )
         , ( "classes", Encode.string node.classes )
+        , ( "position", positionEncoder node.position )
+        , ( "grabbable", Encode.bool node.grabbable )
+        , ( "locked", Encode.bool node.locked )
+        , ( "removed", Encode.bool node.removed )
+        , ( "selectable", Encode.bool node.selectable )
+        , ( "selected", Encode.bool node.selected )
         ]
 
 

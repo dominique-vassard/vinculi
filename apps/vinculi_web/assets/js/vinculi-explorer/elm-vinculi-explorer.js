@@ -15454,13 +15454,17 @@ var _user$project$Types$PublicationNodeData = F4(
 	function (a, b, c, d) {
 		return {id: a, labels: b, name: c, title: d};
 	});
-var _user$project$Types$Node = F2(
+var _user$project$Types$Position = F2(
 	function (a, b) {
-		return {data: a, classes: b};
+		return {x: a, y: b};
 	});
-var _user$project$Types$Edge = F2(
-	function (a, b) {
-		return {data: a, classes: b};
+var _user$project$Types$NodeType = F9(
+	function (a, b, c, d, e, f, g, h, i) {
+		return {group: a, data: b, classes: c, position: d, grabbable: e, locked: f, removed: g, selectable: h, selected: i};
+	});
+var _user$project$Types$EdgeType = F9(
+	function (a, b, c, d, e, f, g, h, i) {
+		return {group: a, data: b, classes: c, position: d, grabbable: e, locked: f, removed: g, selectable: h, selected: i};
 	});
 var _user$project$Types$GenericEdgeData = F3(
 	function (a, b, c) {
@@ -15469,10 +15473,6 @@ var _user$project$Types$GenericEdgeData = F3(
 var _user$project$Types$InfluencedEdgeData = F4(
 	function (a, b, c, d) {
 		return {source: a, target: b, edge_type: c, strength: d};
-	});
-var _user$project$Types$Graph = F2(
-	function (a, b) {
-		return {nodes: a, edges: b};
 	});
 var _user$project$Types$Model = F6(
 	function (a, b, c, d, e, f) {
@@ -15499,6 +15499,12 @@ var _user$project$Types$InfluencedEdge = function (a) {
 };
 var _user$project$Types$GenericEdge = function (a) {
 	return {ctor: 'GenericEdge', _0: a};
+};
+var _user$project$Types$Edge = function (a) {
+	return {ctor: 'Edge', _0: a};
+};
+var _user$project$Types$Node = function (a) {
+	return {ctor: 'Node', _0: a};
 };
 var _user$project$Types$SetSearchNode = function (a) {
 	return {ctor: 'SetSearchNode', _0: a};
@@ -15554,6 +15560,16 @@ var _user$project$Accessors_Node$getLabels = function (node) {
 	return labels;
 };
 
+var _user$project$Decoders_Common$positionDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'y',
+	_elm_lang$core$Json_Decode$float,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'x',
+		_elm_lang$core$Json_Decode$float,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Position)));
+
 var _user$project$Decoders_Edge$commonDataDecoder = function (dataType) {
 	return A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -15591,14 +15607,46 @@ var _user$project$Decoders_Edge$dataDecoder = A2(
 	A2(_elm_lang$core$Json_Decode$field, 'type', _elm_lang$core$Json_Decode$string));
 var _user$project$Decoders_Edge$decoder = A4(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
-	'classes',
-	_elm_lang$core$Json_Decode$string,
-	'',
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'data',
-		_user$project$Decoders_Edge$dataDecoder,
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Edge)));
+	'selected',
+	_elm_lang$core$Json_Decode$bool,
+	false,
+	A4(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+		'selectable',
+		_elm_lang$core$Json_Decode$bool,
+		true,
+		A4(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+			'removed',
+			_elm_lang$core$Json_Decode$bool,
+			false,
+			A4(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+				'locked',
+				_elm_lang$core$Json_Decode$bool,
+				false,
+				A4(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+					'grabbable',
+					_elm_lang$core$Json_Decode$bool,
+					true,
+					A2(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$hardcoded,
+						_elm_lang$core$Maybe$Nothing,
+						A4(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+							'classes',
+							_elm_lang$core$Json_Decode$string,
+							'',
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'data',
+								_user$project$Decoders_Edge$dataDecoder,
+								A3(
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+									'group',
+									_elm_lang$core$Json_Decode$string,
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$EdgeType))))))))));
 
 var _user$project$Decoders_Node$commonDataDecoder = function (dataType) {
 	return A3(
@@ -15684,24 +15732,76 @@ var _user$project$Decoders_Node$dataDecoder = A2(
 		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)));
 var _user$project$Decoders_Node$decoder = A4(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
-	'classes',
-	_elm_lang$core$Json_Decode$string,
-	'',
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'data',
-		_user$project$Decoders_Node$dataDecoder,
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Node)));
+	'selected',
+	_elm_lang$core$Json_Decode$bool,
+	false,
+	A4(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+		'selectable',
+		_elm_lang$core$Json_Decode$bool,
+		true,
+		A4(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+			'removed',
+			_elm_lang$core$Json_Decode$bool,
+			false,
+			A4(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+				'locked',
+				_elm_lang$core$Json_Decode$bool,
+				false,
+				A4(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+					'grabbable',
+					_elm_lang$core$Json_Decode$bool,
+					true,
+					A4(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+						'position',
+						_user$project$Decoders_Common$positionDecoder,
+						A2(_user$project$Types$Position, 0, 0),
+						A4(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+							'classes',
+							_elm_lang$core$Json_Decode$string,
+							'',
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'data',
+								_user$project$Decoders_Node$dataDecoder,
+								A3(
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+									'group',
+									_elm_lang$core$Json_Decode$string,
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$NodeType))))))))));
 
-var _user$project$Decoders_Graph$decoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'edges',
-	_elm_lang$core$Json_Decode$list(_user$project$Decoders_Edge$decoder),
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'nodes',
-		_elm_lang$core$Json_Decode$list(_user$project$Decoders_Node$decoder),
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Graph)));
+var _user$project$Decoders_Graph$edgeDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$Edge, _user$project$Decoders_Edge$decoder);
+var _user$project$Decoders_Graph$nodeDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$Node, _user$project$Decoders_Node$decoder);
+var _user$project$Decoders_Graph$elementTypeDecoder = function (elementType) {
+	var _p0 = elementType;
+	switch (_p0) {
+		case 'nodes':
+			return _user$project$Decoders_Graph$nodeDecoder;
+		case 'edges':
+			return _user$project$Decoders_Graph$edgeDecoder;
+		default:
+			return _elm_lang$core$Native_Utils.crashCase(
+				'Decoders.Graph',
+				{
+					start: {line: 22, column: 5},
+					end: {line: 30, column: 32}
+				},
+				_p0)('BOOM!');
+	}
+};
+var _user$project$Decoders_Graph$elementDecoder = A2(
+	_elm_lang$core$Json_Decode$andThen,
+	_user$project$Decoders_Graph$elementTypeDecoder,
+	A2(_elm_lang$core$Json_Decode$field, 'group', _elm_lang$core$Json_Decode$string));
+var _user$project$Decoders_Graph$decoder = A2(
+	_elm_lang$core$Json_Decode$field,
+	'data',
+	_elm_lang$core$Json_Decode$list(_user$project$Decoders_Graph$elementDecoder));
 
 var _user$project$Decoders_Port$localGraphDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -15712,6 +15812,29 @@ var _user$project$Decoders_Port$localGraphDecoder = A3(
 		'uuid',
 		_elm_lang$core$Json_Decode$string,
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$SearchNode)));
+
+var _user$project$Encoders_Common$nothingEncoder = _elm_lang$core$Json_Encode$object(
+	{ctor: '[]'});
+var _user$project$Encoders_Common$positionEncoder = function (position) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'x',
+				_1: _elm_lang$core$Json_Encode$float(position.x)
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'y',
+					_1: _elm_lang$core$Json_Encode$float(position.y)
+				},
+				_1: {ctor: '[]'}
+			}
+		});
+};
 
 var _user$project$Encoders_Edge$commonEncoder = function (data) {
 	return {
@@ -15773,17 +15896,69 @@ var _user$project$Encoders_Edge$encoder = function (edge) {
 			ctor: '::',
 			_0: {
 				ctor: '_Tuple2',
-				_0: 'data',
-				_1: _user$project$Encoders_Edge$dataEncoder(edge.data)
+				_0: 'group',
+				_1: _elm_lang$core$Json_Encode$string(edge.group)
 			},
 			_1: {
 				ctor: '::',
 				_0: {
 					ctor: '_Tuple2',
-					_0: 'classes',
-					_1: _elm_lang$core$Json_Encode$string(edge.classes)
+					_0: 'data',
+					_1: _user$project$Encoders_Edge$dataEncoder(edge.data)
 				},
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'classes',
+						_1: _elm_lang$core$Json_Encode$string(edge.classes)
+					},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'position', _1: _user$project$Encoders_Common$nothingEncoder},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'grabbable',
+								_1: _elm_lang$core$Json_Encode$bool(edge.grabbable)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'locked',
+									_1: _elm_lang$core$Json_Encode$bool(edge.locked)
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'removed',
+										_1: _elm_lang$core$Json_Encode$bool(edge.removed)
+									},
+									_1: {
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'selectable',
+											_1: _elm_lang$core$Json_Encode$bool(edge.selectable)
+										},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'selected',
+												_1: _elm_lang$core$Json_Encode$bool(edge.selected)
+											},
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		});
 };
@@ -15892,42 +16067,88 @@ var _user$project$Encoders_Node$encoder = function (node) {
 			ctor: '::',
 			_0: {
 				ctor: '_Tuple2',
-				_0: 'data',
-				_1: _user$project$Encoders_Node$dataEncoder(node.data)
+				_0: 'group',
+				_1: _elm_lang$core$Json_Encode$string(node.group)
 			},
 			_1: {
 				ctor: '::',
 				_0: {
 					ctor: '_Tuple2',
-					_0: 'classes',
-					_1: _elm_lang$core$Json_Encode$string(node.classes)
+					_0: 'data',
+					_1: _user$project$Encoders_Node$dataEncoder(node.data)
 				},
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'classes',
+						_1: _elm_lang$core$Json_Encode$string(node.classes)
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'position',
+							_1: _user$project$Encoders_Common$positionEncoder(node.position)
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'grabbable',
+								_1: _elm_lang$core$Json_Encode$bool(node.grabbable)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'locked',
+									_1: _elm_lang$core$Json_Encode$bool(node.locked)
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'removed',
+										_1: _elm_lang$core$Json_Encode$bool(node.removed)
+									},
+									_1: {
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'selectable',
+											_1: _elm_lang$core$Json_Encode$bool(node.selectable)
+										},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'selected',
+												_1: _elm_lang$core$Json_Encode$bool(node.selected)
+											},
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		});
 };
 
+var _user$project$Encoders_Graph$elementEncoder = function (element) {
+	var _p0 = element;
+	if (_p0.ctor === 'Node') {
+		return _user$project$Encoders_Node$encoder(_p0._0);
+	} else {
+		return _user$project$Encoders_Edge$encoder(_p0._0);
+	}
+};
 var _user$project$Encoders_Graph$encoder = function (graph) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'nodes',
-				_1: _elm_lang$core$Json_Encode$list(
-					A2(_elm_lang$core$List$map, _user$project$Encoders_Node$encoder, graph.nodes))
-			},
-			_1: {
-				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'edges',
-					_1: _elm_lang$core$Json_Encode$list(
-						A2(_elm_lang$core$List$map, _user$project$Encoders_Edge$encoder, graph.edges))
-				},
-				_1: {ctor: '[]'}
-			}
-		});
+	return _elm_lang$core$Json_Encode$list(
+		A2(_elm_lang$core$List$map, _user$project$Encoders_Graph$elementEncoder, graph));
 };
 
 var _user$project$Ports$initGraph = _elm_lang$core$Native_Platform.outgoingPort(
@@ -16067,9 +16288,10 @@ var _user$project$Main$subscriptions = function (model) {
 var _user$project$Main$addEdgeClasses = function (edge) {
 	var classes = _elm_lang$core$String$toLower(
 		_user$project$Accessors_Edge$getType(edge));
-	return _elm_lang$core$Native_Utils.update(
-		edge,
-		{classes: classes});
+	return _user$project$Types$Edge(
+		_elm_lang$core$Native_Utils.update(
+			edge,
+			{classes: classes}));
 };
 var _user$project$Main$addNodeClasses = function (node) {
 	var classes = _elm_lang$core$String$toLower(
@@ -16077,26 +16299,21 @@ var _user$project$Main$addNodeClasses = function (node) {
 			_elm_lang$core$String$join,
 			'',
 			_user$project$Accessors_Node$getLabels(node)));
-	return _elm_lang$core$Native_Utils.update(
-		node,
-		{classes: classes});
+	return _user$project$Types$Node(
+		_elm_lang$core$Native_Utils.update(
+			node,
+			{classes: classes}));
+};
+var _user$project$Main$addClass = function (element) {
+	var _p2 = element;
+	if (_p2.ctor === 'Node') {
+		return _user$project$Main$addNodeClasses(_p2._0);
+	} else {
+		return _user$project$Main$addEdgeClasses(_p2._0);
+	}
 };
 var _user$project$Main$manageMetaData = function (graph) {
-	var edges = A2(
-		_elm_lang$core$List$map,
-		function (edge) {
-			return _user$project$Main$addEdgeClasses(edge);
-		},
-		graph.edges);
-	var nodes = A2(
-		_elm_lang$core$List$map,
-		function (x) {
-			return _user$project$Main$addNodeClasses(x);
-		},
-		graph.nodes);
-	return _elm_lang$core$Native_Utils.update(
-		graph,
-		{nodes: nodes, edges: edges});
+	return A2(_elm_lang$core$List$map, _user$project$Main$addClass, graph);
 };
 var _user$project$Main$joinChannel = A2(
 	_elm_lang$core$Task$perform,
@@ -16108,10 +16325,7 @@ var _user$project$Main$init = function (flags) {
 		ctor: '_Tuple2',
 		_0: {
 			phxSocket: _fbonetti$elm_phoenix_socket$Phoenix_Socket$init(flags.socketUrl),
-			graph: A2(
-				_user$project$Types$Graph,
-				{ctor: '[]'},
-				{ctor: '[]'}),
+			graph: {ctor: '[]'},
 			socketUrl: flags.socketUrl,
 			initGraph: true,
 			searchNode: _elm_lang$core$Maybe$Just(
@@ -16124,12 +16338,12 @@ var _user$project$Main$init = function (flags) {
 var _user$project$Main$channelName = 'constellation:explore';
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p2 = msg;
-		switch (_p2.ctor) {
+		var _p3 = msg;
+		switch (_p3.ctor) {
 			case 'PhoenixMsg':
-				var _p3 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$update, _p2._0, model.phxSocket);
-				var phxSocket = _p3._0;
-				var phxCmd = _p3._1;
+				var _p4 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$update, _p3._0, model.phxSocket);
+				var phxSocket = _p4._0;
+				var phxCmd = _p4._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -16162,13 +16376,13 @@ var _user$project$Main$update = F2(
 						_user$project$Encoders_Graph$encoder(model.graph))
 				};
 			case 'SetSearchNode':
-				if (_p2._0.ctor === 'Ok') {
+				if (_p3._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								searchNode: _elm_lang$core$Maybe$Just(_p2._0._0)
+								searchNode: _elm_lang$core$Maybe$Just(_p3._0._0)
 							}),
 						_1: A2(
 							_elm_lang$core$Task$perform,
@@ -16184,7 +16398,7 @@ var _user$project$Main$update = F2(
 					_fbonetti$elm_phoenix_socket$Phoenix_Channel$onJoin,
 					_elm_lang$core$Basics$always(_user$project$Types$GetNodeLocalGraph),
 					_fbonetti$elm_phoenix_socket$Phoenix_Channel$init(_user$project$Main$channelName));
-				var _p4 = A2(
+				var _p5 = A2(
 					_fbonetti$elm_phoenix_socket$Phoenix_Socket$join,
 					channel,
 					A4(
@@ -16194,8 +16408,8 @@ var _user$project$Main$update = F2(
 						_user$project$Types$ReceiveNodeLocalGraph,
 						_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
 							_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(model.socketUrl))));
-				var phxSocket = _p4._0;
-				var phxCmd = _p4._1;
+				var phxSocket = _p5._0;
+				var phxCmd = _p5._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -16204,18 +16418,18 @@ var _user$project$Main$update = F2(
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Types$PhoenixMsg, phxCmd)
 				};
 			case 'GetNodeLocalGraph':
-				var _p5 = model.searchNode;
-				if (_p5.ctor === 'Nothing') {
+				var _p6 = model.searchNode;
+				if (_p6.ctor === 'Nothing') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
-					var _p7 = _p5._0;
+					var _p8 = _p6._0;
 					var payload = _elm_lang$core$Json_Encode$object(
 						{
 							ctor: '::',
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'uuid',
-								_1: _elm_lang$core$Json_Encode$string(_p7.uuid)
+								_1: _elm_lang$core$Json_Encode$string(_p8.uuid)
 							},
 							_1: {
 								ctor: '::',
@@ -16223,7 +16437,7 @@ var _user$project$Main$update = F2(
 									ctor: '_Tuple2',
 									_0: 'labels',
 									_1: _elm_lang$core$Json_Encode$list(
-										A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, _p7.labels))
+										A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, _p8.labels))
 								},
 								_1: {ctor: '[]'}
 							}
@@ -16238,9 +16452,9 @@ var _user$project$Main$update = F2(
 								_fbonetti$elm_phoenix_socket$Phoenix_Push$withPayload,
 								payload,
 								A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'node_local_graph', _user$project$Main$channelName))));
-					var _p6 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
-					var phxSocket = _p6._0;
-					var phxCmd = _p6._1;
+					var _p7 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
+					var phxSocket = _p7._0;
+					var phxCmd = _p7._1;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -16251,8 +16465,8 @@ var _user$project$Main$update = F2(
 				}
 			default:
 				var localGraphCmd = function () {
-					var _p8 = model.initGraph;
-					if (_p8 === true) {
+					var _p9 = model.initGraph;
+					if (_p9 === true) {
 						return A2(
 							_elm_lang$core$Task$perform,
 							_elm_lang$core$Basics$always(_user$project$Types$InitGraph),
@@ -16266,15 +16480,15 @@ var _user$project$Main$update = F2(
 								{ctor: '_Tuple0'}));
 					}
 				}();
-				var decodedGraph = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Graph$decoder, _p2._0);
-				var _p9 = decodedGraph;
-				if (_p9.ctor === 'Ok') {
+				var decodedGraph = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Graph$decoder, _p3._0);
+				var _p10 = decodedGraph;
+				if (_p10.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								graph: _user$project$Main$manageMetaData(_p9._0),
+								graph: _user$project$Main$manageMetaData(_p10._0),
 								initGraph: false
 							}),
 						_1: localGraphCmd
@@ -16285,7 +16499,11 @@ var _user$project$Main$update = F2(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								errorMessage: _elm_lang$core$Maybe$Just('Cannot decode received graph.')
+								errorMessage: _elm_lang$core$Maybe$Just(
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										'Cannot decode received graph. -[',
+										A2(_elm_lang$core$Basics_ops['++'], _p10._0, ']')))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};

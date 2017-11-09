@@ -1,14 +1,42 @@
 module Decoders.Graph exposing (decoder)
 
-import Json.Decode.Pipeline exposing (decode, required)
-import Json.Decode exposing (Decoder, list)
-import Types exposing (Graph)
+import Json.Decode exposing (Decoder, andThen, field, list, string)
+import Types exposing (Graph, Element(Node, Edge))
 import Decoders.Node as Node exposing (decoder)
 import Decoders.Edge as Edge exposing (decoder)
 
 
 decoder : Decoder Graph
 decoder =
-    Json.Decode.Pipeline.decode Graph
-        |> required "nodes" (Json.Decode.list Node.decoder)
-        |> required "edges" (Json.Decode.list Edge.decoder)
+    Json.Decode.field "data" (Json.Decode.list elementDecoder)
+
+
+elementDecoder : Decoder Element
+elementDecoder =
+    Json.Decode.field "group" Json.Decode.string
+        |> Json.Decode.andThen elementTypeDecoder
+
+
+elementTypeDecoder : String -> Decoder Element
+elementTypeDecoder elementType =
+    case elementType of
+        "nodes" ->
+            nodeDecoder
+
+        "edges" ->
+            edgeDecoder
+
+        _ ->
+            Debug.crash "BOOM!"
+
+
+nodeDecoder : Decoder Element
+nodeDecoder =
+    Node.decoder
+        |> Json.Decode.map Node
+
+
+edgeDecoder : Decoder Element
+edgeDecoder =
+    Edge.decoder
+        |> Json.Decode.map Edge
