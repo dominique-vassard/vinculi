@@ -11,7 +11,7 @@ defmodule Utils.Struct do
       iex> Utils.Struct.to_atom_map %{"first" => 1, "second" => "two"}
       %{first: 1, second: "two"}
 
-      iex> Utils.Struct.to_atom_map %{"first" => 1, second:"two"}
+      iex> Utils.Struct.to_atom_map %{"first" => 1, second: "two"}
       %{first: 1, second: "two"}
 
       iex> map = %{"first" => 1, "nested" => %{"second" => "two"}}
