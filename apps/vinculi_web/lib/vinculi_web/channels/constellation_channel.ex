@@ -24,15 +24,14 @@ defmodule VinculiWeb.ConstellationChannel do
     {:noreply, socket}
   end
 
-  # def handle_in("shout", payload, socket) do
-  #   IO.puts inspect payload
-  #   result = Map.put(payload, "sup", "non-visible")
-  #   l = %{test: "value", other: "test2"}
-  #   result = Map.put(result, "message", l)
-  #   IO.puts ">>>>>>>>>>>>>> #{inspect result}"
-  #   {:reply, {:ok, result}, socket}
-  # end
+  @doc """
+  Reply with data for the requested node
 
+  Requires a map formated as %{"uuid" => uuid, "labels" => labels}
+  For example:
+    %{"uuid" => "town-2, "labels" => ["Town"]}
+
+  """
   def handle_in("node_local_graph", %{"uuid" => uuid, "labels" => labels}, socket) do
     data = Node.get_local_graph(List.first(labels), uuid, :cytoscape)
     {:reply, {:ok, %{data: data}}, socket}
