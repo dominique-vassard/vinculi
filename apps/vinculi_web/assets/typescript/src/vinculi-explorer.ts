@@ -4,7 +4,6 @@ import Elm = require("./../../js/vinculi-explorer/elm-vinculi-explorer")
 // import Elm = require("elm-vinculi-explorer")
 // import Elm from "elm-vinculi-explorer"
 import $ = require("jquery")
-import Ports from "./ports"
 import {GraphManager} from "./graph-manager"
 // import { GraphManagerFn } from "./graph-manager-fn"
 
@@ -23,12 +22,10 @@ if (elmDiv) {
 function nextOperation(graphManager) {
     console.log("Next Operation")
     console.log(graphManager)
-    console.log(graphManager.cy)
 }
 
 async function initGraphManager(elmApp) {
-    const ports = new Ports(elmApp)
-    const graphManager = new GraphManager(ports)
+    const graphManager = new GraphManager(elmApp)
     await graphManager.init()
     nextOperation(graphManager)
 }

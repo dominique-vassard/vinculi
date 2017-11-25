@@ -36,28 +36,67 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var cytoscape = require("cytoscape");
+var Ports = require("./ports");
+/**
+ * Class responsible for all graph operations, comunication with Elm ports
+ */
 var GraphManager = /** @class */ (function () {
-    // currentNode: cytoscape.NodeSingular | null
-    function GraphManager(ports) {
+    /**
+     * Constructs the graphManager
+     *
+     * @param {any}   ElmApp   The elm application to use (for ports init)
+     */
+    function GraphManager(elmApp) {
         var _this = this;
-        this._ports = ports;
+        /**
+         * List of port callbacks, formated as:
+         *     {
+         *         "init": {
+         *             // List of ports used during initialsiation
+         *             portName : port Function,
+         *             ...
+         *         },
+         *         "runtime": {
+         *             // List of ports used during runtime
+         *             portName : port Function,
+         *             ...
+         *         }
+         *     }
+         *
+         * IMPORTANT: portName must match the Elm port name
+         * Example:
+         *     if (un)subscription use: `Elm.ports.initGraph.subscribe`
+         *     Then portName must be ` initGraph`
+         *
+         * Init port will be deactived post initialisation.
+         * @type {Ports.Callbacks}
+         */
+        this._portCallbacks = {
+            "init": {
+                "initGraph": function (initialGraph) {
+                    _this.initGraph(initialGraph);
+                },
+            },
+            "runtime": {
+                "addToGraph": function (localGraph) {
+                    _this.addData(localGraph);
+                }
+            }
+        };
+        this._ports = new Ports.Ports(elmApp, this._portCallbacks);
         this._cy = cytoscape();
-        this._currentNode = null;
-        ports.addCallback("initGraphPort", function (initialGraph) {
-            _this.initGraph(initialGraph);
-        });
-        ports.addCallback("getLocalGraph", function (localGraph) {
-            _this.addData(localGraph);
-        });
+        this._currentNode = undefined;
     }
+    /**
+     *  Initiliaze graph Manager: get style and initial graph data
+     *
+     * @return {Promise<GraphManager>}   The initialized graph Manager
+     */
     GraphManager.prototype.init = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._ports.initGraphPort(function (newGraph) {
-                            _this.initGraph(newGraph);
-                        })];
+                    case 0: return [4 /*yield*/, this._ports.initGraphPort(this._portCallbacks["init"]["initGraph"])];
                     case 1:
                         _a.sent();
                         return [2 /*return*/, this];
@@ -65,63 +104,33 @@ var GraphManager = /** @class */ (function () {
             });
         });
     };
-    GraphManager.prototype.initGraph = function (initialGraph) {
-        this._cy = cytoscape({
-            container: document.getElementById('cy'),
-            elements: initialGraph,
-            style: $.ajax({
-                url: 'http://localhost:4000/graph_style/graph.css',
-                type: 'GET',
-                dataType: 'text',
-            }),
-            layout: {
-                name: 'concentric',
-                animate: true,
-                avoidOverlap: true
-            }
-        });
-        this._currentNode = null;
-        // InitGraphPort is not useful anymore
-        // Then unsuscribe
-        this._ports.postInit();
-        this.initHandlers();
-    };
+    /**
+     * Handlers intialization
+     *
+     * TODO: Manage modes
+     *
+     */
     GraphManager.prototype.initHandlers = function () {
         var _this = this;
         this._cy.on('click', 'node', function (event) { _this.nodeDeploymentHandler(event); });
+        return this;
     };
-    GraphManager.prototype.nodeDeploymentHandler = function (event) {
-        console.log(this);
-        var node = event.target;
-        console.log(node.id());
-        console.log(node.data()["labels"]);
-        var data = {
-            "uuid": node.id(),
-            "labels": node.data()["labels"]
-        };
-        this._currentNode = node;
-        this._ports.getLocalGraph(data);
-        // elmApp.ports.getLocalGraph.send(data)
-    };
-    GraphManager.prototype.addData = function (localGraph) {
-        console.log("Add data");
-        console.log(localGraph);
-        var layout_config = { "name": 'concentric',
-            "boundingBox": this.getBoundingBox(),
-            "animate": true };
-        console.log(layout_config);
-        this._cy.add(localGraph).layout(layout_config).run();
-        console.log(this.cy.elements().jsons());
-    };
+    /**
+     * Computes the current bounding box
+     * in order to display new data elegantly
+     *
+     * @returns  {cytoscape.BoundingBox12}  A valid bound box where to dispaly new data
+     *
+     */
     GraphManager.prototype.getBoundingBox = function () {
         //Padding around deployed node
         var padding = 400;
         //Determine node position from border
         var node = this._currentNode;
-        if (!node) {
+        if (node == undefined) {
             return;
         }
-        var bbox = this._cy.elements().boundingBox();
+        var bbox = this._cy.elements().boundingBox({});
         var nodePos = node.position();
         var distR, distL, distT, distB, minDist, bb;
         distR = nodePos.x - bbox.x1;
@@ -145,26 +154,82 @@ var GraphManager = /** @class */ (function () {
         //Define new node bounding box
         bb = {
             "x1": node.position().x - padding / 2,
-            "y1": node.position('y') - padding / 2,
+            "y1": node.position().y - padding / 2,
             "w": padding,
             "h": padding
         };
         return bb;
     };
-    Object.defineProperty(GraphManager.prototype, "cy", {
-        get: function () {
-            return this._cy;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphManager.prototype, "currentNode", {
-        get: function () {
-            return this._currentNode;
-        },
-        enumerable: true,
-        configurable: true
-    });
+    /////////////////////////////////////////////////////////////////
+    //                         HANDLERS                            //
+    /////////////////////////////////////////////////////////////////
+    /**
+     * Manage node deployment
+     * TODO: Hide/show children if node data has yet been retrieved
+     *       Else call the deploy method
+     *
+     * TODO: Update filters when done
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (click/tap on node)
+     * @return void
+     */
+    GraphManager.prototype.nodeDeploymentHandler = function (event) {
+        var node = event.target;
+        var data = {
+            "uuid": node.id(),
+            "labels": node.data()["labels"]
+        };
+        this._currentNode = node;
+        this._ports.getLocalGraph(data);
+    };
+    /////////////////////////////////////////////////////////////////
+    //                       PORTS CALLBACKS                       //
+    /////////////////////////////////////////////////////////////////
+    /**
+     *   Graph initialization:
+     *       - Perform the cytoscape object initialisation
+     *       - Deactivate init ports
+     *        Initialize default handlers
+     *
+     * @param {cytoscape.ElementDefinition[]}
+     */
+    GraphManager.prototype.initGraph = function (initialGraph) {
+        this._cy = cytoscape({
+            container: document.getElementById('cy'),
+            elements: initialGraph,
+            style: $.ajax({
+                url: 'http://localhost:4000/graph_style/graph.css',
+                type: 'GET',
+                dataType: 'text',
+            }),
+            layout: {
+                name: 'concentric',
+                animate: true,
+                avoidOverlap: true
+            }
+        });
+        this._currentNode = undefined;
+        // InitGraphPort is not useful anymore
+        // Then unsuscribe
+        this._ports.postInit();
+        this.initHandlers();
+    };
+    /**
+     * Add new local graph to current graph
+     * If ther is some:
+     *     - display lcoal graph nodes and edges
+     *     - focus on them
+     *
+     * @param {cytoscape.ElementDefinition[]}    localGaph    The received local graph data
+     */
+    GraphManager.prototype.addData = function (localGraph) {
+        var layout_config = {
+            "name": 'concentric',
+            "boundingBox": this.getBoundingBox(),
+            "animate": true
+        };
+        var l = this._cy.add(localGraph).layout(layout_config).run();
+    };
     return GraphManager;
 }());
 exports.GraphManager = GraphManager;

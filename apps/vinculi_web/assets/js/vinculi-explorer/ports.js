@@ -35,15 +35,29 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Class which manages ports: Communication with Elm
+ */
 var Ports = /** @class */ (function () {
-    function Ports(elmApp) {
-        this.callbacks = {};
+    /**
+     * Cosntrucs the Ports object
+     *
+     * @param {any}         ElmApp       The elm application to use (for ports init)
+     * @param {Callbacks}   callbacks    The callbacks to use for each ports
+     */
+    function Ports(elmApp, callbacks) {
+        this._callbacks = callbacks;
         this._elmApp = elmApp;
     }
-    Ports.prototype.addCallback = function (callbackName, callbackFn) {
-        this.callbacks[callbackName] = callbackFn;
-        return this;
-    };
+    /////////////////////////////////////////////////////////////////
+    //                            INITS                            //
+    /////////////////////////////////////////////////////////////////
+    /**
+     * Async function which fetch/wait for initial graph data
+     *
+     * @param  {Function}                                 callback    The function to call when adata is received
+     * @return {Promise<cytoscape.ElementDefinition[]>}               The initial graph data
+     */
     Ports.prototype.initGraphPort = function (callback) {
         return __awaiter(this, void 0, void 0, function () {
             var res;
@@ -57,6 +71,12 @@ var Ports = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Port to receive initial graph data
+     *
+     * @param  {Function}                                 callback    The function to call when adata is received
+     * @return {Promise<cytoscape.ElementDefinition[]>}               The initial graph data
+     */
     Ports.prototype._initGraphPort = function (callback) {
         var _this = this;
         return new Promise(function (resolve) {
@@ -65,18 +85,36 @@ var Ports = /** @class */ (function () {
             });
         });
     };
-    Ports.prototype.getLocalGraph = function (data) {
-        console.log("Send data");
-        this._elmApp.ports.getLocalGraph.send(data);
-    };
-    // initPorts(): void {
-    //     this.initGraphPort(this.callbacks["initGraphPort"])
-    // }
+    /**
+     * Deactivate init ports
+     * Activate runtime ports
+     *
+     * @returns void
+     *
+     */
     Ports.prototype.postInit = function () {
-        this._elmApp.ports.initGraph.unsubscribe(this.callbacks["initGraphPort"]);
-        // Ports that send back a local graph
-        this._elmApp.ports.addToGraph.subscribe(this.callbacks["getLocalGraph"]);
+        // Deactivate now useless init ports
+        for (var _i = 0, _a = Object.entries(this._callbacks["init"]); _i < _a.length; _i++) {
+            var _b = _a[_i], callbackName = _b[0], callbackFunc = _b[1];
+            this._elmApp.ports[callbackName].unsubscribe(callbackFunc);
+        }
+        // Activate all ports required at runtile
+        for (var _c = 0, _d = Object.entries(this._callbacks["runtime"]); _c < _d.length; _c++) {
+            var _e = _d[_c], callbackName = _e[0], callbackFunc = _e[1];
+            this._elmApp.ports[callbackName].subscribe(callbackFunc);
+        }
+    };
+    /////////////////////////////////////////////////////////////////
+    //                         >OUT PORTS                          //
+    /////////////////////////////////////////////////////////////////
+    /**
+     * @param {NodeSearchData}   data    The node to search for which ask for data
+     *
+     * @returns void
+     */
+    Ports.prototype.getLocalGraph = function (data) {
+        this._elmApp.ports.getLocalGraph.send(data);
     };
     return Ports;
 }());
-exports.default = Ports;
+exports.Ports = Ports;

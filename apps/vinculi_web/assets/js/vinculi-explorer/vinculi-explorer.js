@@ -38,7 +38,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // import Elm  from "./../../js/vinculi-explorer/elm-vinculi-explorer"
 // import $ from "jquery"
 var Elm = require("./../../js/vinculi-explorer/elm-vinculi-explorer");
-var ports_1 = require("./ports");
 var graph_manager_1 = require("./graph-manager");
 // import { GraphManagerFn } from "./graph-manager-fn"
 var elmApp;
@@ -53,16 +52,14 @@ if (elmDiv) {
 function nextOperation(graphManager) {
     console.log("Next Operation");
     console.log(graphManager);
-    console.log(graphManager.cy);
 }
 function initGraphManager(elmApp) {
     return __awaiter(this, void 0, void 0, function () {
-        var ports, graphManager;
+        var graphManager;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    ports = new ports_1.default(elmApp);
-                    graphManager = new graph_manager_1.GraphManager(ports);
+                    graphManager = new graph_manager_1.GraphManager(elmApp);
                     return [4 /*yield*/, graphManager.init()];
                 case 1:
                     _a.sent();
