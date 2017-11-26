@@ -122,5 +122,25 @@ export class Ports {
         this._elmApp.ports.getLocalGraph.send(data)
     }
 
+    /**
+     * Send new graph state to Elm for further computations / displays / etc.
+     *
+     * @param {string[]}   data     The actiulaized graph
+     *
+     * @returns void
+     */
+    sendNewGraphState(data: string[]): void {
+        this._elmApp.ports.newGraphState.send(data)
+    }
 
+    /**
+     * Send Elm a node uuid in order to display its infos
+     *
+     * @param {string}   nodeUuid     The uuid of the node to display infos for
+     *
+     * @returns void
+     */
+    sendNodeIdToDisplay(nodeUuid: string):void {
+        this._elmApp.ports.displayNodeInfos.send(nodeUuid)
+    }
 }

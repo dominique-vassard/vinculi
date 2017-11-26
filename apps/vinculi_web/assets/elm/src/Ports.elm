@@ -18,3 +18,9 @@ port addToGraph : Json.Encode.Value -> Cmd msg
 
 
 port getLocalGraph : (Json.Decode.Value -> msg) -> Sub msg
+
+
+port newGraphState : (Json.Decode.Value -> msg) -> Sub msg
+
+
+port displayNodeInfos : (Json.Decode.Value -> msg) -> Sub msg

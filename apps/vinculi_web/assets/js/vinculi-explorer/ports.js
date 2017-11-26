@@ -115,6 +115,26 @@ var Ports = /** @class */ (function () {
     Ports.prototype.getLocalGraph = function (data) {
         this._elmApp.ports.getLocalGraph.send(data);
     };
+    /**
+     * Send new graph state to Elm for further computations / displays / etc.
+     *
+     * @param {string[]}   data     The actiulaized graph
+     *
+     * @returns void
+     */
+    Ports.prototype.sendNewGraphState = function (data) {
+        this._elmApp.ports.newGraphState.send(data);
+    };
+    /**
+     * Send Elm a node uuid in order to display its infos
+     *
+     * @param {string}   nodeUuid     The uuid of the node to display infos for
+     *
+     * @returns void
+     */
+    Ports.prototype.sendNodeIdToDisplay = function (nodeUuid) {
+        this._elmApp.ports.displayNodeInfos.send(nodeUuid);
+    };
     return Ports;
 }());
 exports.Ports = Ports;

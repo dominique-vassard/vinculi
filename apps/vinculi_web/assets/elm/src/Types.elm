@@ -115,21 +115,24 @@ type EdgeData
 
 type alias CommonEdgeData a =
     { a
-        | source : String
+        | id : String
+        , source : String
         , target : String
         , edge_type : String
     }
 
 
 type alias GenericEdgeData =
-    { source : String
+    { id : String
+    , source : String
     , target : String
     , edge_type : String
     }
 
 
 type alias InfluencedEdgeData =
-    { source : String
+    { id : String
+    , source : String
     , target : String
     , edge_type : String
     , strength : Int
@@ -155,6 +158,7 @@ type alias Model =
     , socketUrl : String
     , initGraph : Bool
     , searchNode : Maybe SearchNode
+    , browsedNode : Maybe NodeType
     , errorMessage : Maybe String
     }
 
@@ -174,3 +178,5 @@ type Msg
     | SendGraph
     | Join
     | SetSearchNode (Result String SearchNode)
+    | SetBrowsedNode (Result String String)
+    | SetGraphState (Result String Graph)

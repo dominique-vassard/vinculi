@@ -113,6 +113,7 @@ var GraphManager = /** @class */ (function () {
     GraphManager.prototype.initHandlers = function () {
         var _this = this;
         this._cy.on('click', 'node', function (event) { _this.nodeDeploymentHandler(event); });
+        this._cy.on('mouseover', 'node', function (event) { _this.showNodeInfosHandler(event); });
         return this;
     };
     /**
@@ -182,6 +183,17 @@ var GraphManager = /** @class */ (function () {
         this._currentNode = node;
         this._ports.getLocalGraph(data);
     };
+    /**
+     * Manage node infos displaying
+     * Send node uuid to Elm for dsiplaying
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover on node)
+     * @return void
+     */
+    GraphManager.prototype.showNodeInfosHandler = function (event) {
+        var node = event.target;
+        this._ports.sendNodeIdToDisplay(node.id());
+    };
     /////////////////////////////////////////////////////////////////
     //                       PORTS CALLBACKS                       //
     /////////////////////////////////////////////////////////////////
@@ -204,6 +216,7 @@ var GraphManager = /** @class */ (function () {
             }),
             layout: {
                 name: 'concentric',
+                // fit: false,
                 animate: true,
                 avoidOverlap: true
             }
@@ -211,6 +224,7 @@ var GraphManager = /** @class */ (function () {
         this._currentNode = undefined;
         // InitGraphPort is not useful anymore
         // Then unsuscribe
+        // this.sendNewGraphState()
         this._ports.postInit();
         this.initHandlers();
     };
@@ -224,11 +238,20 @@ var GraphManager = /** @class */ (function () {
      */
     GraphManager.prototype.addData = function (localGraph) {
         var layout_config = {
-            "name": 'concentric',
-            "boundingBox": this.getBoundingBox(),
-            "animate": true
+            name: 'concentric',
+            boundingBox: this.getBoundingBox(),
+            animate: true
         };
-        var l = this._cy.add(localGraph).layout(layout_config).run();
+        this._cy.add(localGraph).layout(layout_config).run();
+        this.sendNewGraphState();
+    };
+    /**
+     * Send new graph state to Elm
+     *
+     * @returns void
+     */
+    GraphManager.prototype.sendNewGraphState = function () {
+        this._ports.sendNewGraphState(this._cy.elements().jsons());
     };
     return GraphManager;
 }());

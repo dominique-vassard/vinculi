@@ -39,7 +39,8 @@ dataEncoder data =
 
 commonEncoder : CommonEdgeData a -> List ( String, Value )
 commonEncoder data =
-    [ ( "source", Encode.string data.source )
+    [ ( "id", Encode.string data.id )
+    , ( "source", Encode.string data.source )
     , ( "target", Encode.string data.target )
     , ( "type", Encode.string data.edge_type )
     ]

@@ -1,4 +1,4 @@
-module Accessors.Node exposing (getLabels)
+module Accessors.Node exposing (getLabels, getGenericData)
 
 import Types
     exposing

@@ -22,7 +22,7 @@ getGenericEdgeData : EdgeType -> GenericEdgeData
 getGenericEdgeData edge =
     case edge.data of
         InfluencedEdge data ->
-            GenericEdgeData data.source data.target data.edge_type
+            GenericEdgeData data.id data.source data.target data.edge_type
 
         GenericEdge data ->
             data

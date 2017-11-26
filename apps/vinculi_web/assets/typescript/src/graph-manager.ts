@@ -92,6 +92,9 @@ export class GraphManager {
         this._cy.on('click', 'node',
             (event) => { this.nodeDeploymentHandler(event) }
         )
+        this._cy.on('mouseover', 'node',
+            (event) => { this.showNodeInfosHandler(event) }
+        )
         return this
     }
 
@@ -166,6 +169,18 @@ export class GraphManager {
         this._ports.getLocalGraph(data)
     }
 
+    /**
+     * Manage node infos displaying
+     * Send node uuid to Elm for dsiplaying
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover on node)
+     * @return void
+     */
+    showNodeInfosHandler(event: cytoscape.EventObject): void {
+        const node = event.target
+        this._ports.sendNodeIdToDisplay(node.id())
+    }
+
     /////////////////////////////////////////////////////////////////
     //                       PORTS CALLBACKS                       //
     /////////////////////////////////////////////////////////////////
@@ -192,15 +207,16 @@ export class GraphManager {
 
             layout: <cytoscape.ConcentricLayoutOptions>{
                 name: 'concentric',
+                // fit: false,
                 animate: true,
                 avoidOverlap: true
             }
-
         })
         this._currentNode = undefined
 
         // InitGraphPort is not useful anymore
         // Then unsuscribe
+        // this.sendNewGraphState()
         this._ports.postInit()
         this.initHandlers()
     }
@@ -216,10 +232,20 @@ export class GraphManager {
     addData(localGraph: cytoscape.ElementDefinition[]) {
         let layout_config =
             {
-                "name": 'concentric',
-                "boundingBox": this.getBoundingBox(),
-                "animate": true
+                name: 'concentric',
+                boundingBox: this.getBoundingBox(),
+                animate: true
             }
-        const l = this._cy.add(localGraph).layout(layout_config).run()
+        this._cy.add(localGraph).layout(layout_config).run()
+        this.sendNewGraphState()
+    }
+
+    /**
+     * Send new graph state to Elm
+     *
+     * @returns void
+     */
+    sendNewGraphState(): void {
+        this._ports.sendNewGraphState(this._cy.elements().jsons())
     }
 }

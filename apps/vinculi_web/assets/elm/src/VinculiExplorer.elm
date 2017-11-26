@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, button, div, form, input, li, span, text, ul)
+import Html exposing (Html, button, div, h5, span, text)
 import Html.Attributes exposing (class, id)
 import Json.Encode exposing (Value, object, string)
 import Json.Decode exposing (field, decodeString, decodeValue, string, Decoder)
@@ -17,11 +17,13 @@ import Phoenix.Socket as PhxSocket
 import Phoenix.Channel as PhxChannel exposing (init, onJoin)
 import Phoenix.Push as PhxPush exposing (init, onError, onOk, withPayload)
 import Bootstrap.Alert as Alert
+import Bootstrap.Card as Card
 import Bootstrap.Grid as Grid
+import Bootstrap.Grid.Row as Row
 import Bootstrap.Grid.Col as Col
 import Types exposing (..)
 import Ports exposing (..)
-import Decoders.Graph as GraphDecode exposing (decoder)
+import Decoders.Graph as GraphDecode exposing (decoder, fromWsDecoder)
 import Decoders.Port as PortDecoder exposing (localGraphDecoder)
 import Encoders.Graph as GraphEncode exposing (encoder)
 import Accessors.Node as Node exposing (..)
@@ -63,6 +65,7 @@ init flags =
                 { uuid = flags.originNodeUuid
                 , labels = flags.originNodeLabels
                 }
+      , browsedNode = Nothing
       , errorMessage = Nothing
       }
     , joinChannel
@@ -114,6 +117,50 @@ update msg model =
 
         SetSearchNode (Err searchNode) ->
             ( model, Cmd.none )
+
+        SetBrowsedNode (Ok nodeUuid) ->
+            let
+                filtered_node =
+                    List.head <|
+                        List.filter
+                            (\x ->
+                                case x of
+                                    Node node ->
+                                        (Node.getGenericData node).id == nodeUuid
+
+                                    Edge _ ->
+                                        False
+                            )
+                            model.graph
+
+                node =
+                    case filtered_node of
+                        Just (Node node) ->
+                            Just node
+
+                        _ ->
+                            Nothing
+            in
+                ( { model | browsedNode = node }, Cmd.none )
+
+        SetBrowsedNode (Err error) ->
+            ( { model
+                | errorMessage =
+                    Just ("Failed to set browsedNode: " ++ error)
+              }
+            , Cmd.none
+            )
+
+        SetGraphState (Ok graph) ->
+            ( { model | graph = graph }, Cmd.none )
+
+        SetGraphState (Err error) ->
+            ( { model
+                | errorMessage =
+                    Just ("Failed to set new graph state: " ++ error)
+              }
+            , Cmd.none
+            )
 
         -- Socket
         Join ->
@@ -172,7 +219,7 @@ update msg model =
         ReceiveNodeLocalGraph raw ->
             let
                 decodedGraph =
-                    Json.Decode.decodeValue GraphDecode.decoder raw
+                    Json.Decode.decodeValue GraphDecode.fromWsDecoder raw
 
                 localGraphCmd =
                     case model.initGraph of
@@ -249,6 +296,11 @@ subscriptions model =
                 PortDecoder.localGraphDecoder
                 >> SetSearchNode
             )
+        , Ports.newGraphState
+            (Json.Decode.decodeValue GraphDecode.decoder
+                >> SetGraphState
+            )
+        , Ports.displayNodeInfos ((Json.Decode.decodeValue Json.Decode.string) >> SetBrowsedNode)
         , PhxSocket.listen model.phxSocket PhoenixMsg
         ]
 
@@ -268,7 +320,11 @@ view model =
                     []
                 ]
             , div [ class "col-lg-3 bg-gray rounded-right" ]
-                [ span [] [ text "Control panel" ]
+                [ Grid.row [ Row.attrs [ class "rounded bg-secondary" ] ]
+                    [ Grid.col [ Col.lg12 ] [ text "Browse" ] ]
+                , Grid.row []
+                    [ Grid.col [ Col.lg12 ] [ viewNodeData model.browsedNode ]
+                    ]
                 ]
             ]
         ]
@@ -289,3 +345,84 @@ viewError errorMessage =
                         ]
     in
         div_
+
+
+viewNodeData : Maybe NodeType -> Html Msg
+viewNodeData nodetoDisplay =
+    let
+        dataToDisplay =
+            case nodetoDisplay of
+                Nothing ->
+                    div [] []
+
+                Just node ->
+                    case node.data of
+                        GenericNode nodeData ->
+                            viewGenericNodeData nodeData
+
+                        PersonNode nodeData ->
+                            viewPersonNodeData nodeData
+
+                        PublicationNode nodeData ->
+                            viewPublicationNodeData nodeData
+
+                        ValueNode nodeData ->
+                            viewValueNodeData nodeData
+    in
+        Card.config []
+            |> Card.header [ class "text-center" ]
+                [ h5 [] [ text "Node infos" ] ]
+            |> Card.block [ Card.blockAttrs [ class "node-infos" ] ]
+                [ Card.text [] [ dataToDisplay ] ]
+            |> Card.view
+
+
+viewGenericNodeData : GenericNodeData -> Html Msg
+viewGenericNodeData nodeData =
+    div []
+        [ viewNodeLabel nodeData.labels ]
+
+
+viewPersonNodeData : PersonNodeData -> Html Msg
+viewPersonNodeData nodeData =
+    div []
+        [ viewNodeLabel nodeData.labels
+        , viewInfoLine "Prénom" nodeData.firstName
+        , viewInfoLine "Nom" nodeData.lastName
+        , viewInfoLine "Pseudonymes" nodeData.aka
+        , viewInfoLine "Lien Ars Margica" nodeData.internalLink
+        , viewInfoLine "Lien externe" nodeData.externalLink
+        ]
+
+
+viewPublicationNodeData : PublicationNodeData -> Html Msg
+viewPublicationNodeData nodeData =
+    div []
+        [ viewNodeLabel nodeData.labels
+        , viewInfoLine "Titre" nodeData.title
+
+        --, viewInfoLine "Lien Ars Margica" nodeData.titleFr
+        --, viewInfoLine "Lien Ars Margica" nodeData.internalLink
+        --, viewInfoLine "Lien externe" nodeData.externalLink
+        ]
+
+
+viewValueNodeData : ValueNodeData -> Html Msg
+viewValueNodeData nodeData =
+    div []
+        [ viewNodeLabel nodeData.labels
+        , viewInfoLine "Valeur" <| toString nodeData.value
+        ]
+
+
+viewNodeLabel : List String -> Html Msg
+viewNodeLabel labels =
+    viewInfoLine "Label" (String.join "," labels)
+
+
+viewInfoLine : String -> String -> Html Msg
+viewInfoLine label value =
+    Grid.row []
+        [ Grid.col [ Col.lg ] [ text <| label ++ ": " ]
+        , Grid.col [ Col.lg8 ] [ text <| value ]
+        ]

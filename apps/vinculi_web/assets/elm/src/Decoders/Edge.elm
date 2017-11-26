@@ -42,9 +42,10 @@ dataDecoderHelper edge_type =
             genericDecoder
 
 
-commonDataDecoder : (String -> String -> String -> e_type) -> Decoder e_type
+commonDataDecoder : (String -> String -> String -> String -> e_type) -> Decoder e_type
 commonDataDecoder dataType =
     Json.Decode.Pipeline.decode dataType
+        |> required "id" Decode.string
         |> required "source" Decode.string
         |> required "target" Decode.string
         |> required "type" Decode.string
