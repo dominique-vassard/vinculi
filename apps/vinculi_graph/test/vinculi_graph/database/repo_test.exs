@@ -142,7 +142,7 @@ defmodule VinculiGraph.Database.RepoTest do
       {res, r} = Repo.query(cql, params)
       assert res == :ok
       assert length(changes) == length(r)
-      check_multiple_nodes(r, changes)
+      check_non_sorted_nodes(r, changes)
     end
 
     test "Can query with no params" do
@@ -305,7 +305,7 @@ defmodule VinculiGraph.Database.RepoTest do
       changes = for _ <- 1..:rand.uniform(15), do: insert_test_person(params)
       res = Repo.all(cql, params)
       assert length(changes) == length(res)
-      check_multiple_nodes(res, changes)
+      check_non_sorted_nodes(res, changes)
     end
 
     test "Can query with no params" do
@@ -374,4 +374,20 @@ defmodule VinculiGraph.Database.RepoTest do
     check_multiple_nodes(nodes, changes)
   end
   def check_multiple_nodes([],[]),do: true
+
+  @doc """
+  Check node which can be unsorted
+  """
+  def check_non_sorted_nodes(nodes, expected) do
+    res = nodes
+    |> Enum.map(& check_node_exists(&1, expected))
+    |> Enum.filter(& &1 != nil)
+
+    assert length(res) == length(expected)
+  end
+
+  defp check_node_exists(%{"n" => %{properties: %{"uuid" => uuid}}}, expected) do
+    expected
+    |> Enum.find(& &1.uuid == uuid)
+  end
 end

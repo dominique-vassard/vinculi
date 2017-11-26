@@ -1,6 +1,6 @@
 defmodule VinculiGraph.Meta.Node do
   @moduledoc """
-  Contains functions related to node at a general level
+  Contains functions related to query constrtction for node
   """
 
   @doc """
@@ -24,6 +24,29 @@ defmodule VinculiGraph.Meta.Node do
     RETURN
       n
     """
+  end
+
+  @doc """
+  Returns cypher qury and params to get a node local graph, i.e te given node
+  and all its neighbours.
+
+  #### Example
+
+      iex> VinculiGraph.Meta.Node.get_cql_local_graph_by_uuid("Person", "unique_uid")
+      {"MATCH\\n  (source:Person)-[relation]-(neighbour)\\nWHERE\\n  source.uuid = {nodeUuid}\\nRETURN\\n  source, relation, neighbour\\n",
+      %{nodeUuid: "unique_uid"}}
+  """
+  def get_cql_local_graph_by_uuid(node_label, node_uuid) do
+    cql = """
+    MATCH
+      (source:#{node_label})-[relation]-(neighbour)
+    WHERE
+      source.uuid = {nodeUuid}
+    RETURN
+      source, relation, neighbour
+    """
+    params = %{nodeUuid: node_uuid}
+    {cql, params}
   end
 
   @doc """
@@ -108,5 +131,5 @@ defmodule VinculiGraph.Meta.Node do
 
   defp is_empty?(value) when is_binary(value), do: String.length(value) == 0
   defp is_empty?(value) when is_list(value), do: length(value) == 0
-  defp is_empty?(value), do: false
+  defp is_empty?(_), do: false
 end

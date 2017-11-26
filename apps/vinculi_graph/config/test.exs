@@ -10,3 +10,10 @@ config :bolt_sips, Bolt,
   pool_size: 5,
   max_overflow: 1,
   basic_auth: ["username": "neo4j", "password": "Goreydyi"]
+
+  # Config Assert_value
+  config :ex_unit, timeout: :infinity
+
+  config :vinculi_graph,
+    timeout: :infinity,
+    ownership_timeout: :infinity

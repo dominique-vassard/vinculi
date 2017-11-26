@@ -18,6 +18,8 @@ $(function () {
   $('[data-toggle="tooltip"]').tooltip()
 })
 
+// require("./vinculi-explorer/vinculi-explorer.js")
+require("./vinculi-explorer/vinculi-explorer")
 // Import local files
 //
 // Local files can be imported directly using relative

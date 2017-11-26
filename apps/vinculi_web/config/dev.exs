@@ -7,6 +7,7 @@ use Mix.Config
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
 config :vinculi_web, VinculiWeb.Endpoint,
+  env: :dev,
   http: [port: 4000],
   debug_errors: true,
   code_reloader: true,
@@ -37,6 +38,7 @@ config :vinculi_web, VinculiWeb.Endpoint,
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
       ~r{lib/vinculi_web/views/.*(ex)$},
+      ~r{lib/vinculi_web/channels/.*(ex)$},
       ~r{lib/vinculi_web/templates/.*(eex|drab)$}
     ]
   ]

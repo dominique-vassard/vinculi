@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "lib": ["es2017", "DOM"],
+    "strict": true,
+    "noImplicitAny": false,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./typescript/typings"
+    ],
+    "outDir": "./js/vinculi-explorer/",
+    "baseUrl": "./",
+    "paths" : {
+      "./../elm-vinculi-explorer": ["js/vinculi-explorer/elm-vinculi-explorer"],
+      "elm-vinculi-explorer": ["js/vinculi-explorer/elm-vinculi-explorer"]
+    }
+  },
+  "include": [
+    "typescript/src"
+  ]
+}
