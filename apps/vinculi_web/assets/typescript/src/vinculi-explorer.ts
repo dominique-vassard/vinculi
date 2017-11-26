@@ -1,11 +1,6 @@
-// import Elm  from "./../../js/vinculi-explorer/elm-vinculi-explorer"
-// import $ from "jquery"
 import Elm = require("./../../js/vinculi-explorer/elm-vinculi-explorer")
-// import Elm = require("elm-vinculi-explorer")
-// import Elm from "elm-vinculi-explorer"
-import $ = require("jquery")
+// import $ = require("jquery")
 import {GraphManager} from "./graph-manager"
-// import { GraphManagerFn } from "./graph-manager-fn"
 
 
 let elmApp;
@@ -24,11 +19,11 @@ function nextOperation(graphManager) {
     console.log(graphManager)
 }
 
-async function initGraphManager(elmApp) {
-    const graphManager = new GraphManager(elmApp)
+async function initGraphManager(elmApp, serverUrl:string) {
+    const graphManager = new GraphManager(elmApp, serverUrl)
     await graphManager.init()
     nextOperation(graphManager)
 }
 
 
-initGraphManager(elmApp)
+initGraphManager(elmApp, server_url)

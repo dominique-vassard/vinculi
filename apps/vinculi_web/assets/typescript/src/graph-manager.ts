@@ -6,6 +6,12 @@ import * as Ports from "./ports"
  */
 export class GraphManager {
     /**
+     * The server url (used to get stylesheet)
+     *
+     * @type {string}
+     */
+    private _serverUrl: string
+    /**
      * The cytoscape object (manage the graph)
      * @type {cytoscape.Core}
      */
@@ -63,11 +69,13 @@ export class GraphManager {
     /**
      * Constructs the graphManager
      *
-     * @param {any}   ElmApp   The elm application to use (for ports init)
+     * @param {any}       ElmApp       The elm application to use (for ports init)
+     * @param {string}    serverUrl    The server url to use to get sylesheet
      */
-    constructor(elmApp: any) {
-        this._ports = new Ports.Ports(elmApp, this._portCallbacks)
+    constructor(elmApp: any, serverUrl: string) {
+        this._serverUrl = serverUrl
         this._cy = cytoscape()
+        this._ports = new Ports.Ports(elmApp, this._portCallbacks)
         this._currentNode = undefined
     }
 
@@ -199,11 +207,7 @@ export class GraphManager {
 
             elements: initialGraph,
 
-            style: $.ajax({
-                url: 'http://localhost:4000/graph_style/graph.css',
-                type: 'GET',
-                dataType: 'text',
-            }),
+            style: this.getStyleSheet(),
 
             layout: <cytoscape.ConcentricLayoutOptions>{
                 name: 'concentric',
@@ -216,9 +220,37 @@ export class GraphManager {
 
         // InitGraphPort is not useful anymore
         // Then unsuscribe
-        // this.sendNewGraphState()
         this._ports.postInit()
         this.initHandlers()
+        // for some reason, this._cy.elements is not yey accessbile
+        // Then we don't send graph state, it will be with the first action on graph
+        // this.sendNewGraphState()
+    }
+
+    /**
+     * Retrieves stylesheet from server
+     *
+     * @return {Promise<string>}  The promise with the retrieved stylesheet
+     */
+    getStyleSheet():Promise<string> {
+        const promise = new Promise((resolve, reject) => {
+            const request = new XMLHttpRequest()
+            request.open('GET', this._serverUrl + '/graph_style/graph.css')
+            request.onload = () => {
+                if (request.status >= 200 && request.status < 400) {
+                    resolve(request.responseText)
+                }  else {
+                    reject("Cannot retrieve stylesheet")
+                }
+            }
+
+            request.onerror = () => { reject("Cannot retrieve stylesheet") }
+
+            request.send()
+        })
+
+        return <Promise<string>>promise
+
     }
 
     /**

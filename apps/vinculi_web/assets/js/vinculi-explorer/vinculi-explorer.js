@@ -35,11 +35,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// import Elm  from "./../../js/vinculi-explorer/elm-vinculi-explorer"
-// import $ from "jquery"
 var Elm = require("./../../js/vinculi-explorer/elm-vinculi-explorer");
+// import $ = require("jquery")
 var graph_manager_1 = require("./graph-manager");
-// import { GraphManagerFn } from "./graph-manager-fn"
 var elmApp;
 var elmDiv = document.getElementById("elm-vinculi-explorer");
 if (elmDiv) {
@@ -53,13 +51,13 @@ function nextOperation(graphManager) {
     console.log("Next Operation");
     console.log(graphManager);
 }
-function initGraphManager(elmApp) {
+function initGraphManager(elmApp, serverUrl) {
     return __awaiter(this, void 0, void 0, function () {
         var graphManager;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    graphManager = new graph_manager_1.GraphManager(elmApp);
+                    graphManager = new graph_manager_1.GraphManager(elmApp, serverUrl);
                     return [4 /*yield*/, graphManager.init()];
                 case 1:
                     _a.sent();
@@ -69,4 +67,4 @@ function initGraphManager(elmApp) {
         });
     });
 }
-initGraphManager(elmApp);
+initGraphManager(elmApp, server_url);

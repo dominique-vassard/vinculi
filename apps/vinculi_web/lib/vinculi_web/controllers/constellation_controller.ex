@@ -14,11 +14,24 @@ defmodule VinculiWeb.ConstellationController do
   def explore(conn, %{"labels" => node_labels, "node_uuid" => node_uuid}) do
     # node_uuid = "person-2"
     # IO.puts inspect params
+    server_url = endpoint_module(conn).url()
+
+    IO.puts inspect conn, pretty: true
+    socket_prefix = get_socket_prefix(Application.get_env(:vinculi_web, :env))
+    socket_host = get_socket_host(conn, Application.get_env(:vinculi_web, :env))
+    socket_url = socket_prefix <> "://#{socket_host}" <> "/socket/websocket"
+
     render conn, "explore.html", layout: {VinculiWeb.LayoutView, "app_light.html"},
                                  node_uuid: node_uuid,
                                  node_labels: node_labels,
-                                 socket_url: "ws://localhost:4000/socket/websocket"
+                                 server_url: server_url,
+                                 socket_url: socket_url
   end
+
+  def get_socket_prefix(:prod), do: "wss"
+  def get_socket_prefix(_), do: "ws"
+  def get_socket_host(conn, :prod), do: conn.host
+  def get_socket_host(conn, _), do: "#{conn.host}:#{conn.port}"
 
   # def search(conn, %{"search" => node_form_params}) do
   #   IO.puts inspect node_form_params

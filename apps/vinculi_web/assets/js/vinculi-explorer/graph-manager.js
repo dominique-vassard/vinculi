@@ -44,9 +44,10 @@ var GraphManager = /** @class */ (function () {
     /**
      * Constructs the graphManager
      *
-     * @param {any}   ElmApp   The elm application to use (for ports init)
+     * @param {any}       ElmApp       The elm application to use (for ports init)
+     * @param {string}    serverUrl    The server url to use to get sylesheet
      */
-    function GraphManager(elmApp) {
+    function GraphManager(elmApp, serverUrl) {
         var _this = this;
         /**
          * List of port callbacks, formated as:
@@ -83,8 +84,9 @@ var GraphManager = /** @class */ (function () {
                 }
             }
         };
-        this._ports = new Ports.Ports(elmApp, this._portCallbacks);
+        this._serverUrl = serverUrl;
         this._cy = cytoscape();
+        this._ports = new Ports.Ports(elmApp, this._portCallbacks);
         this._currentNode = undefined;
     }
     /**
@@ -209,11 +211,7 @@ var GraphManager = /** @class */ (function () {
         this._cy = cytoscape({
             container: document.getElementById('cy'),
             elements: initialGraph,
-            style: $.ajax({
-                url: 'http://localhost:4000/graph_style/graph.css',
-                type: 'GET',
-                dataType: 'text',
-            }),
+            style: this.getStyleSheet(),
             layout: {
                 name: 'concentric',
                 // fit: false,
@@ -224,9 +222,34 @@ var GraphManager = /** @class */ (function () {
         this._currentNode = undefined;
         // InitGraphPort is not useful anymore
         // Then unsuscribe
-        // this.sendNewGraphState()
         this._ports.postInit();
         this.initHandlers();
+        // for some reason, this._cy.elements is not yey accessbile
+        // Then we don't send graph state, it will be with the first action on graph
+        // this.sendNewGraphState()
+    };
+    /**
+     * Retrieves stylesheet from server
+     *
+     * @return {Promise<string>}  The promise with the retrieved stylesheet
+     */
+    GraphManager.prototype.getStyleSheet = function () {
+        var _this = this;
+        var promise = new Promise(function (resolve, reject) {
+            var request = new XMLHttpRequest();
+            request.open('GET', _this._serverUrl + '/graph_style/graph.css');
+            request.onload = function () {
+                if (request.status >= 200 && request.status < 400) {
+                    resolve(request.responseText);
+                }
+                else {
+                    reject("Cannot retrieve stylesheet");
+                }
+            };
+            request.onerror = function () { reject("Cannot retrieve stylesheet"); };
+            request.send();
+        });
+        return promise;
     };
     /**
      * Add new local graph to current graph
