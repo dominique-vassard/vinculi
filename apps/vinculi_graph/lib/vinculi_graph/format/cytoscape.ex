@@ -104,13 +104,18 @@ defmodule VinculiGraph.Format.Cytoscape do
   Take a Bolt.Sips.Types result (Node or Relationship) and convert it to
   cytoscape format
 
+  Note about relationship:
+  An computed is is added to data, because it is
+  required by Cytoscape. It is not needed for query therefore, it doesn't to be
+  persist in database.
+
   #### Example
 
       iex> data = %Bolt.Sips.Types.Relationship{end: "person-3", id: 1428,
       properties: %{"strength" => 3}, start: "person-1", type: "INFLUENCED"}
 
       iex> VinculiGraph.Format.Cytoscape.format_element(data)
-      %{end: "person-3", group: "edges", start: "person-1", strength: 3,
+      %{id: "person-1+person-3", end: "person-3", group: "edges", start: "person-1", strength: 3,
         type: "INFLUENCED"}
 
       iex> data = %Bolt.Sips.Types.Node{id: 2381, labels: ["Person"],
@@ -134,7 +139,7 @@ defmodule VinculiGraph.Format.Cytoscape do
 
   def format_element(%Relationship{start: start_uid, end: end_uid, type: type, properties: properties}) do
     data =
-      Map.merge(properties, %{source: start_uid, target: end_uid, type: type})
+      Map.merge(properties, %{id: "#{start_uid}+#{end_uid}", source: start_uid, target: end_uid, type: type})
       |> Utils.Struct.to_atom_map()
 
     %{group: "edges", data: data}

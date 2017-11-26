@@ -1,5 +1,6 @@
 defmodule VinculiGraph.Format.TestCytoscape do
   use ExUnit.Case
+  import AssertValue
 
   alias VinculiGraph.Format.Cytoscape
 
@@ -51,28 +52,25 @@ defmodule VinculiGraph.Format.TestCytoscape do
 
   describe "Test format/1:" do
     test "produces a valid json for cytoscape" do
-      expected = [%{data: %{firstName: "Marcel", id: "person-9", labels: ["Person"],
-                 lastName: "MAUSS", name: "Marcel MAUSS"}, group: "nodes"},
-             %{data: %{externalLink: "https://en.wikipedia.org/wiki/David_Hume",
-                 firstName: "David", id: "person-1",
-                 internalLink: "http://arsmagica.fr/polyphonies/hume-david-1711-1776",
-                 labels: ["Person"], lastName: "HUME", name: "David HUME"},
-               group: "nodes"},
-             %{data: %{firstName: "Edmund", id: "person-6", labels: ["Person"],
-                 lastName: "HUSSERL", name: "Edmund HUSSERL"}, group: "nodes"},
-             %{data: %{firstName: "Immanuel", id: "person-3",
-                 labels: ["Person"], lastName: "KANT", name: "Immanuel KANT"},
-               group: "nodes"},
-             %{data: %{source: "person-1", strength: 2, target: "person-9",
-                 type: "INFLUENCED"}, group: "edges"},
-             %{data: %{source: "person-1", strength: 2, target: "person-6",
-                 type: "INFLUENCED"}, group: "edges"},
-             %{data: %{source: "person-1", strength: 3, target: "person-3",
-                 type: "INFLUENCED"}, group: "edges"}]
-
-      res = Cytoscape.format(@query_result)
-
-      assert expected == res
+      res = inspect Cytoscape.format(@query_result), pretty: true
+      assert_value res == """
+      [%{data: %{firstName: \"Marcel\", id: \"person-9\", labels: [\"Person\"],
+           lastName: \"MAUSS\", name: \"Marcel MAUSS\"}, group: \"nodes\"},
+       %{data: %{externalLink: \"https://en.wikipedia.org/wiki/David_Hume\",
+           firstName: \"David\", id: \"person-1\",
+           internalLink: \"http://arsmagica.fr/polyphonies/hume-david-1711-1776\",
+           labels: [\"Person\"], lastName: \"HUME\", name: \"David HUME\"}, group: \"nodes\"},
+       %{data: %{firstName: \"Edmund\", id: \"person-6\", labels: [\"Person\"],
+           lastName: \"HUSSERL\", name: \"Edmund HUSSERL\"}, group: \"nodes\"},
+       %{data: %{firstName: \"Immanuel\", id: \"person-3\", labels: [\"Person\"],
+           lastName: \"KANT\", name: \"Immanuel KANT\"}, group: \"nodes\"},
+       %{data: %{id: \"person-1+person-9\", source: \"person-1\", strength: 2,
+           target: \"person-9\", type: \"INFLUENCED\"}, group: \"edges\"},
+       %{data: %{id: \"person-1+person-6\", source: \"person-1\", strength: 2,
+           target: \"person-6\", type: \"INFLUENCED\"}, group: \"edges\"},
+       %{data: %{id: \"person-1+person-3\", source: \"person-1\", strength: 3,
+           target: \"person-3\", type: \"INFLUENCED\"}, group: \"edges\"}]<NOEOL>
+      """
     end
 
     test "produces valid json for cytoscape with confusing node/rel ids" do
@@ -83,14 +81,14 @@ defmodule VinculiGraph.Format.TestCytoscape do
        "source" => %Bolt.Sips.Types.Node{id: 1, labels: ["Town"],
         properties: %{"name" => "Kirkcaldy", "uuid" => "town-2"}}}]
 
-      expected = [%{data: %{id: "country-1", labels: ["Country"], name: "Scotland"},
-                   group: "nodes"},
-                 %{data: %{id: "town-2", labels: ["Town"], name: "Kirkcaldy"},
-                   group: "nodes"},
-                 %{data: %{source: "town-2", target: "country-1",
-                     type: "IS_IN_COUNTRY"}, group: "edges"}]
-
-      assert expected == Cytoscape.format(query_result)
+      res = inspect Cytoscape.format(query_result), pretty: true
+      assert_value res == """
+      [%{data: %{id: \"country-1\", labels: [\"Country\"], name: \"Scotland\"},
+         group: \"nodes\"},
+       %{data: %{id: \"town-2\", labels: [\"Town\"], name: \"Kirkcaldy\"}, group: \"nodes\"},
+       %{data: %{id: \"town-2+country-1\", source: \"town-2\", target: \"country-1\",
+           type: \"IS_IN_COUNTRY\"}, group: \"edges\"}]<NOEOL>
+      """
     end
   end
 
@@ -99,12 +97,11 @@ defmodule VinculiGraph.Format.TestCytoscape do
       data = %Bolt.Sips.Types.Relationship{end: 2381, id: 1428,
         properties: %{"strength" => 3}, start: 2373, type: "INFLUENCED"}
 
-      expected = %Bolt.Sips.Types.Relationship{end: "person-3", id: 1428,
-        properties: %{"strength" => 3}, start: "person-1", type: "INFLUENCED"}
-
-      assert expected == Cytoscape.update_relationships(data,
-                                                         @flat_query_result)
-
+      res = inspect Cytoscape.update_relationships(data, @flat_query_result), pretty: true
+      assert_value res == """
+      %Bolt.Sips.Types.Relationship{end: \"person-3\", id: 1428,
+       properties: %{\"strength\" => 3}, start: \"person-1\", type: \"INFLUENCED\"}<NOEOL>
+      """
     end
 
     test "on Bolt.Sips.Types.Node should not do anything" do
@@ -112,7 +109,12 @@ defmodule VinculiGraph.Format.TestCytoscape do
       properties: %{"firstName" => "Immanuel", "lastName" => "KANT",
         "uuid" => "person-3"}}
 
-      assert data == Cytoscape.update_relationships(data, @flat_query_result)
+      res = inspect Cytoscape.update_relationships(data, @flat_query_result), pretty: true
+      assert_value res == """
+      %Bolt.Sips.Types.Node{id: 2381, labels: [\"Person\"],
+       properties: %{\"firstName\" => \"Immanuel\", \"lastName\" => \"KANT\",
+         \"uuid\" => \"person-3\"}}<NOEOL>
+      """
     end
 
     test "on other map should not do anything" do
@@ -125,10 +127,11 @@ defmodule VinculiGraph.Format.TestCytoscape do
       data = %Bolt.Sips.Types.Relationship{end: "person-3", id: 1428,
         properties: %{"strength" => 3}, start: "person-1", type: "INFLUENCED"}
 
-      expected = %{group: "edges",
-                   data: %{target: "person-3", source: "person-1", strength: 3,
-                   type: "INFLUENCED"}}
-      assert expected == Cytoscape.format_element(data)
+      res = inspect Cytoscape.format_element(data), pretty: true
+      assert_value res == """
+      %{data: %{id: \"person-1+person-3\", source: \"person-1\", strength: 3,
+          target: \"person-3\", type: \"INFLUENCED\"}, group: \"edges\"}<NOEOL>
+      """
     end
 
     test "Bolt.Sips.Types.Node should produce valid cytoscape data" do
@@ -136,10 +139,11 @@ defmodule VinculiGraph.Format.TestCytoscape do
         properties: %{"firstName" => "Immanuel", "lastName" => "KANT",
           "uuid" => "person-3"}}
 
-      expected = %{group: "nodes",
-                   data: %{firstName: "Immanuel", labels: ["Person"],
-                   lastName: "KANT", name: "Immanuel KANT", id: "person-3"}}
-      assert expected == Cytoscape.format_element(data)
+      res = inspect Cytoscape.format_element(data), pretty: true
+      assert_value res == """
+      %{data: %{firstName: \"Immanuel\", id: \"person-3\", labels: [\"Person\"],
+          lastName: \"KANT\", name: \"Immanuel KANT\"}, group: \"nodes\"}<NOEOL>
+      """
     end
   end
 end
