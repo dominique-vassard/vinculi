@@ -26,7 +26,7 @@ defmodule VinculiWeb.ConstellationChannelTest do
     data = [%{data: %{id: "country-1", labels: ["Country"], name: "Scotland"},
        group: "nodes"},
      %{data: %{id: "town-2", labels: ["Town"], name: "Kirkcaldy"}, group: "nodes"},
-     %{data: %{source: "town-2", target: "country-1", type: "IS_IN_COUNTRY"},
+     %{data: %{id: "town-2+country-1", source: "town-2", target: "country-1", type: "IS_IN_COUNTRY"},
        group: "edges"}]
 
     assert_reply ref, :ok, %{data: ^data}
