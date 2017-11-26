@@ -15,8 +15,8 @@ if (elmDiv) {
 
 
 function nextOperation(graphManager) {
-    console.log("Next Operation")
-    console.log(graphManager)
+    // console.log("Next Operation")
+    // console.log(graphManager)
 }
 
 async function initGraphManager(elmApp, serverUrl:string) {

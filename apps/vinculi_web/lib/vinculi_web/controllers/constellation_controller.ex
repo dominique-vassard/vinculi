@@ -16,7 +16,6 @@ defmodule VinculiWeb.ConstellationController do
     # IO.puts inspect params
     server_url = endpoint_module(conn).url()
 
-    IO.puts inspect conn, pretty: true
     socket_prefix = get_socket_prefix(Application.get_env(:vinculi_web, :env))
     socket_host = get_socket_host(conn, Application.get_env(:vinculi_web, :env))
     socket_url = socket_prefix <> "://#{socket_host}" <> "/socket/websocket"
