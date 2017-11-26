@@ -41,7 +41,8 @@ defmodule VinculiWeb.Router do
 
   scope "/", VinculiWeb do
     pipe_through :browser
-    get "/constellation/explore/:node_uuid", ConstellationController, :explore
+    get "/constellation/explore/:labels/:node_uuid", ConstellationController, :explore
+    get "/constellation/index", ConstellationController, :index
     # Add public routes below
   end
 
@@ -50,7 +51,6 @@ defmodule VinculiWeb.Router do
     # Add protected routes below
     get "/", PageController, :index
 
-    get "/constellation/index", ConstellationController, :index
     # post "/constellation/search", ConstellationController, :search
 
     # Test pages
