@@ -19,6 +19,7 @@ defmodule VinculiWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug Coherence.Authentication.Session, protected: true
+    plug VinculiWeb.TokenPlug
     plug VinculiWeb.LocalePlug
   end
 
@@ -41,7 +42,6 @@ defmodule VinculiWeb.Router do
 
   scope "/", VinculiWeb do
     pipe_through :browser
-    get "/constellation/explore/:labels/:node_uuid", ConstellationController, :explore
     get "/constellation/index", ConstellationController, :index
     # Add public routes below
   end
@@ -50,6 +50,7 @@ defmodule VinculiWeb.Router do
     pipe_through :protected
     # Add protected routes below
     get "/", PageController, :index
+    get "/constellation/explore/:labels/:node_uuid", ConstellationController, :explore
 
     # post "/constellation/search", ConstellationController, :search
 

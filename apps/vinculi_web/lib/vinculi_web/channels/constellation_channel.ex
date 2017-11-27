@@ -3,11 +3,13 @@ defmodule VinculiWeb.ConstellationChannel do
 
   alias VinculiGraph.Node
 
-  def join("constellation:explore", payload, socket) do
-    if authorized?(payload) do
-      {:ok, socket}
-    else
-      {:error, %{reason: "unauthorized"}}
+  def join("constellation:explore", %{"token" => token}, socket) do
+    salt = VinculiWeb.Endpoint.config(:secret_key_base)
+    case Phoenix.Token.verify(socket, salt, token, max_age: 2460) do
+      {:ok, user_id} ->
+        {:ok, assign(socket, :current_user, user_id)}
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
@@ -38,7 +40,6 @@ defmodule VinculiWeb.ConstellationChannel do
   end
 
   # Add authorization logic here as required.
-  defp authorized?(_payload) do
-    true
+  defp authorized?(%{"token" => token} = payload, socket) do
   end
 end
