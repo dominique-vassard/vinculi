@@ -42,9 +42,10 @@ var elmApp;
 var elmDiv = document.getElementById("elm-vinculi-explorer");
 if (elmDiv) {
     elmApp = Elm.Main.embed(elmDiv, {
-        socketUrl: socket_url,
-        originNodeUuid: node_uuid,
-        originNodeLabels: node_labels
+        socketUrl: window.socketUrl,
+        originNodeUuid: window.nodeUuid,
+        originNodeLabels: window.nodeLabels,
+        userToken: window.userToken
     });
 }
 function nextOperation(graphManager) {
@@ -67,4 +68,4 @@ function initGraphManager(elmApp, serverUrl) {
         });
     });
 }
-initGraphManager(elmApp, server_url);
+initGraphManager(elmApp, window.serverUrl);

@@ -12645,9 +12645,9 @@ var _rundis$elm_bootstrap$Bootstrap_Grid$col = F2(
 			{options: options, children: children});
 	});
 
-var _user$project$Types$Flags = F3(
-	function (a, b, c) {
-		return {socketUrl: a, originNodeUuid: b, originNodeLabels: c};
+var _user$project$Types$Flags = F4(
+	function (a, b, c, d) {
+		return {socketUrl: a, originNodeUuid: b, originNodeLabels: c, userToken: d};
 	});
 var _user$project$Types$GenericNodeData = F3(
 	function (a, b, c) {
@@ -12685,9 +12685,9 @@ var _user$project$Types$InfluencedEdgeData = F5(
 	function (a, b, c, d, e) {
 		return {id: a, source: b, target: c, edge_type: d, strength: e};
 	});
-var _user$project$Types$Model = F7(
-	function (a, b, c, d, e, f, g) {
-		return {phxSocket: a, graph: b, socketUrl: c, initGraph: d, searchNode: e, browsedNode: f, errorMessage: g};
+var _user$project$Types$Model = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {phxSocket: a, graph: b, socketUrl: c, initGraph: d, searchNode: e, browsedNode: f, errorMessage: g, userToken: h};
 	});
 var _user$project$Types$SearchNode = F2(
 	function (a, b) {
@@ -12726,6 +12726,7 @@ var _user$project$Types$SetBrowsedNode = function (a) {
 var _user$project$Types$SetSearchNode = function (a) {
 	return {ctor: 'SetSearchNode', _0: a};
 };
+var _user$project$Types$JoinError = {ctor: 'JoinError'};
 var _user$project$Types$Join = {ctor: 'Join'};
 var _user$project$Types$SendGraph = {ctor: 'SendGraph'};
 var _user$project$Types$InitGraph = {ctor: 'InitGraph'};
@@ -13032,6 +13033,18 @@ var _user$project$Decoders_Port$localGraphDecoder = A3(
 		_elm_lang$core$Json_Decode$string,
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$SearchNode)));
 
+var _user$project$Encoders_Common$userEncoder = function (userToken) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'token',
+				_1: _elm_lang$core$Json_Encode$string(userToken)
+			},
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Encoders_Common$nothingEncoder = _elm_lang$core$Json_Encode$object(
 	{ctor: '[]'});
 var _user$project$Encoders_Common$positionEncoder = function (position) {
@@ -13802,7 +13815,8 @@ var _user$project$Main$init = function (flags) {
 			searchNode: _elm_lang$core$Maybe$Just(
 				{uuid: flags.originNodeUuid, labels: flags.originNodeLabels}),
 			browsedNode: _elm_lang$core$Maybe$Nothing,
-			errorMessage: _elm_lang$core$Maybe$Nothing
+			errorMessage: _elm_lang$core$Maybe$Nothing,
+			userToken: flags.userToken
 		},
 		_1: _user$project$Main$joinChannel
 	};
@@ -13931,9 +13945,15 @@ var _user$project$Main$update = F2(
 				}
 			case 'Join':
 				var channel = A2(
-					_fbonetti$elm_phoenix_socket$Phoenix_Channel$onJoin,
-					_elm_lang$core$Basics$always(_user$project$Types$GetNodeLocalGraph),
-					_fbonetti$elm_phoenix_socket$Phoenix_Channel$init(_user$project$Main$channelName));
+					_fbonetti$elm_phoenix_socket$Phoenix_Channel$onJoinError,
+					_elm_lang$core$Basics$always(_user$project$Types$JoinError),
+					A2(
+						_fbonetti$elm_phoenix_socket$Phoenix_Channel$onJoin,
+						_elm_lang$core$Basics$always(_user$project$Types$GetNodeLocalGraph),
+						A2(
+							_fbonetti$elm_phoenix_socket$Phoenix_Channel$withPayload,
+							_user$project$Encoders_Common$userEncoder(model.userToken),
+							_fbonetti$elm_phoenix_socket$Phoenix_Channel$init(_user$project$Main$channelName))));
 				var _p11 = A2(
 					_fbonetti$elm_phoenix_socket$Phoenix_Socket$join,
 					channel,
@@ -13951,6 +13971,16 @@ var _user$project$Main$update = F2(
 						model,
 						{phxSocket: phxSocket}),
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Types$PhoenixMsg, phxCmd)
+				};
+			case 'JoinError':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							errorMessage: _elm_lang$core$Maybe$Just('Impossible d\'afficher le graphe.')
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'GetNodeLocalGraph':
 				var _p12 = model.searchNode;
@@ -14056,8 +14086,13 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 					return A2(
 						_elm_lang$core$Json_Decode$andThen,
 						function (socketUrl) {
-							return _elm_lang$core$Json_Decode$succeed(
-								{originNodeLabels: originNodeLabels, originNodeUuid: originNodeUuid, socketUrl: socketUrl});
+							return A2(
+								_elm_lang$core$Json_Decode$andThen,
+								function (userToken) {
+									return _elm_lang$core$Json_Decode$succeed(
+										{originNodeLabels: originNodeLabels, originNodeUuid: originNodeUuid, socketUrl: socketUrl, userToken: userToken});
+								},
+								A2(_elm_lang$core$Json_Decode$field, 'userToken', _elm_lang$core$Json_Decode$string));
 						},
 						A2(_elm_lang$core$Json_Decode$field, 'socketUrl', _elm_lang$core$Json_Decode$string));
 				},

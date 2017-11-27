@@ -15,3 +15,8 @@ positionEncoder position =
 nothingEncoder : Value
 nothingEncoder =
     Encode.object []
+
+
+userEncoder : String -> Encode.Value
+userEncoder userToken =
+    Encode.object [ ( "token", Encode.string userToken ) ]

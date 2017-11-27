@@ -7,9 +7,10 @@ let elmApp;
 const elmDiv = document.getElementById("elm-vinculi-explorer")
 if (elmDiv) {
     elmApp = Elm.Main.embed(elmDiv, {
-        socketUrl: <string>socket_url,
-        originNodeUuid: <string>node_uuid,
-        originNodeLabels: <string[]>node_labels
+        socketUrl: <string>window.socketUrl,
+        originNodeUuid: <string>window.nodeUuid,
+        originNodeLabels: <string[]>window.nodeLabels,
+        userToken: <string>window.userToken
     })
 }
 
@@ -26,4 +27,4 @@ async function initGraphManager(elmApp, serverUrl:string) {
 }
 
 
-initGraphManager(elmApp, server_url)
+initGraphManager(elmApp, window.serverUrl)

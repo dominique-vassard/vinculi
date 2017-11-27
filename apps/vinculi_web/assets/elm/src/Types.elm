@@ -11,6 +11,7 @@ type alias Flags =
     { socketUrl : String
     , originNodeUuid : String
     , originNodeLabels : List String
+    , userToken : String
     }
 
 
@@ -160,6 +161,7 @@ type alias Model =
     , searchNode : Maybe SearchNode
     , browsedNode : Maybe NodeType
     , errorMessage : Maybe String
+    , userToken : String
     }
 
 
@@ -177,6 +179,7 @@ type Msg
     | InitGraph
     | SendGraph
     | Join
+    | JoinError
     | SetSearchNode (Result String SearchNode)
     | SetBrowsedNode (Result String String)
     | SetGraphState (Result String Graph)

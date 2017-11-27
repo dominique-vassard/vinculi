@@ -25,6 +25,7 @@ import Types exposing (..)
 import Ports exposing (..)
 import Decoders.Graph as GraphDecode exposing (decoder, fromWsDecoder)
 import Decoders.Port as PortDecoder exposing (localGraphDecoder)
+import Encoders.Common as GraphEncode exposing (userEncoder)
 import Encoders.Graph as GraphEncode exposing (encoder)
 import Accessors.Node as Node exposing (..)
 import Accessors.Edge as Edge exposing (..)
@@ -67,6 +68,7 @@ init flags =
                 }
       , browsedNode = Nothing
       , errorMessage = Nothing
+      , userToken = flags.userToken
       }
     , joinChannel
     )
@@ -167,7 +169,9 @@ update msg model =
             let
                 channel =
                     PhxChannel.init channelName
+                        |> PhxChannel.withPayload (userEncoder model.userToken)
                         |> PhxChannel.onJoin (always GetNodeLocalGraph)
+                        |> PhxChannel.onJoinError (always JoinError)
 
                 ( phxSocket, phxCmd ) =
                     PhxSocket.init model.socketUrl
@@ -180,6 +184,11 @@ update msg model =
                 ( { model | phxSocket = phxSocket }
                 , Cmd.map PhoenixMsg phxCmd
                 )
+
+        JoinError ->
+            ( { model | errorMessage = Just "Impossible d'afficher le graphe." }
+            , Cmd.none
+            )
 
         GetNodeLocalGraph ->
             case model.searchNode of
