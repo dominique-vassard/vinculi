@@ -379,7 +379,7 @@ msgstr "Mettre à jour le mot de passe"
 
 #: lib/vinculi_web/coherence_messages.ex:67
 msgid "User account confirmed successfully."
-msgstr "Le compe a été confirmé avec succès."
+msgstr "Le compte a été confirmé avec succès."
 
 #: lib/vinculi_web/coherence_messages.ex:68
 msgid "User already has an account!"
@@ -411,7 +411,7 @@ msgstr "Votre compte n'est pas bloqué."
 
 #: lib/vinculi_web/templates/coherence/email/confirmation.html.eex:4
 msgid "Your new account is almost ready. Click the link below to confirm you new account."
-msgstr "Votre inscrition est presque terminée. Merci de cliquer sur le lien ci-dessous pour confirmer votre compte."
+msgstr "Votre inscription est presque terminée. Merci de cliquer sur le lien ci-dessous pour confirmer votre compte."
 
 #: lib/vinculi_web/templates/coherence/email/password.html.eex:13
 msgid "Your password won't change until you access the link above and create a new one."
