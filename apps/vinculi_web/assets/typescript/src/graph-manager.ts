@@ -268,7 +268,8 @@ export class GraphManager {
                 name: 'concentric',
                 // fit: false,
                 animate: true,
-                avoidOverlap: true
+                avoidOverlap: true,
+                spacingFactor: 3
             }
         })
         this._currentNode = undefined
@@ -322,7 +323,8 @@ export class GraphManager {
             {
                 name: 'concentric',
                 boundingBox: this.getBoundingBox(),
-                animate: true
+                animate: true,
+                spacingFactor: 3
             }
         this._cy.add(localGraph).layout(layout_config).run()
         this.sendNewGraphState()
