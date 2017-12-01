@@ -47,10 +47,11 @@ if (elmDiv) {
         originNodeLabels: window.nodeLabels,
         userToken: window.userToken
     });
+    initGraphManager(elmApp, window.serverUrl);
 }
 function nextOperation(graphManager) {
-    // console.log("Next Operation")
-    // console.log(graphManager)
+    console.log("Next Operation");
+    console.log(graphManager);
 }
 function initGraphManager(elmApp, serverUrl) {
     return __awaiter(this, void 0, void 0, function () {
@@ -68,4 +69,3 @@ function initGraphManager(elmApp, serverUrl) {
         });
     });
 }
-initGraphManager(elmApp, window.serverUrl);

@@ -67,6 +67,7 @@ init flags =
                 , labels = flags.originNodeLabels
                 }
       , browsedNode = Nothing
+      , currentNode = CurrentNodeInfos Nothing Nothing
       , errorMessage = Nothing
       , userToken = flags.userToken
       }
@@ -142,8 +143,14 @@ update msg model =
 
                         _ ->
                             Nothing
+
+                curNode =
+                    model.currentNode
+
+                newCurNode =
+                    { curNode | browsed = node }
             in
-                ( { model | browsedNode = node }, Cmd.none )
+                ( { model | browsedNode = node, currentNode = newCurNode }, Cmd.none )
 
         SetBrowsedNode (Err error) ->
             ( { model
@@ -152,6 +159,36 @@ update msg model =
               }
             , Cmd.none
             )
+
+        UnsetBrowsedNode _ ->
+            let
+                oldCurNode =
+                    model.currentNode
+
+                newCurNode =
+                    { oldCurNode | browsed = Nothing }
+            in
+                ( { model | currentNode = newCurNode }, Cmd.none )
+
+        PinNode True ->
+            let
+                oldCurNode =
+                    model.currentNode
+
+                newCurNode =
+                    { oldCurNode | pinned = oldCurNode.browsed }
+            in
+                ( { model | currentNode = newCurNode }, Cmd.none )
+
+        PinNode False ->
+            let
+                oldCurNode =
+                    model.currentNode
+
+                newCurNode =
+                    { oldCurNode | pinned = Nothing }
+            in
+                ( { model | currentNode = newCurNode }, Cmd.none )
 
         SetGraphState (Ok graph) ->
             ( { model | graph = graph }, Cmd.none )
@@ -175,7 +212,7 @@ update msg model =
 
                 ( phxSocket, phxCmd ) =
                     PhxSocket.init model.socketUrl
-                        --|> PhxSocket.withDebug
+                        |> PhxSocket.withDebug
                         |> PhxSocket.on "node_local_graph"
                             channelName
                             ReceiveNodeLocalGraph
@@ -309,7 +346,12 @@ subscriptions model =
             (Json.Decode.decodeValue GraphDecode.decoder
                 >> SetGraphState
             )
-        , Ports.displayNodeInfos ((Json.Decode.decodeValue Json.Decode.string) >> SetBrowsedNode)
+        , Ports.displayNodeInfos
+            ((Json.Decode.decodeValue Json.Decode.string)
+                >> SetBrowsedNode
+            )
+        , Ports.hideNodeInfos UnsetBrowsedNode
+        , Ports.pinNodeInfos PinNode
         , PhxSocket.listen model.phxSocket PhoenixMsg
         ]
 
@@ -332,7 +374,9 @@ view model =
                 [ Grid.row [ Row.attrs [ class "rounded bg-secondary" ] ]
                     [ Grid.col [ Col.lg12 ] [ text "Browse" ] ]
                 , Grid.row []
-                    [ Grid.col [ Col.lg12 ] [ viewNodeData model.browsedNode ]
+                    [ Grid.col [ Col.lg12 ]
+                        [ viewNodeData <| nodeToDisplay model.currentNode
+                        ]
                     ]
                 ]
             ]
@@ -354,6 +398,16 @@ viewError errorMessage =
                         ]
     in
         div_
+
+
+nodeToDisplay : CurrentNodeInfos -> Maybe NodeType
+nodeToDisplay currentNode =
+    case currentNode.browsed of
+        Just node ->
+            Just node
+
+        Nothing ->
+            currentNode.pinned
 
 
 viewNodeData : Maybe NodeType -> Html Msg

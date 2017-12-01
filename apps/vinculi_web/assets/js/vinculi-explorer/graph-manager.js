@@ -114,8 +114,16 @@ var GraphManager = /** @class */ (function () {
      */
     GraphManager.prototype.initHandlers = function () {
         var _this = this;
-        this._cy.on('click', 'node', function (event) { _this.nodeDeploymentHandler(event); });
+        // Double tap: deploy node
+        this._cy.on('doubleTap', 'node', function (event) { _this.nodeDeploymentHandler(event); });
+        // Tap on canvas: unpin node infos
+        this._cy.on('tap', function (event) { _this.unpinNodeInfosHandler(event); });
+        // Tap on node: pin node infos
+        this._cy.on('tap', 'node', function (event) { _this.pinNodeInfosHandler(event); });
+        // Mouseover node: display node infos
         this._cy.on('mouseover', 'node', function (event) { _this.showNodeInfosHandler(event); });
+        // Mouseout node :hide node infos
+        this._cy.on('mouseout', 'node', function (event) { _this.hideNodeInfosHandler(event); });
         return this;
     };
     /**
@@ -173,7 +181,7 @@ var GraphManager = /** @class */ (function () {
      *
      * TODO: Update filters when done
      *
-     * @param  cytoscape.EventObject   event    Event attached to this method (click/tap on node)
+     * @param  cytoscape.EventObject   event    Event attached to this method (double on node)
      * @return void
      */
     GraphManager.prototype.nodeDeploymentHandler = function (event) {
@@ -187,14 +195,48 @@ var GraphManager = /** @class */ (function () {
     };
     /**
      * Manage node infos displaying
-     * Send node uuid to Elm for dsiplaying
+     * Send node uuid to Elm for displaying
      *
-     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover on node)
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover node)
      * @return void
      */
     GraphManager.prototype.showNodeInfosHandler = function (event) {
         var node = event.target;
         this._ports.sendNodeIdToDisplay(node.id());
+    };
+    /**
+     * Manage node infos hiding
+     * Send command to Elm for hiding node infos
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseout node)
+     * @return void
+     */
+    GraphManager.prototype.hideNodeInfosHandler = function (event) {
+        this._ports.sendHideNodeCommand();
+    };
+    /**
+     * Manage node infos pinning
+     * Send command to Elm for pinning
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (click/tap on node)
+     * @return void
+     */
+    GraphManager.prototype.pinNodeInfosHandler = function (event) {
+        var node = event.target;
+        this._ports.sendPinNodeCommand(true);
+    };
+    /**
+     * Manage node infos unpinning
+     * Send command to Elm for unpinning
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (click/tap on canvas)
+     * @return void
+     */
+    GraphManager.prototype.unpinNodeInfosHandler = function (event) {
+        var target = event.target;
+        if (target === this._cy) {
+            this._ports.sendPinNodeCommand(false);
+        }
     };
     /////////////////////////////////////////////////////////////////
     //                       PORTS CALLBACKS                       //
@@ -223,8 +265,9 @@ var GraphManager = /** @class */ (function () {
         // InitGraphPort is not useful anymore
         // Then unsuscribe
         this._ports.postInit();
+        this._registerDoubleTapEvent();
         this.initHandlers();
-        // for some reason, this._cy.elements is not yey accessbile
+        // for some reason, this._cy.elements is not yet accessbile
         // Then we don't send graph state, it will be with the first action on graph
         // this.sendNewGraphState()
     };
@@ -275,6 +318,28 @@ var GraphManager = /** @class */ (function () {
      */
     GraphManager.prototype.sendNewGraphState = function () {
         this._ports.sendNewGraphState(this._cy.elements().jsons());
+    };
+    /**
+     * Add event "doubleTap" to cy
+     *
+     */
+    GraphManager.prototype._registerDoubleTapEvent = function () {
+        var tappedBefore;
+        var tappedTimeout;
+        this._cy.on('tap', function (event) {
+            var tappedNow = event.target;
+            if (tappedTimeout && tappedBefore) {
+                clearTimeout(tappedTimeout);
+            }
+            if (tappedBefore == tappedNow) {
+                tappedNow.emit('doubleTap');
+                tappedBefore = null;
+            }
+            else {
+                tappedTimeout = setTimeout(function () { return tappedBefore = null; }, 300);
+                tappedBefore = tappedNow;
+            }
+        });
     };
     return GraphManager;
 }());

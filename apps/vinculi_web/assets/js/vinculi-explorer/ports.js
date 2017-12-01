@@ -135,6 +135,24 @@ var Ports = /** @class */ (function () {
     Ports.prototype.sendNodeIdToDisplay = function (nodeUuid) {
         this._elmApp.ports.displayNodeInfos.send(nodeUuid);
     };
+    /**
+     * Send Elm a command in order to pin its infos
+     *
+     * @param {boolean}   pin         True to tpin, False to unpin
+     *
+     * @returns void
+     */
+    Ports.prototype.sendPinNodeCommand = function (pin) {
+        this._elmApp.ports.pinNodeInfos.send(pin);
+    };
+    /**
+     * Send Elm a command in order to hide browsed node infos
+     *
+     * @returns void
+     */
+    Ports.prototype.sendHideNodeCommand = function () {
+        this._elmApp.ports.hideNodeInfos.send(true);
+    };
     return Ports;
 }());
 exports.Ports = Ports;

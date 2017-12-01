@@ -24,3 +24,9 @@ port newGraphState : (Json.Decode.Value -> msg) -> Sub msg
 
 
 port displayNodeInfos : (Json.Decode.Value -> msg) -> Sub msg
+
+
+port hideNodeInfos : (Bool -> msg) -> Sub msg
+
+
+port pinNodeInfos : (Bool -> msg) -> Sub msg

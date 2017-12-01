@@ -97,11 +97,29 @@ export class GraphManager {
      *
      */
     initHandlers(): GraphManager {
-        this._cy.on('click', 'node',
+        // Double tap: deploy node
+        this._cy.on('doubleTap', 'node',
             (event) => { this.nodeDeploymentHandler(event) }
         )
+
+        // Tap on canvas: unpin node infos
+        this._cy.on('tap',
+            (event) => { this.unpinNodeInfosHandler(event) }
+        )
+
+        // Tap on node: pin node infos
+        this._cy.on('tap', 'node',
+            (event) => { this.pinNodeInfosHandler(event) }
+        )
+
+        // Mouseover node: display node infos
         this._cy.on('mouseover', 'node',
             (event) => { this.showNodeInfosHandler(event) }
+        )
+
+        // Mouseout node :hide node infos
+        this._cy.on('mouseout', 'node',
+            (event) => { this.hideNodeInfosHandler(event) }
         )
         return this
     }
@@ -164,7 +182,7 @@ export class GraphManager {
      *
      * TODO: Update filters when done
      *
-     * @param  cytoscape.EventObject   event    Event attached to this method (click/tap on node)
+     * @param  cytoscape.EventObject   event    Event attached to this method (double on node)
      * @return void
      */
     nodeDeploymentHandler(event: cytoscape.EventObject): void {
@@ -179,14 +197,51 @@ export class GraphManager {
 
     /**
      * Manage node infos displaying
-     * Send node uuid to Elm for dsiplaying
+     * Send node uuid to Elm for displaying
      *
-     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover on node)
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover node)
      * @return void
      */
     showNodeInfosHandler(event: cytoscape.EventObject): void {
         const node = event.target
         this._ports.sendNodeIdToDisplay(node.id())
+    }
+
+    /**
+     * Manage node infos hiding
+     * Send command to Elm for hiding node infos
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseout node)
+     * @return void
+     */
+    hideNodeInfosHandler(event: cytoscape.EventObject): void {
+        this._ports.sendHideNodeCommand()
+    }
+
+    /**
+     * Manage node infos pinning
+     * Send command to Elm for pinning
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (click/tap on node)
+     * @return void
+     */
+    pinNodeInfosHandler(event: cytoscape.EventObject): void {
+        const node = event.target
+        this._ports.sendPinNodeCommand(true)
+    }
+
+    /**
+     * Manage node infos unpinning
+     * Send command to Elm for unpinning
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (click/tap on canvas)
+     * @return void
+     */
+    unpinNodeInfosHandler(event: cytoscape.EventObject): void {
+        const target = event.target
+        if (target === this._cy) {
+            this._ports.sendPinNodeCommand(false)
+        }
     }
 
     /////////////////////////////////////////////////////////////////
@@ -221,8 +276,9 @@ export class GraphManager {
         // InitGraphPort is not useful anymore
         // Then unsuscribe
         this._ports.postInit()
+        this._registerDoubleTapEvent()
         this.initHandlers()
-        // for some reason, this._cy.elements is not yey accessbile
+        // for some reason, this._cy.elements is not yet accessbile
         // Then we don't send graph state, it will be with the first action on graph
         // this.sendNewGraphState()
     }
@@ -279,5 +335,28 @@ export class GraphManager {
      */
     sendNewGraphState(): void {
         this._ports.sendNewGraphState(this._cy.elements().jsons())
+    }
+
+    /**
+     * Add event "doubleTap" to cy
+     *
+     */
+    _registerDoubleTapEvent() {
+        let tappedBefore
+        let tappedTimeout
+        this._cy.on('tap', (event) => {
+            let tappedNow = event.target
+            if (tappedTimeout && tappedBefore) {
+                clearTimeout(tappedTimeout)
+            }
+
+            if (tappedBefore == tappedNow) {
+                tappedNow.emit('doubleTap')
+                tappedBefore = null
+            } else {
+                tappedTimeout = setTimeout( () => tappedBefore = null, 300)
+                tappedBefore = tappedNow
+            }
+        })
     }
 }

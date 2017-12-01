@@ -153,6 +153,16 @@ type alias Graph =
     List Element
 
 
+type alias CurrentNodeInfos =
+    { browsed : Maybe NodeType
+    , pinned : Maybe NodeType
+    }
+
+
+
+--- MODEL
+
+
 type alias Model =
     { phxSocket : PhxSocket.Socket Msg
     , graph : Graph
@@ -160,6 +170,7 @@ type alias Model =
     , initGraph : Bool
     , searchNode : Maybe SearchNode
     , browsedNode : Maybe NodeType
+    , currentNode : CurrentNodeInfos
     , errorMessage : Maybe String
     , userToken : String
     }
@@ -182,4 +193,6 @@ type Msg
     | JoinError
     | SetSearchNode (Result String SearchNode)
     | SetBrowsedNode (Result String String)
+    | UnsetBrowsedNode Bool
+    | PinNode Bool
     | SetGraphState (Result String Graph)

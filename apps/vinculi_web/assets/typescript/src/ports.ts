@@ -2,7 +2,7 @@
  * Callbacks interface definition
  */
 export interface Callbacks {
-    [category:string]: {
+    [category: string]: {
         [callbackName: string]: Function
     }
 }
@@ -57,7 +57,7 @@ export class Ports {
      * @param {any}         ElmApp       The elm application to use (for ports init)
      * @param {Callbacks}   callbacks    The callbacks to use for each ports
      */
-    constructor(elmApp: any, callbacks:Callbacks) {
+    constructor(elmApp: any, callbacks: Callbacks) {
         this._callbacks = callbacks
         this._elmApp = elmApp
     }
@@ -118,7 +118,7 @@ export class Ports {
      *
      * @returns void
      */
-    getLocalGraph(data: NodeSearchData):void {
+    getLocalGraph(data: NodeSearchData): void {
         this._elmApp.ports.getLocalGraph.send(data)
     }
 
@@ -140,7 +140,27 @@ export class Ports {
      *
      * @returns void
      */
-    sendNodeIdToDisplay(nodeUuid: string):void {
+    sendNodeIdToDisplay(nodeUuid: string): void {
         this._elmApp.ports.displayNodeInfos.send(nodeUuid)
+    }
+
+    /**
+     * Send Elm a command in order to pin its infos
+     *
+     * @param {boolean}   pin         True to tpin, False to unpin
+     *
+     * @returns void
+     */
+    sendPinNodeCommand(pin: boolean):void {
+        this._elmApp.ports.pinNodeInfos.send(pin)
+    }
+
+    /**
+     * Send Elm a command in order to hide browsed node infos
+     *
+     * @returns void
+     */
+    sendHideNodeCommand(): void {
+        this._elmApp.ports.hideNodeInfos.send(true)
     }
 }
