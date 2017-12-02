@@ -153,14 +153,20 @@ type alias Graph =
     List Element
 
 
-type alias CurrentNodeInfos =
-    { browsed : Maybe NodeType
+
+--- MODEL
+
+
+type alias NodeOperations =
+    { searched : Maybe SearchNodeType
+    , browsed : Maybe NodeType
     , pinned : Maybe NodeType
     }
 
 
-
---- MODEL
+type alias Operations =
+    { node : NodeOperations
+    }
 
 
 type alias Model =
@@ -168,15 +174,13 @@ type alias Model =
     , graph : Graph
     , socketUrl : String
     , initGraph : Bool
-    , searchNode : Maybe SearchNode
-    , browsedNode : Maybe NodeType
-    , currentNode : CurrentNodeInfos
     , errorMessage : Maybe String
     , userToken : String
+    , operations : Operations
     }
 
 
-type alias SearchNode =
+type alias SearchNodeType =
     { uuid : String
     , labels : List String
     }
@@ -191,7 +195,7 @@ type Msg
     | SendGraph
     | Join
     | JoinError
-    | SetSearchNode (Result String SearchNode)
+    | SetSearchNode (Result String SearchNodeType)
     | SetBrowsedNode (Result String String)
     | UnsetBrowsedNode Bool
     | PinNode Bool

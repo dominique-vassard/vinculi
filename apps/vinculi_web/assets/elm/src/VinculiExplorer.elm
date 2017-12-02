@@ -29,6 +29,7 @@ import Encoders.Common as GraphEncode exposing (userEncoder)
 import Encoders.Graph as GraphEncode exposing (encoder)
 import Accessors.Node as Node exposing (..)
 import Accessors.Edge as Edge exposing (..)
+import Accessors.Operations as Operations exposing (..)
 import Task
 
 
@@ -55,21 +56,29 @@ channelName =
 -- MODEL
 
 
+initOperations : Flags -> Operations
+initOperations flags =
+    { node =
+        { searched =
+            Just
+                { uuid = flags.originNodeUuid
+                , labels = flags.originNodeLabels
+                }
+        , browsed = Nothing
+        , pinned = Nothing
+        }
+    }
+
+
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( { phxSocket = PhxSocket.init flags.socketUrl
       , graph = []
       , socketUrl = flags.socketUrl
       , initGraph = True
-      , searchNode =
-            Just
-                { uuid = flags.originNodeUuid
-                , labels = flags.originNodeLabels
-                }
-      , browsedNode = Nothing
-      , currentNode = CurrentNodeInfos Nothing Nothing
       , errorMessage = Nothing
       , userToken = flags.userToken
+      , operations = initOperations flags
       }
     , joinChannel
     )
@@ -114,9 +123,15 @@ update msg model =
 
         --Ports IN
         SetSearchNode (Ok searchNode) ->
-            ( { model | searchNode = Just searchNode }
-            , Task.perform (always GetNodeLocalGraph) (Task.succeed ())
-            )
+            let
+                newOps =
+                    (Operations.setSearchedNode (Just searchNode)
+                        model.operations
+                    )
+            in
+                ( { model | operations = newOps }
+                , Task.perform (always GetNodeLocalGraph) (Task.succeed ())
+                )
 
         SetSearchNode (Err searchNode) ->
             ( model, Cmd.none )
@@ -144,13 +159,10 @@ update msg model =
                         _ ->
                             Nothing
 
-                curNode =
-                    model.currentNode
-
-                newCurNode =
-                    { curNode | browsed = node }
+                newOps =
+                    Operations.setBrowsedNode node model.operations
             in
-                ( { model | browsedNode = node, currentNode = newCurNode }, Cmd.none )
+                ( { model | operations = newOps }, Cmd.none )
 
         SetBrowsedNode (Err error) ->
             ( { model
@@ -162,33 +174,27 @@ update msg model =
 
         UnsetBrowsedNode _ ->
             let
-                oldCurNode =
-                    model.currentNode
-
-                newCurNode =
-                    { oldCurNode | browsed = Nothing }
+                newOps =
+                    Operations.setBrowsedNode Nothing model.operations
             in
-                ( { model | currentNode = newCurNode }, Cmd.none )
+                ( { model | operations = newOps }, Cmd.none )
 
         PinNode True ->
             let
-                oldCurNode =
-                    model.currentNode
-
-                newCurNode =
-                    { oldCurNode | pinned = oldCurNode.browsed }
+                newOps =
+                    (Operations.setPinnedNode
+                        model.operations.node.browsed
+                        model.operations
+                    )
             in
-                ( { model | currentNode = newCurNode }, Cmd.none )
+                ( { model | operations = newOps }, Cmd.none )
 
         PinNode False ->
             let
-                oldCurNode =
-                    model.currentNode
-
-                newCurNode =
-                    { oldCurNode | pinned = Nothing }
+                newOps =
+                    Operations.setPinnedNode Nothing model.operations
             in
-                ( { model | currentNode = newCurNode }, Cmd.none )
+                ( { model | operations = newOps }, Cmd.none )
 
         SetGraphState (Ok graph) ->
             ( { model | graph = graph }, Cmd.none )
@@ -228,7 +234,7 @@ update msg model =
             )
 
         GetNodeLocalGraph ->
-            case model.searchNode of
+            case model.operations.node.searched of
                 Nothing ->
                     ( model, Cmd.none )
 
@@ -274,12 +280,15 @@ update msg model =
 
                         False ->
                             Task.perform (always SendGraph) (Task.succeed ())
+
+                newOps =
+                    Operations.setSearchedNode Nothing model.operations
             in
                 case decodedGraph of
                     Ok graph ->
                         ( { model
                             | graph = manageMetaData graph
-                            , searchNode = Nothing
+                            , operations = newOps
                             , initGraph = False
                           }
                         , localGraphCmd
@@ -288,7 +297,11 @@ update msg model =
                     Err error ->
                         ( { model
                             | errorMessage =
-                                Just ("Cannot decode received graph. -[" ++ error ++ "]")
+                                Just
+                                    ("Cannot decode received graph. -["
+                                        ++ error
+                                        ++ "]"
+                                    )
                           }
                         , Cmd.none
                         )
@@ -376,7 +389,7 @@ view model =
                     [ Grid.col [ Col.lg12 ] [ text "Browse" ] ]
                 , Grid.row []
                     [ Grid.col [ Col.lg12 ]
-                        [ viewNodeData <| nodeToDisplay model.currentNode
+                        [ viewNodeData <| nodeToDisplay model.operations.node
                         ]
                     ]
                 ]
@@ -401,7 +414,7 @@ viewError errorMessage =
         div_
 
 
-nodeToDisplay : CurrentNodeInfos -> Maybe NodeType
+nodeToDisplay : NodeOperations -> Maybe NodeType
 nodeToDisplay currentNode =
     case currentNode.browsed of
         Just node ->
