@@ -279,6 +279,7 @@ update msg model =
                     Ok graph ->
                         ( { model
                             | graph = manageMetaData graph
+                            , searchNode = Nothing
                             , initGraph = False
                           }
                         , localGraphCmd

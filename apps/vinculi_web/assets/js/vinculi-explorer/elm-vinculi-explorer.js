@@ -18086,6 +18086,7 @@ var _user$project$Main$update = F2(
 							model,
 							{
 								graph: _user$project$Main$manageMetaData(_p17._0),
+								searchNode: _elm_lang$core$Maybe$Nothing,
 								initGraph: false
 							}),
 						_1: localGraphCmd
