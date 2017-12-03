@@ -16749,16 +16749,21 @@ var _user$project$Types$NodeOperations = F3(
 	function (a, b, c) {
 		return {searched: a, browsed: b, pinned: c};
 	});
-var _user$project$Types$Operations = function (a) {
-	return {node: a};
-};
+var _user$project$Types$GraphOperations = F2(
+	function (a, b) {
+		return {data: a, isInitial: b};
+	});
+var _user$project$Types$Operations = F2(
+	function (a, b) {
+		return {node: a, graph: b};
+	});
 var _user$project$Types$Snapshot = F2(
 	function (a, b) {
 		return {graph: a, description: b};
 	});
-var _user$project$Types$Model = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {phxSocket: a, graph: b, socketUrl: c, initGraph: d, errorMessage: e, userToken: f, operations: g, snapshots: h};
+var _user$project$Types$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {phxSocket: a, socketUrl: b, userToken: c, errorMessage: d, operations: e, snapshots: f};
 	});
 var _user$project$Types$SearchNodeType = F2(
 	function (a, b) {
@@ -16855,6 +16860,26 @@ var _user$project$Accessors_Node$getLabels = function (node) {
 	return labels;
 };
 
+var _user$project$Accessors_Operations$setGraphData = F2(
+	function (graph, operations) {
+		var oldGraphOps = operations.graph;
+		var newGraphOps = _elm_lang$core$Native_Utils.update(
+			oldGraphOps,
+			{data: graph});
+		return _elm_lang$core$Native_Utils.update(
+			operations,
+			{graph: newGraphOps});
+	});
+var _user$project$Accessors_Operations$setGraphIsInitial = F2(
+	function (isInitial, operations) {
+		var oldGraphOps = operations.graph;
+		var newGraphOps = _elm_lang$core$Native_Utils.update(
+			oldGraphOps,
+			{isInitial: isInitial});
+		return _elm_lang$core$Native_Utils.update(
+			operations,
+			{graph: newGraphOps});
+	});
 var _user$project$Accessors_Operations$setSearchedNode = F2(
 	function (newSearchNode, operations) {
 		var oldNodeOps = operations.node;
@@ -17948,7 +17973,8 @@ var _user$project$Main$initOperations = function (flags) {
 				{uuid: flags.originNodeUuid, labels: flags.originNodeLabels}),
 			browsed: _elm_lang$core$Maybe$Nothing,
 			pinned: _elm_lang$core$Maybe$Nothing
-		}
+		},
+		graph: {data: _elm_lang$core$Maybe$Nothing, isInitial: true}
 	};
 };
 var _user$project$Main$init = function (flags) {
@@ -17956,9 +17982,7 @@ var _user$project$Main$init = function (flags) {
 		ctor: '_Tuple2',
 		_0: {
 			phxSocket: _fbonetti$elm_phoenix_socket$Phoenix_Socket$init(flags.socketUrl),
-			graph: {ctor: '[]'},
 			socketUrl: flags.socketUrl,
-			initGraph: true,
 			errorMessage: _elm_lang$core$Maybe$Nothing,
 			userToken: flags.userToken,
 			operations: _user$project$Main$initOperations(flags),
@@ -18000,19 +18024,29 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SendGraph':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Ports$addToGraph(
-						_user$project$Encoders_Graph$encoder(model.graph))
-				};
+				var _p10 = model.operations.graph.data;
+				if (_p10.ctor === 'Just') {
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: _user$project$Ports$addToGraph(
+							_user$project$Encoders_Graph$encoder(_p10._0))
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 			case 'InitGraph':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Ports$initGraph(
-						_user$project$Encoders_Graph$encoder(model.graph))
-				};
+				var _p11 = model.operations.graph.data;
+				if (_p11.ctor === 'Just') {
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: _user$project$Ports$initGraph(
+							_user$project$Encoders_Graph$encoder(_p11._0))
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 			case 'SetSearchNode':
 				if (_p8._0.ctor === 'Ok') {
 					var newOps = A2(
@@ -18039,20 +18073,20 @@ var _user$project$Main$update = F2(
 						A2(
 							_elm_lang$core$List$filter,
 							function (x) {
-								var _p10 = x;
-								if (_p10.ctor === 'Node') {
+								var _p12 = x;
+								if (_p12.ctor === 'Node') {
 									return _elm_lang$core$Native_Utils.eq(
-										_user$project$Accessors_Node$getGenericData(_p10._0).id,
+										_user$project$Accessors_Node$getGenericData(_p12._0).id,
 										_p8._0._0);
 								} else {
 									return false;
 								}
 							},
-							model.graph));
+							_user$project$Utils_ZipList$current(model.snapshots).graph));
 					var node = function () {
-						var _p11 = filtered_node;
-						if ((_p11.ctor === 'Just') && (_p11._0.ctor === 'Node')) {
-							return _elm_lang$core$Maybe$Just(_p11._0._0);
+						var _p13 = filtered_node;
+						if ((_p13.ctor === 'Just') && (_p13._0.ctor === 'Node')) {
+							return _elm_lang$core$Maybe$Just(_p13._0._0);
 						} else {
 							return _elm_lang$core$Maybe$Nothing;
 						}
@@ -18108,20 +18142,18 @@ var _user$project$Main$update = F2(
 				}
 			case 'SetGraphState':
 				if (_p8._0.ctor === 'Ok') {
-					var _p13 = _p8._0._0;
-					var newSnapshots = function () {
-						var _p12 = model.initGraph;
-						if (_p12 === true) {
-							return A2(_user$project$Utils_ZipList$update, _p13, model.snapshots);
-						} else {
-							return A2(_user$project$Utils_ZipList$add, _p13, model.snapshots);
-						}
-					}();
+					var newOps = function (_p14) {
+						return A2(
+							_user$project$Accessors_Operations$setGraphData,
+							_elm_lang$core$Maybe$Nothing,
+							A2(_user$project$Accessors_Operations$setGraphIsInitial, false, _p14));
+					}(model.operations);
+					var newSnapshots = A2(_user$project$Utils_ZipList$add, _p8._0._0, model.snapshots);
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{snapshots: newSnapshots, initGraph: false}),
+							{snapshots: newSnapshots, operations: newOps}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -18147,7 +18179,7 @@ var _user$project$Main$update = F2(
 							_fbonetti$elm_phoenix_socket$Phoenix_Channel$withPayload,
 							_user$project$Encoders_Common$userEncoder(model.userToken),
 							_fbonetti$elm_phoenix_socket$Phoenix_Channel$init(_user$project$Main$channelName))));
-				var _p14 = A2(
+				var _p15 = A2(
 					_fbonetti$elm_phoenix_socket$Phoenix_Socket$join,
 					channel,
 					A4(
@@ -18157,8 +18189,8 @@ var _user$project$Main$update = F2(
 						_user$project$Types$ReceiveNodeLocalGraph,
 						_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
 							_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(model.socketUrl))));
-				var phxSocket = _p14._0;
-				var phxCmd = _p14._1;
+				var phxSocket = _p15._0;
+				var phxCmd = _p15._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -18177,18 +18209,18 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'GetNodeLocalGraph':
-				var _p15 = model.operations.node.searched;
-				if (_p15.ctor === 'Nothing') {
+				var _p16 = model.operations.node.searched;
+				if (_p16.ctor === 'Nothing') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
-					var _p17 = _p15._0;
+					var _p18 = _p16._0;
 					var payload = _elm_lang$core$Json_Encode$object(
 						{
 							ctor: '::',
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'uuid',
-								_1: _elm_lang$core$Json_Encode$string(_p17.uuid)
+								_1: _elm_lang$core$Json_Encode$string(_p18.uuid)
 							},
 							_1: {
 								ctor: '::',
@@ -18196,7 +18228,7 @@ var _user$project$Main$update = F2(
 									ctor: '_Tuple2',
 									_0: 'labels',
 									_1: _elm_lang$core$Json_Encode$list(
-										A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, _p17.labels))
+										A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, _p18.labels))
 								},
 								_1: {ctor: '[]'}
 							}
@@ -18211,9 +18243,9 @@ var _user$project$Main$update = F2(
 								_fbonetti$elm_phoenix_socket$Phoenix_Push$withPayload,
 								payload,
 								A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'node_local_graph', _user$project$Main$channelName))));
-					var _p16 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
-					var phxSocket = _p16._0;
-					var phxCmd = _p16._1;
+					var _p17 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
+					var phxSocket = _p17._0;
+					var phxCmd = _p17._1;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -18225,8 +18257,8 @@ var _user$project$Main$update = F2(
 			default:
 				var newOps = A2(_user$project$Accessors_Operations$setSearchedNode, _elm_lang$core$Maybe$Nothing, model.operations);
 				var localGraphCmd = function () {
-					var _p18 = model.initGraph;
-					if (_p18 === true) {
+					var _p19 = model.operations.graph.isInitial;
+					if (_p19 === true) {
 						return A2(
 							_elm_lang$core$Task$perform,
 							_elm_lang$core$Basics$always(_user$project$Types$InitGraph),
@@ -18241,15 +18273,18 @@ var _user$project$Main$update = F2(
 					}
 				}();
 				var decodedGraph = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Graph$fromWsDecoder, _p8._0);
-				var _p19 = decodedGraph;
-				if (_p19.ctor === 'Ok') {
+				var _p20 = decodedGraph;
+				if (_p20.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								graph: _user$project$Main$manageMetaData(_p19._0),
-								operations: newOps
+								operations: A2(
+									_user$project$Accessors_Operations$setGraphData,
+									_elm_lang$core$Maybe$Just(
+										_user$project$Main$manageMetaData(_p20._0)),
+									newOps)
 							}),
 						_1: localGraphCmd
 					};
@@ -18263,7 +18298,7 @@ var _user$project$Main$update = F2(
 									A2(
 										_elm_lang$core$Basics_ops['++'],
 										'Cannot decode received graph. -[',
-										A2(_elm_lang$core$Basics_ops['++'], _p19._0, ']')))
+										A2(_elm_lang$core$Basics_ops['++'], _p20._0, ']')))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};

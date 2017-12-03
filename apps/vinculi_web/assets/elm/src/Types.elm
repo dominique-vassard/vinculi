@@ -165,8 +165,15 @@ type alias NodeOperations =
     }
 
 
+type alias GraphOperations =
+    { data : Maybe Graph
+    , isInitial : Bool
+    }
+
+
 type alias Operations =
     { node : NodeOperations
+    , graph : GraphOperations
     }
 
 
@@ -178,11 +185,9 @@ type alias Snapshot =
 
 type alias Model =
     { phxSocket : PhxSocket.Socket Msg
-    , graph : Graph
     , socketUrl : String
-    , initGraph : Bool
-    , errorMessage : Maybe String
     , userToken : String
+    , errorMessage : Maybe String
     , operations : Operations
     , snapshots : ZipList Snapshot
     }

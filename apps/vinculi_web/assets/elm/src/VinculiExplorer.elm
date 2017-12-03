@@ -69,15 +69,17 @@ initOperations flags =
         , browsed = Nothing
         , pinned = Nothing
         }
+    , graph =
+        { data = Nothing
+        , isInitial = True
+        }
     }
 
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( { phxSocket = PhxSocket.init flags.socketUrl
-      , graph = []
       , socketUrl = flags.socketUrl
-      , initGraph = True
       , errorMessage = Nothing
       , userToken = flags.userToken
       , operations = initOperations flags
@@ -119,10 +121,20 @@ update msg model =
 
         --Ports OUT
         SendGraph ->
-            ( model, Ports.addToGraph (GraphEncode.encoder model.graph) )
+            case model.operations.graph.data of
+                Just graph ->
+                    ( model, Ports.addToGraph (GraphEncode.encoder graph) )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         InitGraph ->
-            ( model, Ports.initGraph (GraphEncode.encoder model.graph) )
+            case model.operations.graph.data of
+                Just graph ->
+                    ( model, Ports.initGraph (GraphEncode.encoder graph) )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         --Ports IN
         SetSearchNode (Ok searchNode) ->
@@ -152,7 +164,7 @@ update msg model =
                                     Edge _ ->
                                         False
                             )
-                            model.graph
+                            (ZipList.current model.snapshots).graph
 
                 node =
                     case filtered_node of
@@ -202,16 +214,17 @@ update msg model =
         SetGraphState (Ok snapshot) ->
             let
                 newSnapshots =
-                    case model.initGraph of
-                        True ->
-                            ZipList.update snapshot model.snapshots
+                    ZipList.add snapshot model.snapshots
 
-                        False ->
-                            ZipList.add snapshot model.snapshots
+                newOps =
+                    (Operations.setGraphIsInitial False
+                        >> Operations.setGraphData Nothing
+                    )
+                        model.operations
             in
                 ( { model
                     | snapshots = newSnapshots
-                    , initGraph = False
+                    , operations = newOps
                   }
                 , Cmd.none
                 )
@@ -291,7 +304,7 @@ update msg model =
                     Json.Decode.decodeValue GraphDecode.fromWsDecoder raw
 
                 localGraphCmd =
-                    case model.initGraph of
+                    case model.operations.graph.isInitial of
                         True ->
                             Task.perform (always InitGraph) (Task.succeed ())
 
@@ -304,8 +317,11 @@ update msg model =
                 case decodedGraph of
                     Ok graph ->
                         ( { model
-                            | graph = manageMetaData graph
-                            , operations = newOps
+                            | operations =
+                                (Operations.setGraphData
+                                    (Just (manageMetaData graph))
+                                    newOps
+                                )
                           }
                         , localGraphCmd
                         )
