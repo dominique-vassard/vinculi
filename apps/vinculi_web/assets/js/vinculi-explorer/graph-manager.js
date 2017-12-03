@@ -263,14 +263,14 @@ var GraphManager = /** @class */ (function () {
             }
         });
         this._currentNode = undefined;
+        // Hack to allow this._cy.elements to rellay hold elements data
+        this._cy.add(initialGraph);
         // InitGraphPort is not useful anymore
         // Then unsuscribe
         this._ports.postInit();
         this._registerDoubleTapEvent();
         this.initHandlers();
-        // for some reason, this._cy.elements is not yet accessbile
-        // Then we don't send graph state, it will be with the first action on graph
-        // this.sendNewGraphState()
+        this.sendNewGraphState("Init");
     };
     /**
      * Retrieves stylesheet from server
@@ -311,15 +311,21 @@ var GraphManager = /** @class */ (function () {
             spacingFactor: 3
         };
         this._cy.add(localGraph).layout(layout_config).run();
-        this.sendNewGraphState();
+        this.sendNewGraphState("Expand node");
     };
     /**
      * Send new graph state to Elm
      *
+     * @param  {string}       The action relted to the new graph state
+     *
      * @returns void
      */
-    GraphManager.prototype.sendNewGraphState = function () {
-        this._ports.sendNewGraphState(this._cy.elements().jsons());
+    GraphManager.prototype.sendNewGraphState = function (description) {
+        var data = {
+            data: this._cy.elements().jsons(),
+            description: description
+        };
+        this._ports.sendNewGraphState(data);
     };
     /**
      * Add event "doubleTap" to cy

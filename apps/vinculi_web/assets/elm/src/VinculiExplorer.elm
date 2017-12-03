@@ -21,16 +21,18 @@ import Bootstrap.Card as Card
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Row as Row
 import Bootstrap.Grid.Col as Col
+import Task
 import Types exposing (..)
 import Ports exposing (..)
-import Decoders.Graph as GraphDecode exposing (decoder, fromWsDecoder)
+import Decoders.Graph as GraphDecode exposing (fromWsDecoder)
 import Decoders.Port as PortDecoder exposing (localGraphDecoder)
+import Decoders.Snapshot as Snapshot exposing (decoder)
 import Encoders.Common as GraphEncode exposing (userEncoder)
 import Encoders.Graph as GraphEncode exposing (encoder)
 import Accessors.Node as Node exposing (..)
 import Accessors.Edge as Edge exposing (..)
 import Accessors.Operations as Operations exposing (..)
-import Task
+import Utils.ZipList as ZipList exposing (..)
 
 
 main : Program Flags Model Msg
@@ -79,6 +81,7 @@ init flags =
       , errorMessage = Nothing
       , userToken = flags.userToken
       , operations = initOperations flags
+      , snapshots = ZipList.init (Snapshot [] "init") []
       }
     , joinChannel
     )
@@ -196,8 +199,22 @@ update msg model =
             in
                 ( { model | operations = newOps }, Cmd.none )
 
-        SetGraphState (Ok graph) ->
-            ( { model | graph = graph }, Cmd.none )
+        SetGraphState (Ok snapshot) ->
+            let
+                newSnapshots =
+                    case model.initGraph of
+                        True ->
+                            ZipList.update snapshot model.snapshots
+
+                        False ->
+                            ZipList.add snapshot model.snapshots
+            in
+                ( { model
+                    | snapshots = newSnapshots
+                    , initGraph = False
+                  }
+                , Cmd.none
+                )
 
         SetGraphState (Err error) ->
             ( { model
@@ -289,7 +306,6 @@ update msg model =
                         ( { model
                             | graph = manageMetaData graph
                             , operations = newOps
-                            , initGraph = False
                           }
                         , localGraphCmd
                         )
@@ -357,7 +373,7 @@ subscriptions model =
                 >> SetSearchNode
             )
         , Ports.newGraphState
-            (Json.Decode.decodeValue GraphDecode.decoder
+            (Json.Decode.decodeValue Snapshot.decoder
                 >> SetGraphState
             )
         , Ports.displayNodeInfos

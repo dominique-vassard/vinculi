@@ -118,7 +118,7 @@ var Ports = /** @class */ (function () {
     /**
      * Send new graph state to Elm for further computations / displays / etc.
      *
-     * @param {string[]}   data     The actiulaized graph
+     * @param {GraphState}   data     The actualized graph state and a description
      *
      * @returns void
      */

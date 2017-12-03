@@ -16604,6 +16604,107 @@ var _rundis$elm_bootstrap$Bootstrap_Grid$col = F2(
 			{options: options, children: children});
 	});
 
+var _user$project$Utils_ZipList$toList = function (items) {
+	var _p0 = items;
+	if (_p0.ctor === 'Just') {
+		return _p0._0;
+	} else {
+		return {ctor: '[]'};
+	}
+};
+var _user$project$Utils_ZipList$hasNext = function (items) {
+	return _elm_lang$core$Native_Utils.cmp(
+		_elm_lang$core$List$length(items.next),
+		0) > 0;
+};
+var _user$project$Utils_ZipList$hasPrevious = function (items) {
+	return _elm_lang$core$Native_Utils.cmp(
+		_elm_lang$core$List$length(items.previous),
+		0) > 0;
+};
+var _user$project$Utils_ZipList$update = F2(
+	function (item, items) {
+		return _elm_lang$core$Native_Utils.update(
+			items,
+			{current: item});
+	});
+var _user$project$Utils_ZipList$current = function (items) {
+	return items.current;
+};
+var _user$project$Utils_ZipList$forward = function (items) {
+	var checkCurrent = _elm_lang$core$List$head(items.next);
+	var newItems = function () {
+		var _p1 = checkCurrent;
+		if (_p1.ctor === 'Just') {
+			return _elm_lang$core$Native_Utils.update(
+				items,
+				{
+					previous: A2(
+						_elm_lang$core$Basics_ops['++'],
+						items.previous,
+						{
+							ctor: '::',
+							_0: items.current,
+							_1: {ctor: '[]'}
+						}),
+					current: _p1._0,
+					next: _user$project$Utils_ZipList$toList(
+						_elm_lang$core$List$tail(items.next))
+				});
+		} else {
+			return items;
+		}
+	}();
+	return newItems;
+};
+var _user$project$Utils_ZipList$add = F2(
+	function (item, items) {
+		var newItems = _elm_lang$core$Native_Utils.update(
+			items,
+			{
+				next: {
+					ctor: '::',
+					_0: item,
+					_1: {ctor: '[]'}
+				}
+			});
+		return _user$project$Utils_ZipList$forward(newItems);
+	});
+var _user$project$Utils_ZipList$back = function (items) {
+	var checkCurrent = _elm_lang$core$List$head(
+		_elm_lang$core$List$reverse(items.previous));
+	var newItems = function () {
+		var _p2 = checkCurrent;
+		if (_p2.ctor === 'Just') {
+			return _elm_lang$core$Native_Utils.update(
+				items,
+				{
+					previous: _elm_lang$core$List$reverse(
+						_user$project$Utils_ZipList$toList(
+							_elm_lang$core$List$tail(
+								_elm_lang$core$List$reverse(items.previous)))),
+					current: _p2._0,
+					next: {ctor: '::', _0: items.current, _1: items.next}
+				});
+		} else {
+			return items;
+		}
+	}();
+	return newItems;
+};
+var _user$project$Utils_ZipList$ZipList = F3(
+	function (a, b, c) {
+		return {previous: a, current: b, next: c};
+	});
+var _user$project$Utils_ZipList$init = F2(
+	function (item, items) {
+		return A3(
+			_user$project$Utils_ZipList$ZipList,
+			{ctor: '[]'},
+			item,
+			items);
+	});
+
 var _user$project$Types$Flags = F4(
 	function (a, b, c, d) {
 		return {socketUrl: a, originNodeUuid: b, originNodeLabels: c, userToken: d};
@@ -16651,9 +16752,13 @@ var _user$project$Types$NodeOperations = F3(
 var _user$project$Types$Operations = function (a) {
 	return {node: a};
 };
-var _user$project$Types$Model = F7(
-	function (a, b, c, d, e, f, g) {
-		return {phxSocket: a, graph: b, socketUrl: c, initGraph: d, errorMessage: e, userToken: f, operations: g};
+var _user$project$Types$Snapshot = F2(
+	function (a, b) {
+		return {graph: a, description: b};
+	});
+var _user$project$Types$Model = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {phxSocket: a, graph: b, socketUrl: c, initGraph: d, errorMessage: e, userToken: f, operations: g, snapshots: h};
 	});
 var _user$project$Types$SearchNodeType = F2(
 	function (a, b) {
@@ -17035,6 +17140,16 @@ var _user$project$Decoders_Port$localGraphDecoder = A3(
 		'uuid',
 		_elm_lang$core$Json_Decode$string,
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$SearchNodeType)));
+
+var _user$project$Decoders_Snapshot$decoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'description',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'data',
+		_user$project$Decoders_Graph$decoder,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$Snapshot)));
 
 var _user$project$Encoders_Common$userEncoder = function (userToken) {
 	return _elm_lang$core$Json_Encode$object(
@@ -17765,7 +17880,7 @@ var _user$project$Main$subscriptions = function (model) {
 				_0: _user$project$Ports$newGraphState(
 					function (_p5) {
 						return _user$project$Types$SetGraphState(
-							A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Graph$decoder, _p5));
+							A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Snapshot$decoder, _p5));
 					}),
 				_1: {
 					ctor: '::',
@@ -17846,7 +17961,14 @@ var _user$project$Main$init = function (flags) {
 			initGraph: true,
 			errorMessage: _elm_lang$core$Maybe$Nothing,
 			userToken: flags.userToken,
-			operations: _user$project$Main$initOperations(flags)
+			operations: _user$project$Main$initOperations(flags),
+			snapshots: A2(
+				_user$project$Utils_ZipList$init,
+				A2(
+					_user$project$Types$Snapshot,
+					{ctor: '[]'},
+					'init'),
+				{ctor: '[]'})
 		},
 		_1: _user$project$Main$joinChannel
 	};
@@ -17986,11 +18108,20 @@ var _user$project$Main$update = F2(
 				}
 			case 'SetGraphState':
 				if (_p8._0.ctor === 'Ok') {
+					var _p13 = _p8._0._0;
+					var newSnapshots = function () {
+						var _p12 = model.initGraph;
+						if (_p12 === true) {
+							return A2(_user$project$Utils_ZipList$update, _p13, model.snapshots);
+						} else {
+							return A2(_user$project$Utils_ZipList$add, _p13, model.snapshots);
+						}
+					}();
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{graph: _p8._0._0}),
+							{snapshots: newSnapshots, initGraph: false}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -18016,7 +18147,7 @@ var _user$project$Main$update = F2(
 							_fbonetti$elm_phoenix_socket$Phoenix_Channel$withPayload,
 							_user$project$Encoders_Common$userEncoder(model.userToken),
 							_fbonetti$elm_phoenix_socket$Phoenix_Channel$init(_user$project$Main$channelName))));
-				var _p12 = A2(
+				var _p14 = A2(
 					_fbonetti$elm_phoenix_socket$Phoenix_Socket$join,
 					channel,
 					A4(
@@ -18026,8 +18157,8 @@ var _user$project$Main$update = F2(
 						_user$project$Types$ReceiveNodeLocalGraph,
 						_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
 							_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(model.socketUrl))));
-				var phxSocket = _p12._0;
-				var phxCmd = _p12._1;
+				var phxSocket = _p14._0;
+				var phxCmd = _p14._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -18046,18 +18177,18 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'GetNodeLocalGraph':
-				var _p13 = model.operations.node.searched;
-				if (_p13.ctor === 'Nothing') {
+				var _p15 = model.operations.node.searched;
+				if (_p15.ctor === 'Nothing') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
-					var _p15 = _p13._0;
+					var _p17 = _p15._0;
 					var payload = _elm_lang$core$Json_Encode$object(
 						{
 							ctor: '::',
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'uuid',
-								_1: _elm_lang$core$Json_Encode$string(_p15.uuid)
+								_1: _elm_lang$core$Json_Encode$string(_p17.uuid)
 							},
 							_1: {
 								ctor: '::',
@@ -18065,7 +18196,7 @@ var _user$project$Main$update = F2(
 									ctor: '_Tuple2',
 									_0: 'labels',
 									_1: _elm_lang$core$Json_Encode$list(
-										A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, _p15.labels))
+										A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, _p17.labels))
 								},
 								_1: {ctor: '[]'}
 							}
@@ -18080,9 +18211,9 @@ var _user$project$Main$update = F2(
 								_fbonetti$elm_phoenix_socket$Phoenix_Push$withPayload,
 								payload,
 								A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'node_local_graph', _user$project$Main$channelName))));
-					var _p14 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
-					var phxSocket = _p14._0;
-					var phxCmd = _p14._1;
+					var _p16 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
+					var phxSocket = _p16._0;
+					var phxCmd = _p16._1;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -18094,8 +18225,8 @@ var _user$project$Main$update = F2(
 			default:
 				var newOps = A2(_user$project$Accessors_Operations$setSearchedNode, _elm_lang$core$Maybe$Nothing, model.operations);
 				var localGraphCmd = function () {
-					var _p16 = model.initGraph;
-					if (_p16 === true) {
+					var _p18 = model.initGraph;
+					if (_p18 === true) {
 						return A2(
 							_elm_lang$core$Task$perform,
 							_elm_lang$core$Basics$always(_user$project$Types$InitGraph),
@@ -18110,16 +18241,15 @@ var _user$project$Main$update = F2(
 					}
 				}();
 				var decodedGraph = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Graph$fromWsDecoder, _p8._0);
-				var _p17 = decodedGraph;
-				if (_p17.ctor === 'Ok') {
+				var _p19 = decodedGraph;
+				if (_p19.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								graph: _user$project$Main$manageMetaData(_p17._0),
-								operations: newOps,
-								initGraph: false
+								graph: _user$project$Main$manageMetaData(_p19._0),
+								operations: newOps
 							}),
 						_1: localGraphCmd
 					};
@@ -18133,7 +18263,7 @@ var _user$project$Main$update = F2(
 									A2(
 										_elm_lang$core$Basics_ops['++'],
 										'Cannot decode received graph. -[',
-										A2(_elm_lang$core$Basics_ops['++'], _p17._0, ']')))
+										A2(_elm_lang$core$Basics_ops['++'], _p19._0, ']')))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -18171,7 +18301,7 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Types.NodeData":{"args":[],"tags":{"PersonNode":["Types.PersonNodeData"],"ValueNode":["Types.ValueNodeData"],"PublicationNode":["Types.PublicationNodeData"],"GenericNode":["Types.GenericNodeData"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Types.EdgeData":{"args":[],"tags":{"InfluencedEdge":["Types.InfluencedEdgeData"],"GenericEdge":["Types.GenericEdgeData"]}},"Types.Msg":{"args":[],"tags":{"SetSearchNode":["Result.Result String Types.SearchNodeType"],"GetNodeLocalGraph":[],"JoinError":[],"Join":[],"SetBrowsedNode":["Result.Result String String"],"HandleSendError":["Json.Encode.Value"],"SetGraphState":["Result.Result String Types.Graph"],"PhoenixMsg":["Phoenix.Socket.Msg Types.Msg"],"PinNode":["Bool"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"SendGraph":[],"UnsetBrowsedNode":["Bool"],"InitGraph":[]}},"Types.Element":{"args":[],"tags":{"Node":["Types.NodeType"],"Edge":["Types.EdgeType"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Types.GenericNodeData":{"args":[],"type":"{ id : String, labels : List String, name : String }"},"Types.InfluencedEdgeData":{"args":[],"type":"{ id : String , source : String , target : String , edge_type : String , strength : Int }"},"Types.PersonNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , lastName : String , firstName : String , aka : String , internalLink : String , externalLink : String }"},"Types.ValueNodeData":{"args":[],"type":"{ id : String, labels : List String, name : String, value : Int }"},"Types.PublicationNodeData":{"args":[],"type":"{ id : String, labels : List String, name : String, title : String }"},"Types.Position":{"args":[],"type":"{ x : Float, y : Float }"},"Types.GenericEdgeData":{"args":[],"type":"{ id : String, source : String, target : String, edge_type : String }"},"Types.NodeType":{"args":[],"type":"{ group : String , data : Types.NodeData , classes : String , position : Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.SearchNodeType":{"args":[],"type":"{ uuid : String, labels : List String }"},"Time.Time":{"args":[],"type":"Float"},"Types.EdgeType":{"args":[],"type":"{ group : String , data : Types.EdgeData , classes : String , position : Maybe.Maybe Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.Graph":{"args":[],"type":"List Types.Element"}},"message":"Types.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Types.NodeData":{"args":[],"tags":{"PersonNode":["Types.PersonNodeData"],"ValueNode":["Types.ValueNodeData"],"PublicationNode":["Types.PublicationNodeData"],"GenericNode":["Types.GenericNodeData"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Types.EdgeData":{"args":[],"tags":{"InfluencedEdge":["Types.InfluencedEdgeData"],"GenericEdge":["Types.GenericEdgeData"]}},"Types.Msg":{"args":[],"tags":{"SetSearchNode":["Result.Result String Types.SearchNodeType"],"GetNodeLocalGraph":[],"JoinError":[],"Join":[],"SetBrowsedNode":["Result.Result String String"],"HandleSendError":["Json.Encode.Value"],"SetGraphState":["Result.Result String Types.Snapshot"],"PhoenixMsg":["Phoenix.Socket.Msg Types.Msg"],"PinNode":["Bool"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"SendGraph":[],"UnsetBrowsedNode":["Bool"],"InitGraph":[]}},"Types.Element":{"args":[],"tags":{"Node":["Types.NodeType"],"Edge":["Types.EdgeType"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Types.GenericNodeData":{"args":[],"type":"{ id : String, labels : List String, name : String }"},"Types.InfluencedEdgeData":{"args":[],"type":"{ id : String , source : String , target : String , edge_type : String , strength : Int }"},"Types.PersonNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , lastName : String , firstName : String , aka : String , internalLink : String , externalLink : String }"},"Types.ValueNodeData":{"args":[],"type":"{ id : String, labels : List String, name : String, value : Int }"},"Types.Snapshot":{"args":[],"type":"{ graph : Types.Graph, description : String }"},"Types.PublicationNodeData":{"args":[],"type":"{ id : String, labels : List String, name : String, title : String }"},"Types.Position":{"args":[],"type":"{ x : Float, y : Float }"},"Types.GenericEdgeData":{"args":[],"type":"{ id : String, source : String, target : String, edge_type : String }"},"Types.NodeType":{"args":[],"type":"{ group : String , data : Types.NodeData , classes : String , position : Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.SearchNodeType":{"args":[],"type":"{ uuid : String, labels : List String }"},"Time.Time":{"args":[],"type":"Float"},"Types.EdgeType":{"args":[],"type":"{ group : String , data : Types.EdgeData , classes : String , position : Maybe.Maybe Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.Graph":{"args":[],"type":"List Types.Element"}},"message":"Types.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])

@@ -2,6 +2,7 @@ module Types exposing (..)
 
 import Phoenix.Socket as PhxSocket exposing (Socket)
 import Json.Encode exposing (Value)
+import Utils.ZipList as ZipList exposing (ZipList)
 
 
 --- FLAGS
@@ -169,6 +170,12 @@ type alias Operations =
     }
 
 
+type alias Snapshot =
+    { graph : Graph
+    , description : String
+    }
+
+
 type alias Model =
     { phxSocket : PhxSocket.Socket Msg
     , graph : Graph
@@ -177,6 +184,7 @@ type alias Model =
     , errorMessage : Maybe String
     , userToken : String
     , operations : Operations
+    , snapshots : ZipList Snapshot
     }
 
 
@@ -199,4 +207,4 @@ type Msg
     | SetBrowsedNode (Result String String)
     | UnsetBrowsedNode Bool
     | PinNode Bool
-    | SetGraphState (Result String Graph)
+    | SetGraphState (Result String Snapshot)

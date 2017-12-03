@@ -7,6 +7,11 @@ export interface Callbacks {
     }
 }
 
+export interface GraphState {
+    data: string[],
+    description: string
+}
+
 /**
  * NodeSearchData type definition
  * @type {Object}
@@ -125,11 +130,11 @@ export class Ports {
     /**
      * Send new graph state to Elm for further computations / displays / etc.
      *
-     * @param {string[]}   data     The actiulaized graph
+     * @param {GraphState}   data     The actualized graph state and a description
      *
      * @returns void
      */
-    sendNewGraphState(data: string[]): void {
+    sendNewGraphState(data: GraphState): void {
         this._elmApp.ports.newGraphState.send(data)
     }
 

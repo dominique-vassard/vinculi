@@ -274,14 +274,15 @@ export class GraphManager {
         })
         this._currentNode = undefined
 
+        // Hack to allow this._cy.elements to rellay hold elements data
+        this._cy.add(initialGraph)
+
         // InitGraphPort is not useful anymore
         // Then unsuscribe
         this._ports.postInit()
         this._registerDoubleTapEvent()
         this.initHandlers()
-        // for some reason, this._cy.elements is not yet accessbile
-        // Then we don't send graph state, it will be with the first action on graph
-        // this.sendNewGraphState()
+        this.sendNewGraphState("Init")
     }
 
     /**
@@ -327,16 +328,22 @@ export class GraphManager {
                 spacingFactor: 3
             }
         this._cy.add(localGraph).layout(layout_config).run()
-        this.sendNewGraphState()
+        this.sendNewGraphState("Expand node")
     }
 
     /**
      * Send new graph state to Elm
      *
+     * @param  {string}       The action relted to the new graph state
+     *
      * @returns void
      */
-    sendNewGraphState(): void {
-        this._ports.sendNewGraphState(this._cy.elements().jsons())
+    sendNewGraphState(description: string): void {
+        const data = {
+            data: this._cy.elements().jsons(),
+            description: description
+        }
+        this._ports.sendNewGraphState(data)
     }
 
     /**
