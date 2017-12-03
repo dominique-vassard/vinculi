@@ -31,6 +31,7 @@ import Encoders.Common as GraphEncode exposing (userEncoder)
 import Encoders.Graph as GraphEncode exposing (encoder)
 import Accessors.Node as Node exposing (..)
 import Accessors.Edge as Edge exposing (..)
+import Accessors.Graph as Graph exposing (..)
 import Accessors.Operations as Operations exposing (..)
 import Utils.ZipList as ZipList exposing (..)
 
@@ -214,7 +215,12 @@ update msg model =
         SetGraphState (Ok snapshot) ->
             let
                 newSnapshots =
-                    ZipList.add snapshot model.snapshots
+                    case model.operations.graph.isInitial of
+                        True ->
+                            ZipList.update snapshot model.snapshots
+
+                        False ->
+                            ZipList.add snapshot model.snapshots
 
                 newOps =
                     (Operations.setGraphIsInitial False
@@ -316,15 +322,34 @@ update msg model =
             in
                 case decodedGraph of
                     Ok graph ->
-                        ( { model
-                            | operations =
-                                (Operations.setGraphData
-                                    (Just (manageMetaData graph))
+                        let
+                            filteredGraph =
+                                substractGraph graph
+                                    (ZipList.current
+                                        model.snapshots
+                                    ).graph
+
+                            graphCmd =
+                                if List.length filteredGraph > 0 then
+                                    localGraphCmd
+                                else
+                                    Cmd.none
+
+                            finalOps =
+                                Operations.setGraphData
+                                    (Just
+                                        (manageMetaData
+                                            model.operations.node.searched
+                                            graph
+                                        )
+                                    )
                                     newOps
-                                )
-                          }
-                        , localGraphCmd
-                        )
+                        in
+                            ( { model
+                                | operations = finalOps
+                              }
+                            , graphCmd
+                            )
 
                     Err error ->
                         ( { model
@@ -339,9 +364,43 @@ update msg model =
                         )
 
 
-manageMetaData : Graph -> Graph
-manageMetaData graph =
-    List.map addClass graph
+substractGraph : Graph -> Graph -> Graph
+substractGraph receivedGraph graph =
+    List.filter
+        (\x ->
+            not (Graph.elementOf x graph)
+        )
+        receivedGraph
+
+
+manageMetaData : Maybe SearchNodeType -> Graph -> Graph
+manageMetaData parentNode graph =
+    List.map (addClass >> (setParentNode parentNode)) graph
+
+
+setParentNode : Maybe SearchNodeType -> Element -> Element
+setParentNode parentNode element =
+    case element of
+        Node node ->
+            case parentNode of
+                Just parentNode ->
+                    if parentNode.uuid == (Node.getGenericData node).id then
+                        Node node
+                    else
+                        let
+                            nodeData =
+                                node.data
+
+                            newNodeData =
+                                Node.setParentNode (Just parentNode.uuid) node.data
+                        in
+                            Node { node | data = newNodeData }
+
+                Nothing ->
+                    Node node
+
+        element ->
+            element
 
 
 addClass : Element -> Element

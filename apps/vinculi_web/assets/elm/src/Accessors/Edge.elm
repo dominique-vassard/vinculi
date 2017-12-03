@@ -1,4 +1,4 @@
-module Accessors.Edge exposing (getType)
+module Accessors.Edge exposing (getType, getGenericData)
 
 import Types
     exposing
@@ -13,13 +13,13 @@ getType : EdgeType -> String
 getType edge =
     let
         { edge_type } =
-            getGenericEdgeData edge
+            getGenericData edge
     in
         edge_type
 
 
-getGenericEdgeData : EdgeType -> GenericEdgeData
-getGenericEdgeData edge =
+getGenericData : EdgeType -> GenericEdgeData
+getGenericData edge =
     case edge.data of
         InfluencedEdge data ->
             GenericEdgeData data.id data.source data.target data.edge_type

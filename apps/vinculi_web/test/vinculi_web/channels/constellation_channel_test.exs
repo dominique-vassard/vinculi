@@ -4,12 +4,26 @@ defmodule VinculiWeb.ConstellationChannelTest do
   alias VinculiWeb.ConstellationChannel
 
   setup do
+    user = insert_user(%{})
+    salt = VinculiWeb.Endpoint.config(:secret_key_base)
+    token = Phoenix.Token.sign(VinculiWeb.Endpoint, salt, user.id)
+
     {:ok, _, socket} =
       socket("user_id", %{some: :assign})
-      |> subscribe_and_join(ConstellationChannel, "constellation:explore")
+      |> subscribe_and_join(ConstellationChannel, "constellation:explore", %{"token" => token})
 
     {:ok, socket: socket}
   end
+
+  # setup do
+  #   user = insert_user(%{})
+  #   salt = VinculiWeb.Endpoint.config(:secret_key_base)
+  #   token = Phoenix.Token.sign(VinculiWeb.Endpoint, salt, user.id)
+  #   # {:ok, socket} = connect(VinculiWeb.UserSocket, %{"token" => token})
+
+  #   socket("", %{})
+  #     |> subscribe_and_join(ConstellationChannel, "constellation:explore", %{token: token})
+  # end
 
   test "ping replies with status ok", %{socket: socket} do
     ref = push socket, "ping", %{"hello" => "there"}

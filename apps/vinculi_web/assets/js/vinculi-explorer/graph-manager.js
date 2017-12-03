@@ -176,8 +176,8 @@ var GraphManager = /** @class */ (function () {
     /////////////////////////////////////////////////////////////////
     /**
      * Manage node deployment
-     * TODO: Hide/show children if node data has yet been retrieved
-     *       Else call the deploy method
+     * Hide/show children if node data has yet been retrieved
+     * Else call the deploy method
      *
      * TODO: Update filters when done
      *
@@ -191,7 +191,19 @@ var GraphManager = /** @class */ (function () {
             "labels": node.data()["labels"]
         };
         this._currentNode = node;
-        this._ports.getLocalGraph(data);
+        var children = this._cy.elements("node[parent-node = '" + node.id() + "']");
+        if (children.length > 0) {
+            var visible = children.some(function (node, _) { return node.visible() == true; });
+            if (visible) {
+                children.hide();
+            }
+            else {
+                children.show();
+            }
+        }
+        else {
+            this._ports.getLocalGraph(data);
+        }
     };
     /**
      * Manage node infos displaying

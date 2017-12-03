@@ -24,6 +24,7 @@ type alias GenericNodeData =
     { id : String
     , labels : List String
     , name : String
+    , parentNode : Maybe String
     }
 
 
@@ -32,6 +33,7 @@ type alias CommonNodeData a =
         | id : String
         , labels : List String
         , name : String
+        , parentNode : Maybe String
     }
 
 
@@ -43,6 +45,7 @@ type alias PersonNodeData =
     { id : String
     , labels : List String
     , name : String
+    , parentNode : Maybe String
     , lastName : String
     , firstName : String
     , aka : String
@@ -55,6 +58,7 @@ type alias ValueNodeData =
     { id : String
     , labels : List String
     , name : String
+    , parentNode : Maybe String
     , value : Int
     }
 
@@ -63,6 +67,7 @@ type alias PublicationNodeData =
     { id : String
     , labels : List String
     , name : String
+    , parentNode : Maybe String
     , title : String
     }
 

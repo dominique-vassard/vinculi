@@ -40,6 +40,6 @@ defmodule VinculiWeb.ConstellationChannel do
   end
 
   # Add authorization logic here as required.
-  defp authorized?(%{"token" => token} = payload, socket) do
-  end
+  # defp authorized?(%{"token" => token} = payload, socket) do
+  # end
 end

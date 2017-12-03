@@ -1,6 +1,6 @@
 module Encoders.Node exposing (encoder)
 
-import Json.Encode as Encode exposing (Value, bool, int, object, string)
+import Json.Encode as Encode exposing (Value, bool, int, object, string, null)
 import Types
     exposing
         ( NodeType
@@ -50,7 +50,18 @@ commonEncoder data =
     [ ( "id", Encode.string data.id )
     , ( "labels", Encode.list (List.map Encode.string data.labels) )
     , ( "name", Encode.string data.name )
+    , ( "parent-node", (maybeStringEncoder data.parentNode) )
     ]
+
+
+maybeStringEncoder : Maybe String -> Encode.Value
+maybeStringEncoder str =
+    case str of
+        Just str ->
+            Encode.string str
+
+        Nothing ->
+            Encode.null
 
 
 genericEncoder : GenericNodeData -> Encode.Value

@@ -1,7 +1,15 @@
 module Decoders.Node exposing (decoder)
 
 import Json.Decode.Pipeline exposing (decode, optional, required)
-import Json.Decode as Decode exposing (Decoder, andThen, list, map, string)
+import Json.Decode as Decode
+    exposing
+        ( Decoder
+        , andThen
+        , list
+        , map
+        , nullable
+        , string
+        )
 import Decoders.Common exposing (positionDecoder)
 import Types
     exposing
@@ -51,12 +59,13 @@ dataDecoderHelper labels =
             genericDecoder
 
 
-commonDataDecoder : (String -> List String -> String -> ntype) -> Decoder ntype
+commonDataDecoder : (String -> List String -> String -> Maybe String -> ntype) -> Decoder ntype
 commonDataDecoder dataType =
     Json.Decode.Pipeline.decode dataType
         |> required "id" Decode.string
         |> required "labels" (Decode.list Decode.string)
         |> required "name" Decode.string
+        |> optional "parent-node" (Decode.nullable Decode.string) Nothing
 
 
 genericDecoder : Decoder NodeData
