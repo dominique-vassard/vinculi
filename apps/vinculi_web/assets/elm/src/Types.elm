@@ -163,10 +163,27 @@ type alias Graph =
 --- MODEL
 
 
+type ElementType
+    = NodeElt
+    | EdgeElt
+
+
+type alias BrowsedElement =
+    { id : String
+    , elementType : ElementType
+    }
+
+
 type alias NodeOperations =
     { searched : Maybe SearchNodeType
     , browsed : Maybe NodeType
     , pinned : Maybe NodeType
+    }
+
+
+type alias EdgeOperations =
+    { browsed : Maybe EdgeType
+    , pinned : Maybe EdgeType
     }
 
 
@@ -179,6 +196,7 @@ type alias GraphOperations =
 type alias Operations =
     { node : NodeOperations
     , graph : GraphOperations
+    , edge : EdgeOperations
     }
 
 
@@ -214,7 +232,7 @@ type Msg
     | Join
     | JoinError
     | SetSearchNode (Result String SearchNodeType)
-    | SetBrowsedNode (Result String String)
-    | UnsetBrowsedNode Bool
+    | SetBrowsedElement (Result String BrowsedElement)
+    | UnsetBrowsedElement (Result String ElementType)
     | PinNode Bool
     | SetGraphState (Result String Snapshot)

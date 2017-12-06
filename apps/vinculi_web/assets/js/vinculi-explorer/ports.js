@@ -126,16 +126,6 @@ var Ports = /** @class */ (function () {
         this._elmApp.ports.newGraphState.send(data);
     };
     /**
-     * Send Elm a node uuid in order to display its infos
-     *
-     * @param {string}   nodeUuid     The uuid of the node to display infos for
-     *
-     * @returns void
-     */
-    Ports.prototype.sendNodeIdToDisplay = function (nodeUuid) {
-        this._elmApp.ports.displayNodeInfos.send(nodeUuid);
-    };
-    /**
      * Send Elm a command in order to pin its infos
      *
      * @param {boolean}   pin         True to tpin, False to unpin
@@ -146,12 +136,20 @@ var Ports = /** @class */ (function () {
         this._elmApp.ports.pinNodeInfos.send(pin);
     };
     /**
-     * Send Elm a command in order to hide browsed node infos
+     * Send Elm a element uuid in order to display its infos
      *
-     * @returns void
+     * @param {string} elementId       The id of the element to display
+     * @param {string} elementType     The type of the element to display
      */
-    Ports.prototype.sendHideNodeCommand = function () {
-        this._elmApp.ports.hideNodeInfos.send(true);
+    Ports.prototype.sendElementIdToDisplay = function (elementId, elementType) {
+        var params = {
+            "id": elementId,
+            "elementType": elementType
+        };
+        this._elmApp.ports.displayElementInfos.send(params);
+    };
+    Ports.prototype.hideElementInfos = function (elementType) {
+        this._elmApp.ports.hideElementInfos.send(elementType);
     };
     return Ports;
 }());

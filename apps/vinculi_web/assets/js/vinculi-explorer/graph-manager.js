@@ -124,6 +124,10 @@ var GraphManager = /** @class */ (function () {
         this._cy.on('mouseover', 'node', function (event) { _this.showNodeInfosHandler(event); });
         // Mouseout node :hide node infos
         this._cy.on('mouseout', 'node', function (event) { _this.hideNodeInfosHandler(event); });
+        // Mouseover edge: display edge infos
+        this._cy.on('mouseover', 'edge', function (event) { _this.showEdgeInfosHandler(event); });
+        // Mouseout edge :hide edge infos
+        this._cy.on('mouseout', 'edge', function (event) { _this.hideEdgeInfosHandler(event); });
         return this;
     };
     /**
@@ -214,7 +218,7 @@ var GraphManager = /** @class */ (function () {
      */
     GraphManager.prototype.showNodeInfosHandler = function (event) {
         var node = event.target;
-        this._ports.sendNodeIdToDisplay(node.id());
+        this._ports.sendElementIdToDisplay(node.id(), "node");
     };
     /**
      * Manage node infos hiding
@@ -224,7 +228,7 @@ var GraphManager = /** @class */ (function () {
      * @return void
      */
     GraphManager.prototype.hideNodeInfosHandler = function (event) {
-        this._ports.sendHideNodeCommand();
+        this._ports.hideElementInfos("node");
     };
     /**
      * Manage node infos pinning
@@ -249,6 +253,27 @@ var GraphManager = /** @class */ (function () {
         if (target === this._cy) {
             this._ports.sendPinNodeCommand(false);
         }
+    };
+    /**
+     * Manage edge infos displaying
+     * Send edge uuid to Elm for displaying
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover node)
+     * @return void
+     */
+    GraphManager.prototype.showEdgeInfosHandler = function (event) {
+        var edge = event.target;
+        this._ports.sendElementIdToDisplay(edge.id(), "edge");
+    };
+    /**
+     * Manage edge infos displaying
+     * Send edge uuid for Elm to hide its infos
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover node)
+     * @return void
+     */
+    GraphManager.prototype.hideEdgeInfosHandler = function (event) {
+        this._ports.hideElementInfos("edge");
     };
     /////////////////////////////////////////////////////////////////
     //                       PORTS CALLBACKS                       //

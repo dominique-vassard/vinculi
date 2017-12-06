@@ -26,7 +26,8 @@ import Types exposing (..)
 import Ports exposing (..)
 import Decoders.Graph as GraphDecode exposing (fromWsDecoder)
 import Decoders.Port as PortDecoder exposing (localGraphDecoder)
-import Decoders.Snapshot as Snapshot exposing (decoder)
+import Decoders.Snapshot as SnapshotDecoder exposing (decoder)
+import Decoders.Element as ElementDecoder exposing (browsedDecoder)
 import Encoders.Common as GraphEncode exposing (userEncoder)
 import Encoders.Graph as GraphEncode exposing (encoder)
 import Accessors.Node as Node exposing (..)
@@ -73,6 +74,10 @@ initOperations flags =
     , graph =
         { data = Nothing
         , isInitial = True
+        }
+    , edge =
+        { browsed = Nothing
+        , pinned = Nothing
         }
     }
 
@@ -152,48 +157,45 @@ update msg model =
         SetSearchNode (Err searchNode) ->
             ( model, Cmd.none )
 
-        SetBrowsedNode (Ok nodeUuid) ->
+        SetBrowsedElement (Ok browsedElement) ->
             let
-                filtered_node =
-                    List.head <|
-                        List.filter
-                            (\x ->
-                                case x of
-                                    Node node ->
-                                        (Node.getGenericData node).id == nodeUuid
+                newModel =
+                    case browsedElement.elementType of
+                        EdgeElt ->
+                            updateBrowsedEdge browsedElement model
 
-                                    Edge _ ->
-                                        False
-                            )
-                            (ZipList.current model.snapshots).graph
-
-                node =
-                    case filtered_node of
-                        Just (Node node) ->
-                            Just node
-
-                        _ ->
-                            Nothing
-
-                newOps =
-                    Operations.setBrowsedNode node model.operations
+                        NodeElt ->
+                            updateBrowsedNode browsedElement model
             in
-                ( { model | operations = newOps }, Cmd.none )
+                ( newModel, Cmd.none )
 
-        SetBrowsedNode (Err error) ->
+        SetBrowsedElement (Err error) ->
             ( { model
                 | errorMessage =
-                    Just ("Failed to set browsedNode: " ++ error)
+                    Just ("Failed to set browsedElement: " ++ error)
               }
             , Cmd.none
             )
 
-        UnsetBrowsedNode _ ->
+        UnsetBrowsedElement (Ok elementType) ->
             let
                 newOps =
-                    Operations.setBrowsedNode Nothing model.operations
+                    case elementType of
+                        NodeElt ->
+                            Operations.setBrowsedNode Nothing model.operations
+
+                        EdgeElt ->
+                            Operations.setBrowsedEdge Nothing model.operations
             in
                 ( { model | operations = newOps }, Cmd.none )
+
+        UnsetBrowsedElement (Err error) ->
+            ( { model
+                | errorMessage =
+                    Just ("Failed to unset browsedElement: " ++ error)
+              }
+            , Cmd.none
+            )
 
         PinNode True ->
             let
@@ -364,6 +366,30 @@ update msg model =
                         )
 
 
+updateBrowsedEdge : BrowsedElement -> Model -> Model
+updateBrowsedEdge element model =
+    let
+        browsedEdge =
+            Graph.getEdge element.id (ZipList.current model.snapshots).graph
+
+        newOps =
+            Operations.setBrowsedEdge browsedEdge model.operations
+    in
+        { model | operations = newOps }
+
+
+updateBrowsedNode : BrowsedElement -> Model -> Model
+updateBrowsedNode element model =
+    let
+        browsedNode =
+            Graph.getNode element.id (ZipList.current model.snapshots).graph
+
+        newOps =
+            Operations.setBrowsedNode browsedNode model.operations
+    in
+        { model | operations = newOps }
+
+
 substractGraph : Graph -> Graph -> Graph
 substractGraph receivedGraph graph =
     List.filter
@@ -392,7 +418,9 @@ setParentNode parentNode element =
                                 node.data
 
                             newNodeData =
-                                Node.setParentNode (Just parentNode.uuid) node.data
+                                Node.setParentNode
+                                    (Just parentNode.uuid)
+                                    node.data
                         in
                             Node { node | data = newNodeData }
 
@@ -448,14 +476,17 @@ subscriptions model =
                 >> SetSearchNode
             )
         , Ports.newGraphState
-            (Json.Decode.decodeValue Snapshot.decoder
+            (Json.Decode.decodeValue SnapshotDecoder.decoder
                 >> SetGraphState
             )
-        , Ports.displayNodeInfos
-            ((Json.Decode.decodeValue Json.Decode.string)
-                >> SetBrowsedNode
+        , Ports.displayElementInfos
+            ((Json.Decode.decodeValue ElementDecoder.browsedDecoder)
+                >> SetBrowsedElement
             )
-        , Ports.hideNodeInfos UnsetBrowsedNode
+        , Ports.hideElementInfos
+            ((Json.Decode.decodeValue ElementDecoder.elementTypeDecoder)
+                >> UnsetBrowsedElement
+            )
         , Ports.pinNodeInfos PinNode
         , PhxSocket.listen model.phxSocket PhoenixMsg
         ]
@@ -481,6 +512,7 @@ view model =
                 , Grid.row []
                     [ Grid.col [ Col.lg12 ]
                         [ viewNodeData <| nodeToDisplay model.operations.node
+                        , viewEdgeData <| edgeToDisplay model.operations.edge
                         ]
                     ]
                 ]
@@ -513,6 +545,35 @@ nodeToDisplay currentNode =
 
         Nothing ->
             currentNode.pinned
+
+
+edgeToDisplay : EdgeOperations -> Maybe EdgeType
+edgeToDisplay currentEdge =
+    case currentEdge.browsed of
+        Just edge ->
+            Just edge
+
+        Nothing ->
+            currentEdge.pinned
+
+
+viewEdgeData : Maybe EdgeType -> Html Msg
+viewEdgeData edgeToDisplay =
+    let
+        dataToDisplay =
+            case edgeToDisplay of
+                Nothing ->
+                    div [] []
+
+                Just edge ->
+                    div [] [ text (Edge.getGenericData edge).edge_type ]
+    in
+        Card.config []
+            |> Card.header [ class "text-center" ]
+                [ h5 [] [ text "Edge infos" ] ]
+            |> Card.block [ Card.blockAttrs [ class "node-infos" ] ]
+                [ Card.text [] [ dataToDisplay ] ]
+            |> Card.view
 
 
 viewNodeData : Maybe NodeType -> Html Msg

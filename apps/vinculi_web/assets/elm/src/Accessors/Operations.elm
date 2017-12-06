@@ -1,6 +1,6 @@
 module Accessors.Operations exposing (..)
 
-import Types exposing (Operations, NodeType, SearchNodeType, Graph)
+import Types exposing (Operations, EdgeType, NodeType, SearchNodeType, Graph)
 
 
 setBrowsedNode : Maybe NodeType -> Operations -> Operations
@@ -37,6 +37,30 @@ setSearchedNode newSearchNode operations =
             { oldNodeOps | searched = newSearchNode }
     in
         { operations | node = newNodeOps }
+
+
+setBrowsedEdge : Maybe EdgeType -> Operations -> Operations
+setBrowsedEdge newBrowsedEdge operations =
+    let
+        oldOps =
+            operations.edge
+
+        newOps =
+            { oldOps | browsed = newBrowsedEdge }
+    in
+        { operations | edge = newOps }
+
+
+setPinnedEdge : Maybe EdgeType -> Operations -> Operations
+setPinnedEdge newPinnedEdge operations =
+    let
+        oldOps =
+            operations.edge
+
+        newOps =
+            { oldOps | pinned = newPinnedEdge }
+    in
+        { operations | edge = newOps }
 
 
 setGraphIsInitial : Bool -> Operations -> Operations

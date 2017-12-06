@@ -139,17 +139,6 @@ export class Ports {
     }
 
     /**
-     * Send Elm a node uuid in order to display its infos
-     *
-     * @param {string}   nodeUuid     The uuid of the node to display infos for
-     *
-     * @returns void
-     */
-    sendNodeIdToDisplay(nodeUuid: string): void {
-        this._elmApp.ports.displayNodeInfos.send(nodeUuid)
-    }
-
-    /**
      * Send Elm a command in order to pin its infos
      *
      * @param {boolean}   pin         True to tpin, False to unpin
@@ -161,11 +150,21 @@ export class Ports {
     }
 
     /**
-     * Send Elm a command in order to hide browsed node infos
+     * Send Elm a element uuid in order to display its infos
      *
-     * @returns void
+     * @param {string} elementId       The id of the element to display
+     * @param {string} elementType     The type of the element to display
      */
-    sendHideNodeCommand(): void {
-        this._elmApp.ports.hideNodeInfos.send(true)
+    sendElementIdToDisplay(elementId:string, elementType:string) : void {
+        const params = {
+            "id": elementId,
+            "elementType": elementType
+        }
+
+        this._elmApp.ports.displayElementInfos.send(params)
+    }
+
+    hideElementInfos(elementType:string):void {
+        this._elmApp.ports.hideElementInfos.send(elementType)
     }
 }

@@ -121,6 +121,16 @@ export class GraphManager {
         this._cy.on('mouseout', 'node',
             (event) => { this.hideNodeInfosHandler(event) }
         )
+
+        // Mouseover edge: display edge infos
+        this._cy.on('mouseover', 'edge',
+            (event) => { this.showEdgeInfosHandler(event) }
+        )
+
+        // Mouseout edge :hide edge infos
+        this._cy.on('mouseout', 'edge',
+            (event) => { this.hideEdgeInfosHandler(event) }
+        )
         return this
     }
 
@@ -217,7 +227,7 @@ export class GraphManager {
      */
     showNodeInfosHandler(event: cytoscape.EventObject): void {
         const node = event.target
-        this._ports.sendNodeIdToDisplay(node.id())
+        this._ports.sendElementIdToDisplay(node.id(), "node")
     }
 
     /**
@@ -228,7 +238,7 @@ export class GraphManager {
      * @return void
      */
     hideNodeInfosHandler(event: cytoscape.EventObject): void {
-        this._ports.sendHideNodeCommand()
+        this._ports.hideElementInfos("node")
     }
 
     /**
@@ -257,6 +267,28 @@ export class GraphManager {
         }
     }
 
+    /**
+     * Manage edge infos displaying
+     * Send edge uuid to Elm for displaying
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover node)
+     * @return void
+     */
+    showEdgeInfosHandler(event: cytoscape.EventObject): void {
+        const edge = event.target
+        this._ports.sendElementIdToDisplay(edge.id(), "edge")
+    }
+
+    /**
+     * Manage edge infos displaying
+     * Send edge uuid for Elm to hide its infos
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover node)
+     * @return void
+     */
+    hideEdgeInfosHandler(event: cytoscape.EventObject): void {
+        this._ports.hideElementInfos("edge")
+    }
     /////////////////////////////////////////////////////////////////
     //                       PORTS CALLBACKS                       //
     /////////////////////////////////////////////////////////////////

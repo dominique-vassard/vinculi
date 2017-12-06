@@ -23,10 +23,10 @@ port getLocalGraph : (Json.Decode.Value -> msg) -> Sub msg
 port newGraphState : (Json.Decode.Value -> msg) -> Sub msg
 
 
-port displayNodeInfos : (Json.Decode.Value -> msg) -> Sub msg
-
-
-port hideNodeInfos : (Bool -> msg) -> Sub msg
+port hideElementInfos : (Json.Decode.Value -> msg) -> Sub msg
 
 
 port pinNodeInfos : (Bool -> msg) -> Sub msg
+
+
+port displayElementInfos : (Json.Decode.Value -> msg) -> Sub msg
