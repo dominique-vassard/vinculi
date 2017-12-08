@@ -16896,56 +16896,38 @@ var _user$project$Accessors_Node$getLabels = function (node) {
 	return labels;
 };
 
-var _user$project$Accessors_Graph$parts = function (graph) {
-	return A2(
-		_elm_lang$core$List$partition,
-		function (x) {
-			var _p0 = x;
-			if (_p0.ctor === 'Node') {
-				return true;
-			} else {
-				return false;
-			}
-		},
-		graph);
+var _user$project$Accessors_Graph$edges = function (graph) {
+	var f = function (x) {
+		var _p0 = x;
+		if (_p0.ctor === 'Node') {
+			return _elm_lang$core$Maybe$Nothing;
+		} else {
+			return _elm_lang$core$Maybe$Just(_p0._0);
+		}
+	};
+	return A2(_elm_lang$core$List$filterMap, f, graph);
 };
 var _user$project$Accessors_Graph$nodes = function (graph) {
 	var f = function (x) {
 		var _p1 = x;
 		if (_p1.ctor === 'Node') {
-			return _p1._0;
+			return _elm_lang$core$Maybe$Just(_p1._0);
 		} else {
-			return _elm_lang$core$Native_Utils.crashCase(
-				'Accessors.Graph',
-				{
-					start: {line: 74, column: 17},
-					end: {line: 79, column: 67}
-				},
-				_p1)('No edge should be found here');
+			return _elm_lang$core$Maybe$Nothing;
 		}
 	};
-	var _p3 = _user$project$Accessors_Graph$parts(graph);
-	var nodes = _p3._0;
-	return A2(_elm_lang$core$List$map, f, nodes);
+	return A2(_elm_lang$core$List$filterMap, f, graph);
 };
-var _user$project$Accessors_Graph$edges = function (graph) {
-	var f = function (x) {
-		var _p4 = x;
-		if (_p4.ctor === 'Edge') {
-			return _p4._0;
-		} else {
-			return _elm_lang$core$Native_Utils.crashCase(
-				'Accessors.Graph',
-				{
-					start: {line: 93, column: 17},
-					end: {line: 98, column: 67}
-				},
-				_p4)('No node should be found here');
-		}
-	};
-	var _p6 = _user$project$Accessors_Graph$parts(graph);
-	var edges = _p6._1;
-	return A2(_elm_lang$core$List$map, f, edges);
+var _user$project$Accessors_Graph$isNode = function (element) {
+	var _p2 = element;
+	if (_p2.ctor === 'Node') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _user$project$Accessors_Graph$isEdge = function (element) {
+	return !_user$project$Accessors_Graph$isNode(element);
 };
 var _user$project$Accessors_Graph$getNode = F2(
 	function (nodeId, graph) {
@@ -16973,9 +16955,9 @@ var _user$project$Accessors_Graph$getEdge = F2(
 	});
 var _user$project$Accessors_Graph$elementOf = F2(
 	function (element, graph) {
-		var _p7 = element;
-		if (_p7.ctor === 'Node') {
-			var nodeId = _user$project$Accessors_Node$getGenericData(_p7._0).id;
+		var _p3 = element;
+		if (_p3.ctor === 'Node') {
+			var nodeId = _user$project$Accessors_Node$getGenericData(_p3._0).id;
 			var filtered = A2(
 				_elm_lang$core$List$filter,
 				function (x) {
@@ -16988,7 +16970,7 @@ var _user$project$Accessors_Graph$elementOf = F2(
 				_elm_lang$core$List$length(filtered),
 				0) > 0;
 		} else {
-			var edgeId = _user$project$Accessors_Edge$getGenericData(_p7._0).id;
+			var edgeId = _user$project$Accessors_Edge$getGenericData(_p3._0).id;
 			var filtered = A2(
 				_elm_lang$core$List$filter,
 				function (x) {

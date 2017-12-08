@@ -49,53 +49,46 @@ getNode nodeId graph =
         List.filter (\x -> (Node.getGenericData x).id == nodeId) (nodes graph)
 
 
-parts : Graph -> ( Graph, Graph )
-parts graph =
-    List.partition
-        (\x ->
-            case x of
-                Node _ ->
-                    True
+isNode : Element -> Bool
+isNode element =
+    case element of
+        Node _ ->
+            True
 
-                Edge _ ->
-                    False
-        )
-        graph
+        Edge _ ->
+            False
+
+
+isEdge : Element -> Bool
+isEdge element =
+    not <| isNode element
 
 
 nodes : Graph -> List NodeType
 nodes graph =
     let
-        ( nodes, _ ) =
-            parts graph
-
         f =
-            (\x ->
+            \x ->
                 case x of
                     Node node ->
-                        node
+                        Just node
 
                     Edge _ ->
-                        Debug.crash "No edge should be found here"
-            )
+                        Nothing
     in
-        List.map f nodes
+        List.filterMap f graph
 
 
 edges : Graph -> List EdgeType
 edges graph =
     let
-        ( _, edges ) =
-            parts graph
-
         f =
-            (\x ->
+            \x ->
                 case x of
-                    Edge edge ->
-                        edge
-
                     Node _ ->
-                        Debug.crash "No node should be found here"
-            )
+                        Nothing
+
+                    Edge edge ->
+                        Just edge
     in
-        List.map f edges
+        List.filterMap f graph
