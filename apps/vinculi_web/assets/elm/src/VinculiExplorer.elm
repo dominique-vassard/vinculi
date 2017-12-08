@@ -27,7 +27,12 @@ import Ports exposing (..)
 import Decoders.Graph as GraphDecode exposing (fromWsDecoder)
 import Decoders.Port as PortDecoder exposing (localGraphDecoder)
 import Decoders.Snapshot as SnapshotDecoder exposing (decoder)
-import Decoders.Element as ElementDecoder exposing (browsedDecoder)
+import Decoders.Element as ElementDecoder
+    exposing
+        ( browsedDecoder
+        , elementTypeDecoder
+        , pinnedDecoder
+        )
 import Encoders.Common as GraphEncode exposing (userEncoder)
 import Encoders.Graph as GraphEncode exposing (encoder)
 import Accessors.Node as Node exposing (..)
@@ -197,22 +202,25 @@ update msg model =
             , Cmd.none
             )
 
-        PinNode True ->
+        SetPinnedElement (Ok pinnedElement) ->
             let
-                newOps =
-                    (Operations.setPinnedNode
-                        model.operations.node.browsed
-                        model.operations
-                    )
-            in
-                ( { model | operations = newOps }, Cmd.none )
+                newModel =
+                    case pinnedElement.elementType of
+                        EdgeElt ->
+                            updatePinnedEdge pinnedElement model
 
-        PinNode False ->
-            let
-                newOps =
-                    Operations.setPinnedNode Nothing model.operations
+                        NodeElt ->
+                            updatePinnedNode pinnedElement model
             in
-                ( { model | operations = newOps }, Cmd.none )
+                ( newModel, Cmd.none )
+
+        SetPinnedElement (Err error) ->
+            ( { model
+                | errorMessage =
+                    Just ("Failed to unset pinnedElement: " ++ error)
+              }
+            , Cmd.none
+            )
 
         SetGraphState (Ok snapshot) ->
             let
@@ -390,6 +398,40 @@ updateBrowsedNode element model =
         { model | operations = newOps }
 
 
+updatePinnedEdge : PinnedElement -> Model -> Model
+updatePinnedEdge element model =
+    let
+        pinnedEdge =
+            case element.pin of
+                True ->
+                    model.operations.edge.browsed
+
+                False ->
+                    Nothing
+
+        newOps =
+            Operations.setPinnedEdge pinnedEdge model.operations
+    in
+        { model | operations = newOps }
+
+
+updatePinnedNode : PinnedElement -> Model -> Model
+updatePinnedNode element model =
+    let
+        pinnedNode =
+            case element.pin of
+                True ->
+                    model.operations.node.browsed
+
+                False ->
+                    Nothing
+
+        newOps =
+            Operations.setPinnedNode pinnedNode model.operations
+    in
+        { model | operations = newOps }
+
+
 substractGraph : Graph -> Graph -> Graph
 substractGraph receivedGraph graph =
     List.filter
@@ -487,7 +529,10 @@ subscriptions model =
             ((Json.Decode.decodeValue ElementDecoder.elementTypeDecoder)
                 >> UnsetBrowsedElement
             )
-        , Ports.pinNodeInfos PinNode
+        , Ports.pinElementInfos
+            ((Json.Decode.decodeValue ElementDecoder.pinnedDecoder)
+                >> SetPinnedElement
+            )
         , PhxSocket.listen model.phxSocket PhoenixMsg
         ]
 

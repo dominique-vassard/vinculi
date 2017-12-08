@@ -148,8 +148,30 @@ var Ports = /** @class */ (function () {
         };
         this._elmApp.ports.displayElementInfos.send(params);
     };
+    /**
+     * Send Elm a command in order to hide an elment's infos
+     *
+     * @param {string} elementType     The type of the element to display
+     *
+     * @returns void
+     */
     Ports.prototype.hideElementInfos = function (elementType) {
         this._elmApp.ports.hideElementInfos.send(elementType);
+    };
+    /**
+     * Send Elm a command in order to pin an elment's infos
+     *
+     * @param {string} elementType     The type of the element to display
+     * @param {boolean}   pin         True to tpin, False to unpin
+     *
+     * @returns void
+     */
+    Ports.prototype.sendElementIdToPin = function (elementType, pin) {
+        var params = {
+            "elementType": elementType,
+            "pin": pin
+        };
+        this._elmApp.ports.pinElementInfos.send(params);
     };
     return Ports;
 }());

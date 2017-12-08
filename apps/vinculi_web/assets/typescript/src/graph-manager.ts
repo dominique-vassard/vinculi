@@ -122,6 +122,11 @@ export class GraphManager {
             (event) => { this.hideNodeInfosHandler(event) }
         )
 
+        // Tap on node: pin node infos
+        this._cy.on('tap', 'edge',
+            (event) => { this.pinEdgeInfosHandler(event) }
+        )
+
         // Mouseover edge: display edge infos
         this._cy.on('mouseover', 'edge',
             (event) => { this.showEdgeInfosHandler(event) }
@@ -250,7 +255,19 @@ export class GraphManager {
      */
     pinNodeInfosHandler(event: cytoscape.EventObject): void {
         const node = event.target
-        this._ports.sendPinNodeCommand(true)
+        this._ports.sendElementIdToPin("node", true)
+    }
+
+    /**
+     * Manage edge infos pinning
+     * Send command to Elm for pinning
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (click/tap on node)
+     * @return void
+     */
+    pinEdgeInfosHandler(event: cytoscape.EventObject): void {
+        const edge = event.target
+        this._ports.sendElementIdToPin("edge", true)
     }
 
     /**
@@ -263,7 +280,8 @@ export class GraphManager {
     unpinNodeInfosHandler(event: cytoscape.EventObject): void {
         const target = event.target
         if (target === this._cy) {
-            this._ports.sendPinNodeCommand(false)
+            this._ports.sendElementIdToPin("node", false)
+            this._ports.sendElementIdToPin("edge", false)
         }
     }
 

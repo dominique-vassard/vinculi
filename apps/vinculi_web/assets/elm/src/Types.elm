@@ -174,6 +174,12 @@ type alias BrowsedElement =
     }
 
 
+type alias PinnedElement =
+    { elementType : ElementType
+    , pin : Bool
+    }
+
+
 type alias NodeOperations =
     { searched : Maybe SearchNodeType
     , browsed : Maybe NodeType
@@ -234,5 +240,5 @@ type Msg
     | SetSearchNode (Result String SearchNodeType)
     | SetBrowsedElement (Result String BrowsedElement)
     | UnsetBrowsedElement (Result String ElementType)
-    | PinNode Bool
+    | SetPinnedElement (Result String PinnedElement)
     | SetGraphState (Result String Snapshot)

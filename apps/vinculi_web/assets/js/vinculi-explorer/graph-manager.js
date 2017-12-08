@@ -124,6 +124,8 @@ var GraphManager = /** @class */ (function () {
         this._cy.on('mouseover', 'node', function (event) { _this.showNodeInfosHandler(event); });
         // Mouseout node :hide node infos
         this._cy.on('mouseout', 'node', function (event) { _this.hideNodeInfosHandler(event); });
+        // Tap on node: pin node infos
+        this._cy.on('tap', 'edge', function (event) { _this.pinEdgeInfosHandler(event); });
         // Mouseover edge: display edge infos
         this._cy.on('mouseover', 'edge', function (event) { _this.showEdgeInfosHandler(event); });
         // Mouseout edge :hide edge infos
@@ -239,7 +241,18 @@ var GraphManager = /** @class */ (function () {
      */
     GraphManager.prototype.pinNodeInfosHandler = function (event) {
         var node = event.target;
-        this._ports.sendPinNodeCommand(true);
+        this._ports.sendElementIdToPin("node", true);
+    };
+    /**
+     * Manage edge infos pinning
+     * Send command to Elm for pinning
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (click/tap on node)
+     * @return void
+     */
+    GraphManager.prototype.pinEdgeInfosHandler = function (event) {
+        var edge = event.target;
+        this._ports.sendElementIdToPin("edge", true);
     };
     /**
      * Manage node infos unpinning
@@ -251,7 +264,8 @@ var GraphManager = /** @class */ (function () {
     GraphManager.prototype.unpinNodeInfosHandler = function (event) {
         var target = event.target;
         if (target === this._cy) {
-            this._ports.sendPinNodeCommand(false);
+            this._ports.sendElementIdToPin("node", false);
+            this._ports.sendElementIdToPin("edge", false);
         }
     };
     /**

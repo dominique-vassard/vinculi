@@ -149,6 +149,8 @@ export class Ports {
         this._elmApp.ports.pinNodeInfos.send(pin)
     }
 
+
+
     /**
      * Send Elm a element uuid in order to display its infos
      *
@@ -164,7 +166,31 @@ export class Ports {
         this._elmApp.ports.displayElementInfos.send(params)
     }
 
+    /**
+     * Send Elm a command in order to hide an elment's infos
+     *
+     * @param {string} elementType     The type of the element to display
+     *
+     * @returns void
+     */
     hideElementInfos(elementType:string):void {
         this._elmApp.ports.hideElementInfos.send(elementType)
+    }
+
+    /**
+     * Send Elm a command in order to pin an elment's infos
+     *
+     * @param {string} elementType     The type of the element to display
+     * @param {boolean}   pin         True to tpin, False to unpin
+     *
+     * @returns void
+     */
+    sendElementIdToPin(elementType:string, pin: boolean): void {
+        const params = {
+            "elementType": elementType,
+            "pin": pin
+        }
+
+        this._elmApp.ports.pinElementInfos.send(params)
     }
 }

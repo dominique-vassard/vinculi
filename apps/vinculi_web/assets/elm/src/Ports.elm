@@ -29,4 +29,7 @@ port hideElementInfos : (Json.Decode.Value -> msg) -> Sub msg
 port pinNodeInfos : (Bool -> msg) -> Sub msg
 
 
+port pinElementInfos : (Json.Decode.Value -> msg) -> Sub msg
+
+
 port displayElementInfos : (Json.Decode.Value -> msg) -> Sub msg
