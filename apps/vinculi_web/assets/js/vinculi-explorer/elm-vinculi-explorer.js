@@ -17894,7 +17894,7 @@ var _user$project$View$viewInfoLine = F3(
 				_0: _rundis$elm_bootstrap$Bootstrap_ListGroup$attrs(
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('border-node p-1 bg-white'),
+						_0: _elm_lang$html$Html_Attributes$class('element-border-infos p-1 bg-white'),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -17962,28 +17962,121 @@ var _user$project$View$viewNodeInfos = function (infoLines) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$View$viewEdgeData = function (edgeToDisplay) {
-	var dataToDisplay = function () {
-		var _p1 = edgeToDisplay;
-		if (_p1.ctor === 'Nothing') {
+var _user$project$View$edgeToDisplay = function (currentEdge) {
+	var _p1 = currentEdge.browsed;
+	if (_p1.ctor === 'Just') {
+		return _elm_lang$core$Maybe$Just(_p1._0);
+	} else {
+		return currentEdge.pinned;
+	}
+};
+var _user$project$View$nodeToDisplay = function (currentNode) {
+	var _p2 = currentNode.browsed;
+	if (_p2.ctor === 'Just') {
+		return _elm_lang$core$Maybe$Just(_p2._0);
+	} else {
+		return currentNode.pinned;
+	}
+};
+var _user$project$View$viewError = function (errorMessage) {
+	var div_ = function () {
+		var _p3 = errorMessage;
+		if (_p3.ctor === 'Nothing') {
 			return A2(
 				_elm_lang$html$Html$div,
 				{ctor: '[]'},
 				{ctor: '[]'});
 		} else {
 			return A2(
-				_elm_lang$html$Html$div,
+				_rundis$elm_bootstrap$Bootstrap_Grid$row,
+				{ctor: '[]'},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('p-1'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(
-						_user$project$Accessors_Edge$getGenericData(_p1._0).edge_type),
+					_0: A2(
+						_rundis$elm_bootstrap$Bootstrap_Grid$col,
+						{
+							ctor: '::',
+							_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$lg12,
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _rundis$elm_bootstrap$Bootstrap_Alert$danger(
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(_p3._0),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
 					_1: {ctor: '[]'}
 				});
+		}
+	}();
+	return div_;
+};
+var _user$project$View$Url = {ctor: 'Url'};
+var _user$project$View$viewInfoLineUrl = F2(
+	function (label, value) {
+		return A3(_user$project$View$viewInfoLine, label, value, _user$project$View$Url);
+	});
+var _user$project$View$SimpleText = {ctor: 'SimpleText'};
+var _user$project$View$viewInfoLineText = F2(
+	function (label, value) {
+		return A3(_user$project$View$viewInfoLine, label, value, _user$project$View$SimpleText);
+	});
+var _user$project$View$viewEdgeType = function (edge_type) {
+	return A2(_user$project$View$viewInfoLineText, 'Type', edge_type);
+};
+var _user$project$View$viewGenericEdgeData = function (edgeData) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('p-1 m-0'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _rundis$elm_bootstrap$Bootstrap_ListGroup$ul(
+				{
+					ctor: '::',
+					_0: _user$project$View$viewEdgeType(edgeData.edge_type),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$View$viewInfluencedEdgeData = function (edgeData) {
+	return _user$project$View$viewNodeInfos(
+		{
+			ctor: '::',
+			_0: _user$project$View$viewEdgeType(edgeData.edge_type),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_user$project$View$viewInfoLineText,
+					'Force',
+					_elm_lang$core$Basics$toString(edgeData.strength)),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$View$viewEdgeData = function (edgeToDisplay) {
+	var dataToDisplay = function () {
+		var _p4 = edgeToDisplay;
+		if (_p4.ctor === 'Nothing') {
+			return A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{ctor: '[]'});
+		} else {
+			var _p5 = _p4._0.data;
+			if (_p5.ctor === 'GenericEdge') {
+				return _user$project$View$viewGenericEdgeData(_p5._0);
+			} else {
+				return _user$project$View$viewInfluencedEdgeData(_p5._0);
+			}
 		}
 	}();
 	return _rundis$elm_bootstrap$Bootstrap_Card$view(
@@ -18036,75 +18129,12 @@ var _user$project$View$viewEdgeData = function (edgeToDisplay) {
 						_0: _rundis$elm_bootstrap$Bootstrap_Card$attrs(
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('border-edge m-1'),
+								_0: _elm_lang$html$Html_Attributes$class('border-edge m-1 bg-edge'),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
 					}))));
 };
-var _user$project$View$edgeToDisplay = function (currentEdge) {
-	var _p2 = currentEdge.browsed;
-	if (_p2.ctor === 'Just') {
-		return _elm_lang$core$Maybe$Just(_p2._0);
-	} else {
-		return currentEdge.pinned;
-	}
-};
-var _user$project$View$nodeToDisplay = function (currentNode) {
-	var _p3 = currentNode.browsed;
-	if (_p3.ctor === 'Just') {
-		return _elm_lang$core$Maybe$Just(_p3._0);
-	} else {
-		return currentNode.pinned;
-	}
-};
-var _user$project$View$viewError = function (errorMessage) {
-	var div_ = function () {
-		var _p4 = errorMessage;
-		if (_p4.ctor === 'Nothing') {
-			return A2(
-				_elm_lang$html$Html$div,
-				{ctor: '[]'},
-				{ctor: '[]'});
-		} else {
-			return A2(
-				_rundis$elm_bootstrap$Bootstrap_Grid$row,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: A2(
-						_rundis$elm_bootstrap$Bootstrap_Grid$col,
-						{
-							ctor: '::',
-							_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$lg12,
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _rundis$elm_bootstrap$Bootstrap_Alert$danger(
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(_p4._0),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				});
-		}
-	}();
-	return div_;
-};
-var _user$project$View$Url = {ctor: 'Url'};
-var _user$project$View$viewInfoLineUrl = F2(
-	function (label, value) {
-		return A3(_user$project$View$viewInfoLine, label, value, _user$project$View$Url);
-	});
-var _user$project$View$SimpleText = {ctor: 'SimpleText'};
-var _user$project$View$viewInfoLineText = F2(
-	function (label, value) {
-		return A3(_user$project$View$viewInfoLine, label, value, _user$project$View$SimpleText);
-	});
 var _user$project$View$viewNodeLabel = function (labels) {
 	return A2(
 		_user$project$View$viewInfoLineText,
@@ -18187,23 +18217,23 @@ var _user$project$View$viewValueNodeData = function (nodeData) {
 };
 var _user$project$View$viewNodeData = function (nodetoDisplay) {
 	var dataToDisplay = function () {
-		var _p5 = nodetoDisplay;
-		if (_p5.ctor === 'Nothing') {
+		var _p6 = nodetoDisplay;
+		if (_p6.ctor === 'Nothing') {
 			return A2(
 				_elm_lang$html$Html$div,
 				{ctor: '[]'},
 				{ctor: '[]'});
 		} else {
-			var _p6 = _p5._0.data;
-			switch (_p6.ctor) {
+			var _p7 = _p6._0.data;
+			switch (_p7.ctor) {
 				case 'GenericNode':
-					return _user$project$View$viewGenericNodeData(_p6._0);
+					return _user$project$View$viewGenericNodeData(_p7._0);
 				case 'PersonNode':
-					return _user$project$View$viewPersonNodeData(_p6._0);
+					return _user$project$View$viewPersonNodeData(_p7._0);
 				case 'PublicationNode':
-					return _user$project$View$viewPublicationNodeData(_p6._0);
+					return _user$project$View$viewPublicationNodeData(_p7._0);
 				default:
-					return _user$project$View$viewValueNodeData(_p6._0);
+					return _user$project$View$viewValueNodeData(_p7._0);
 			}
 		}
 	}();

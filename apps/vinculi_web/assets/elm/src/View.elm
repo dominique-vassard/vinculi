@@ -16,14 +16,15 @@ import Types
         , NodeType
         , EdgeOperations
         , NodeOperations
+        , EdgeData(GenericEdge, InfluencedEdge)
         , GenericEdgeData
+        , InfluencedEdgeData
         , NodeData(GenericNode, PersonNode, PublicationNode, ValueNode)
         , GenericNodeData
         , PersonNodeData
         , PublicationNodeData
         , ValueNodeData
         )
-import Accessors.Edge as Edge exposing (..)
 
 
 type TextType
@@ -101,16 +102,40 @@ viewEdgeData edgeToDisplay =
                     div [] []
 
                 Just edge ->
-                    div [ class "p-1" ]
-                        [ text (Edge.getGenericData edge).edge_type
-                        ]
+                    case edge.data of
+                        GenericEdge edgeData ->
+                            viewGenericEdgeData edgeData
+
+                        InfluencedEdge edgeData ->
+                            viewInfluencedEdgeData edgeData
     in
-        Card.config [ Card.attrs [ class "border-edge m-1" ] ]
+        Card.config [ Card.attrs [ class "border-edge m-1 bg-edge" ] ]
             |> Card.header [ class "text-center bg-edge p-0" ]
                 [ h5 [] [ text "Relation" ] ]
             |> Card.block [ Card.blockAttrs [ class "element-infos" ] ]
                 [ Card.text [] [ dataToDisplay ] ]
             |> Card.view
+
+
+viewGenericEdgeData : GenericEdgeData -> Html Msg
+viewGenericEdgeData edgeData =
+    div [ class "p-1 m-0" ]
+        [ ListGroup.ul
+            [ viewEdgeType edgeData.edge_type ]
+        ]
+
+
+viewInfluencedEdgeData : InfluencedEdgeData -> Html Msg
+viewInfluencedEdgeData edgeData =
+    viewNodeInfos
+        [ viewEdgeType edgeData.edge_type
+        , viewInfoLineText "Force" <| toString edgeData.strength
+        ]
+
+
+viewEdgeType : String -> ListGroup.Item Msg
+viewEdgeType edge_type =
+    viewInfoLineText "Type" edge_type
 
 
 viewNodeData : Maybe NodeType -> Html Msg
@@ -219,7 +244,7 @@ viewInfoLine label value textType =
                     a [ href value ] [ text <| value ]
     in
         ListGroup.li
-            [ ListGroup.attrs [ class "border-node p-1 bg-white" ] ]
+            [ ListGroup.attrs [ class "element-border-infos p-1 bg-white" ] ]
             [ Grid.row [ Row.attrs [ class "border-bottom" ] ]
                 [ Grid.col [ Col.lg ] [ text <| label ++ ": " ]
                 , Grid.col [ Col.lg8 ] [ text_ ]
