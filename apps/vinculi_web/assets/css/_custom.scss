@@ -1,3 +1,7 @@
+/* Variables */
+$node-color: rgba(235, 211, 114, 1);
+$edge-color: rgba(163, 199, 64, 1);
+
 body {
     padding-top: 5rem;
 }
@@ -24,6 +28,22 @@ body {
     min-height: 90vh;
 }
 
-.node-infos {
+.element-infos {
     font-size: 10pt
+}
+
+.bg-node {
+    background-color: $node-color;
+}
+
+.bg-edge {
+    background-color: $edge-color;
+}
+
+.border-node {
+    border-color: $node-color;
+}
+
+.border-edge {
+    border-color: $edge-color;
 }

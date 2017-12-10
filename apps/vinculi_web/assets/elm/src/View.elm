@@ -5,7 +5,8 @@ import Bootstrap.Card as Card
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Row as Row
 import Bootstrap.Grid.Col as Col
-import Html exposing (Html, button, div, h5, span, text)
+import Bootstrap.ListGroup as ListGroup
+import Html exposing (Html, button, div, h5, h6, span, text)
 import Html.Attributes exposing (class, id)
 import Types
     exposing
@@ -95,12 +96,14 @@ viewEdgeData edgeToDisplay =
                     div [] []
 
                 Just edge ->
-                    div [] [ text (Edge.getGenericData edge).edge_type ]
+                    div [ class "p-1" ]
+                        [ text (Edge.getGenericData edge).edge_type
+                        ]
     in
-        Card.config []
-            |> Card.header [ class "text-center" ]
-                [ h5 [] [ text "Edge infos" ] ]
-            |> Card.block [ Card.blockAttrs [ class "node-infos" ] ]
+        Card.config [ Card.attrs [ class "border-edge m-1" ] ]
+            |> Card.header [ class "text-center bg-edge p-0" ]
+                [ h5 [] [ text "Relation" ] ]
+            |> Card.block [ Card.blockAttrs [ class "element-infos" ] ]
                 [ Card.text [] [ dataToDisplay ] ]
             |> Card.view
 
@@ -127,23 +130,34 @@ viewNodeData nodetoDisplay =
                         ValueNode nodeData ->
                             viewValueNodeData nodeData
     in
-        Card.config []
-            |> Card.header [ class "text-center" ]
-                [ h5 [] [ text "Node infos" ] ]
-            |> Card.block [ Card.blockAttrs [ class "node-infos" ] ]
+        Card.config [ Card.attrs [ class "border-node m-1 bg-node" ] ]
+            |> Card.header [ class "text-center bg-node p-0" ]
+                [ h5 [] [ text "Noeud" ] ]
+            |> Card.block [ Card.blockAttrs [ class "element-infos" ] ]
                 [ Card.text [] [ dataToDisplay ] ]
             |> Card.view
 
 
 viewGenericNodeData : GenericNodeData -> Html Msg
 viewGenericNodeData nodeData =
-    div []
-        [ viewNodeLabel nodeData.labels ]
+    div [ class "p-1 m-0" ]
+        [ ListGroup.ul
+            [ viewNodeLabel
+                nodeData.labels
+            ]
+        ]
+
+
+viewNodeInfos : List (ListGroup.Item Msg) -> Html Msg
+viewNodeInfos infoLines =
+    div [ class "p-1 m-0" ]
+        [ ListGroup.ul infoLines
+        ]
 
 
 viewPersonNodeData : PersonNodeData -> Html Msg
 viewPersonNodeData nodeData =
-    div []
+    viewNodeInfos
         [ viewNodeLabel nodeData.labels
         , viewInfoLine "Prénom" nodeData.firstName
         , viewInfoLine "Nom" nodeData.lastName
@@ -155,7 +169,7 @@ viewPersonNodeData nodeData =
 
 viewPublicationNodeData : PublicationNodeData -> Html Msg
 viewPublicationNodeData nodeData =
-    div []
+    viewNodeInfos
         [ viewNodeLabel nodeData.labels
         , viewInfoLine "Titre" nodeData.title
 
@@ -167,20 +181,31 @@ viewPublicationNodeData nodeData =
 
 viewValueNodeData : ValueNodeData -> Html Msg
 viewValueNodeData nodeData =
-    div []
+    viewNodeInfos
         [ viewNodeLabel nodeData.labels
         , viewInfoLine "Valeur" <| toString nodeData.value
         ]
 
 
-viewNodeLabel : List String -> Html Msg
+viewNodeLabel : List String -> ListGroup.Item Msg
 viewNodeLabel labels =
     viewInfoLine "Label" (String.join "," labels)
 
 
-viewInfoLine : String -> String -> Html Msg
+viewInfoLine : String -> String -> ListGroup.Item Msg
 viewInfoLine label value =
-    Grid.row []
-        [ Grid.col [ Col.lg ] [ text <| label ++ ": " ]
-        , Grid.col [ Col.lg8 ] [ text <| value ]
+    ListGroup.li
+        [ ListGroup.attrs [ class "border-node p-1 bg-white" ] ]
+        [ Grid.row [ Row.attrs [ class "border-bottom" ] ]
+            [ Grid.col [ Col.lg ] [ text <| label ++ ": " ]
+            , Grid.col [ Col.lg8 ] [ text <| value ]
+            ]
         ]
+
+
+
+--viewInfoLi : String -> String -> ListGroup.Item Msg
+--viewInfoLi label value =
+--    ListGroup.li
+--        [ ListGroup.attrs [ class "border-node p-1 bg-white" ] ]
+--        [ viewInfoLine label value ]
