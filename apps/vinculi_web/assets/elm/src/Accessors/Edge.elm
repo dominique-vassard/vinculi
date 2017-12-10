@@ -1,4 +1,10 @@
-module Accessors.Edge exposing (getType, getGenericData)
+module Accessors.Edge
+    exposing
+        ( getType
+        , getGenericData
+        , setClasses
+        , setClassesFromType
+        )
 
 import Types
     exposing
@@ -7,6 +13,23 @@ import Types
         , GenericEdgeData
         , InfluencedEdgeData
         )
+
+
+--- SETTERS
+
+
+setClasses : String -> EdgeType -> EdgeType
+setClasses classes edge =
+    { edge | classes = String.toLower classes }
+
+
+setClassesFromType : EdgeType -> EdgeType
+setClassesFromType edge =
+    setClasses (getType edge) edge
+
+
+
+--- GETTERS
 
 
 getType : EdgeType -> String
@@ -26,3 +49,7 @@ getGenericData edge =
 
         GenericEdge data ->
             data
+
+
+
+--- HELPERS

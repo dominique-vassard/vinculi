@@ -1,14 +1,12 @@
 module Main exposing (..)
 
-import Html exposing (Html, button, div, h5, span, text)
-import Html.Attributes exposing (class, id)
+import Html exposing (Html)
 import Json.Encode exposing (Value, object, string)
 import Json.Decode exposing (field, decodeString, decodeValue, string, Decoder)
 import Phoenix.Socket as PhxSocket
     exposing
         ( init
         , join
-        , listen
         , on
         , push
         , update
@@ -16,27 +14,14 @@ import Phoenix.Socket as PhxSocket
         )
 import Phoenix.Channel as PhxChannel exposing (init, onJoin)
 import Phoenix.Push as PhxPush exposing (init, onError, onOk, withPayload)
-import Bootstrap.Alert as Alert
-import Bootstrap.Card as Card
-import Bootstrap.Grid as Grid
-import Bootstrap.Grid.Row as Row
-import Bootstrap.Grid.Col as Col
 import Task
 import Types exposing (..)
-import Ports exposing (..)
+import Ports exposing (addToGraph, initGraph)
+import View exposing (view)
+import Subscriptions exposing (subscriptions)
 import Decoders.Graph as GraphDecode exposing (fromWsDecoder)
-import Decoders.Port as PortDecoder exposing (localGraphDecoder)
-import Decoders.Snapshot as SnapshotDecoder exposing (decoder)
-import Decoders.Element as ElementDecoder
-    exposing
-        ( browsedDecoder
-        , elementTypeDecoder
-        , pinnedDecoder
-        )
 import Encoders.Common as GraphEncode exposing (userEncoder)
 import Encoders.Graph as GraphEncode exposing (encoder)
-import Accessors.Node as Node exposing (..)
-import Accessors.Edge as Edge exposing (..)
 import Accessors.Graph as Graph exposing (..)
 import Accessors.Operations as Operations exposing (..)
 import Utils.ZipList as ZipList exposing (..)
@@ -46,9 +31,9 @@ main : Program Flags Model Msg
 main =
     Html.programWithFlags
         { init = init
-        , view = view
+        , view = View.view
         , update = update
-        , subscriptions = subscriptions
+        , subscriptions = Subscriptions.subscriptions
         }
 
 
@@ -334,7 +319,7 @@ update msg model =
                     Ok graph ->
                         let
                             filteredGraph =
-                                substractGraph graph
+                                Graph.substractGraph graph
                                     (ZipList.current
                                         model.snapshots
                                     ).graph
@@ -348,7 +333,7 @@ update msg model =
                             finalOps =
                                 Operations.setGraphData
                                     (Just
-                                        (manageMetaData
+                                        (Graph.updateMetaData
                                             model.operations.node.searched
                                             graph
                                         )
@@ -430,273 +415,3 @@ updatePinnedNode element model =
             Operations.setPinnedNode pinnedNode model.operations
     in
         { model | operations = newOps }
-
-
-substractGraph : Graph -> Graph -> Graph
-substractGraph receivedGraph graph =
-    List.filter
-        (\x ->
-            not (Graph.elementOf x graph)
-        )
-        receivedGraph
-
-
-manageMetaData : Maybe SearchNodeType -> Graph -> Graph
-manageMetaData parentNode graph =
-    List.map (addClass >> (setParentNode parentNode)) graph
-
-
-setParentNode : Maybe SearchNodeType -> Element -> Element
-setParentNode parentNode element =
-    case element of
-        Node node ->
-            case parentNode of
-                Just parentNode ->
-                    if parentNode.uuid == (Node.getGenericData node).id then
-                        Node node
-                    else
-                        let
-                            nodeData =
-                                node.data
-
-                            newNodeData =
-                                Node.setParentNode
-                                    (Just parentNode.uuid)
-                                    node.data
-                        in
-                            Node { node | data = newNodeData }
-
-                Nothing ->
-                    Node node
-
-        element ->
-            element
-
-
-addClass : Element -> Element
-addClass element =
-    case element of
-        Node node ->
-            addNodeClasses node
-
-        Edge edge ->
-            addEdgeClasses edge
-
-
-addNodeClasses : NodeType -> Element
-addNodeClasses node =
-    let
-        classes =
-            Node.getLabels node
-                |> String.join ""
-                |> String.toLower
-    in
-        Node { node | classes = classes }
-
-
-addEdgeClasses : EdgeType -> Element
-addEdgeClasses edge =
-    let
-        classes =
-            edge
-                |> Edge.getType
-                |> String.toLower
-    in
-        Edge { edge | classes = classes }
-
-
-
---- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.batch
-        [ Ports.getLocalGraph
-            (Json.Decode.decodeValue
-                PortDecoder.localGraphDecoder
-                >> SetSearchNode
-            )
-        , Ports.newGraphState
-            (Json.Decode.decodeValue SnapshotDecoder.decoder
-                >> SetGraphState
-            )
-        , Ports.displayElementInfos
-            ((Json.Decode.decodeValue ElementDecoder.browsedDecoder)
-                >> SetBrowsedElement
-            )
-        , Ports.hideElementInfos
-            ((Json.Decode.decodeValue ElementDecoder.elementTypeDecoder)
-                >> UnsetBrowsedElement
-            )
-        , Ports.pinElementInfos
-            ((Json.Decode.decodeValue ElementDecoder.pinnedDecoder)
-                >> SetPinnedElement
-            )
-        , PhxSocket.listen model.phxSocket PhoenixMsg
-        ]
-
-
-
--- VIEW
-
-
-view : Model -> Html Msg
-view model =
-    div []
-        [ viewError model.errorMessage
-        , div [ class "row bg-silver rounded fill" ]
-            [ div
-                [ class "col-lg-9" ]
-                [ div [ class "row border border-primary cy-graph", id "cy" ]
-                    []
-                ]
-            , div [ class "col-lg-3 bg-gray rounded-right" ]
-                [ Grid.row [ Row.attrs [ class "rounded bg-secondary" ] ]
-                    [ Grid.col [ Col.lg12 ] [ text "Browse" ] ]
-                , Grid.row []
-                    [ Grid.col [ Col.lg12 ]
-                        [ viewNodeData <| nodeToDisplay model.operations.node
-                        , viewEdgeData <| edgeToDisplay model.operations.edge
-                        ]
-                    ]
-                ]
-            ]
-        ]
-
-
-viewError : Maybe String -> Html Msg
-viewError errorMessage =
-    let
-        div_ =
-            case errorMessage of
-                Nothing ->
-                    div [] []
-
-                Just errorMsg ->
-                    Grid.row []
-                        [ Grid.col [ Col.lg12 ]
-                            [ Alert.danger [ text errorMsg ] ]
-                        ]
-    in
-        div_
-
-
-nodeToDisplay : NodeOperations -> Maybe NodeType
-nodeToDisplay currentNode =
-    case currentNode.browsed of
-        Just node ->
-            Just node
-
-        Nothing ->
-            currentNode.pinned
-
-
-edgeToDisplay : EdgeOperations -> Maybe EdgeType
-edgeToDisplay currentEdge =
-    case currentEdge.browsed of
-        Just edge ->
-            Just edge
-
-        Nothing ->
-            currentEdge.pinned
-
-
-viewEdgeData : Maybe EdgeType -> Html Msg
-viewEdgeData edgeToDisplay =
-    let
-        dataToDisplay =
-            case edgeToDisplay of
-                Nothing ->
-                    div [] []
-
-                Just edge ->
-                    div [] [ text (Edge.getGenericData edge).edge_type ]
-    in
-        Card.config []
-            |> Card.header [ class "text-center" ]
-                [ h5 [] [ text "Edge infos" ] ]
-            |> Card.block [ Card.blockAttrs [ class "node-infos" ] ]
-                [ Card.text [] [ dataToDisplay ] ]
-            |> Card.view
-
-
-viewNodeData : Maybe NodeType -> Html Msg
-viewNodeData nodetoDisplay =
-    let
-        dataToDisplay =
-            case nodetoDisplay of
-                Nothing ->
-                    div [] []
-
-                Just node ->
-                    case node.data of
-                        GenericNode nodeData ->
-                            viewGenericNodeData nodeData
-
-                        PersonNode nodeData ->
-                            viewPersonNodeData nodeData
-
-                        PublicationNode nodeData ->
-                            viewPublicationNodeData nodeData
-
-                        ValueNode nodeData ->
-                            viewValueNodeData nodeData
-    in
-        Card.config []
-            |> Card.header [ class "text-center" ]
-                [ h5 [] [ text "Node infos" ] ]
-            |> Card.block [ Card.blockAttrs [ class "node-infos" ] ]
-                [ Card.text [] [ dataToDisplay ] ]
-            |> Card.view
-
-
-viewGenericNodeData : GenericNodeData -> Html Msg
-viewGenericNodeData nodeData =
-    div []
-        [ viewNodeLabel nodeData.labels ]
-
-
-viewPersonNodeData : PersonNodeData -> Html Msg
-viewPersonNodeData nodeData =
-    div []
-        [ viewNodeLabel nodeData.labels
-        , viewInfoLine "Prénom" nodeData.firstName
-        , viewInfoLine "Nom" nodeData.lastName
-        , viewInfoLine "Pseudonymes" nodeData.aka
-        , viewInfoLine "Lien Ars Margica" nodeData.internalLink
-        , viewInfoLine "Lien externe" nodeData.externalLink
-        ]
-
-
-viewPublicationNodeData : PublicationNodeData -> Html Msg
-viewPublicationNodeData nodeData =
-    div []
-        [ viewNodeLabel nodeData.labels
-        , viewInfoLine "Titre" nodeData.title
-
-        --, viewInfoLine "Lien Ars Margica" nodeData.titleFr
-        --, viewInfoLine "Lien Ars Margica" nodeData.internalLink
-        --, viewInfoLine "Lien externe" nodeData.externalLink
-        ]
-
-
-viewValueNodeData : ValueNodeData -> Html Msg
-viewValueNodeData nodeData =
-    div []
-        [ viewNodeLabel nodeData.labels
-        , viewInfoLine "Valeur" <| toString nodeData.value
-        ]
-
-
-viewNodeLabel : List String -> Html Msg
-viewNodeLabel labels =
-    viewInfoLine "Label" (String.join "," labels)
-
-
-viewInfoLine : String -> String -> Html Msg
-viewInfoLine label value =
-    Grid.row []
-        [ Grid.col [ Col.lg ] [ text <| label ++ ": " ]
-        , Grid.col [ Col.lg8 ] [ text <| value ]
-        ]
