@@ -75,6 +75,9 @@ personEncoder personData =
         (commonEncoder personData
             ++ [ ( "firstName", Encode.string personData.firstName )
                , ( "lastName", Encode.string personData.lastName )
+               , ( "aka", Encode.string personData.aka )
+               , ( "internalLink", Encode.string personData.internalLink )
+               , ( "externalLink", Encode.string personData.externalLink )
                ]
         )
 

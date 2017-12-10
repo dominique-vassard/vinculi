@@ -6,8 +6,8 @@ import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Row as Row
 import Bootstrap.Grid.Col as Col
 import Bootstrap.ListGroup as ListGroup
-import Html exposing (Html, button, div, h5, h6, span, text)
-import Html.Attributes exposing (class, id)
+import Html exposing (Html, a, button, div, h5, h6, span, text)
+import Html.Attributes exposing (class, href, id)
 import Types
     exposing
         ( Model
@@ -24,6 +24,11 @@ import Types
         , ValueNodeData
         )
 import Accessors.Edge as Edge exposing (..)
+
+
+type TextType
+    = SimpleText
+    | Url
 
 
 view : Model -> Html Msg
@@ -159,11 +164,11 @@ viewPersonNodeData : PersonNodeData -> Html Msg
 viewPersonNodeData nodeData =
     viewNodeInfos
         [ viewNodeLabel nodeData.labels
-        , viewInfoLine "Prénom" nodeData.firstName
-        , viewInfoLine "Nom" nodeData.lastName
-        , viewInfoLine "Pseudonymes" nodeData.aka
-        , viewInfoLine "Lien Ars Margica" nodeData.internalLink
-        , viewInfoLine "Lien externe" nodeData.externalLink
+        , viewInfoLineText "Prénom" nodeData.firstName
+        , viewInfoLineText "Nom" nodeData.lastName
+        , viewInfoLineText "Pseudonymes" nodeData.aka
+        , viewInfoLineUrl "Lien Ars Margica" nodeData.internalLink
+        , viewInfoLineUrl "Lien externe" nodeData.externalLink
         ]
 
 
@@ -171,7 +176,7 @@ viewPublicationNodeData : PublicationNodeData -> Html Msg
 viewPublicationNodeData nodeData =
     viewNodeInfos
         [ viewNodeLabel nodeData.labels
-        , viewInfoLine "Titre" nodeData.title
+        , viewInfoLineText "Titre" nodeData.title
 
         --, viewInfoLine "Lien Ars Margica" nodeData.titleFr
         --, viewInfoLine "Lien Ars Margica" nodeData.internalLink
@@ -183,29 +188,40 @@ viewValueNodeData : ValueNodeData -> Html Msg
 viewValueNodeData nodeData =
     viewNodeInfos
         [ viewNodeLabel nodeData.labels
-        , viewInfoLine "Valeur" <| toString nodeData.value
+        , viewInfoLineText "Valeur" <| toString nodeData.value
         ]
 
 
 viewNodeLabel : List String -> ListGroup.Item Msg
 viewNodeLabel labels =
-    viewInfoLine "Label" (String.join "," labels)
+    viewInfoLineText "Label" (String.join "," labels)
 
 
-viewInfoLine : String -> String -> ListGroup.Item Msg
-viewInfoLine label value =
-    ListGroup.li
-        [ ListGroup.attrs [ class "border-node p-1 bg-white" ] ]
-        [ Grid.row [ Row.attrs [ class "border-bottom" ] ]
-            [ Grid.col [ Col.lg ] [ text <| label ++ ": " ]
-            , Grid.col [ Col.lg8 ] [ text <| value ]
+viewInfoLineText : String -> String -> ListGroup.Item Msg
+viewInfoLineText label value =
+    viewInfoLine label value SimpleText
+
+
+viewInfoLineUrl : String -> String -> ListGroup.Item Msg
+viewInfoLineUrl label value =
+    viewInfoLine label value Url
+
+
+viewInfoLine : String -> String -> TextType -> ListGroup.Item Msg
+viewInfoLine label value textType =
+    let
+        text_ =
+            case textType of
+                SimpleText ->
+                    text <| value
+
+                Url ->
+                    a [ href value ] [ text <| value ]
+    in
+        ListGroup.li
+            [ ListGroup.attrs [ class "border-node p-1 bg-white" ] ]
+            [ Grid.row [ Row.attrs [ class "border-bottom" ] ]
+                [ Grid.col [ Col.lg ] [ text <| label ++ ": " ]
+                , Grid.col [ Col.lg8 ] [ text_ ]
+                ]
             ]
-        ]
-
-
-
---viewInfoLi : String -> String -> ListGroup.Item Msg
---viewInfoLi label value =
---    ListGroup.li
---        [ ListGroup.attrs [ class "border-node p-1 bg-white" ] ]
---        [ viewInfoLine label value ]

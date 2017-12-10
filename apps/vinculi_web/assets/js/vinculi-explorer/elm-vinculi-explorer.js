@@ -17688,7 +17688,31 @@ var _user$project$Encoders_Node$personEncoder = function (personData) {
 						_0: 'lastName',
 						_1: _elm_lang$core$Json_Encode$string(personData.lastName)
 					},
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'aka',
+							_1: _elm_lang$core$Json_Encode$string(personData.aka)
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'internalLink',
+								_1: _elm_lang$core$Json_Encode$string(personData.internalLink)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'externalLink',
+									_1: _elm_lang$core$Json_Encode$string(personData.externalLink)
+								},
+								_1: {ctor: '[]'}
+							}
+						}
+					}
 				}
 			}));
 };
@@ -17842,8 +17866,27 @@ var _user$project$Ports$pinNodeInfos = _elm_lang$core$Native_Platform.incomingPo
 var _user$project$Ports$pinElementInfos = _elm_lang$core$Native_Platform.incomingPort('pinElementInfos', _elm_lang$core$Json_Decode$value);
 var _user$project$Ports$displayElementInfos = _elm_lang$core$Native_Platform.incomingPort('displayElementInfos', _elm_lang$core$Json_Decode$value);
 
-var _user$project$View$viewInfoLine = F2(
-	function (label, value) {
+var _user$project$View$viewInfoLine = F3(
+	function (label, value, textType) {
+		var text_ = function () {
+			var _p0 = textType;
+			if (_p0.ctor === 'SimpleText') {
+				return _elm_lang$html$Html$text(value);
+			} else {
+				return A2(
+					_elm_lang$html$Html$a,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$href(value),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(value),
+						_1: {ctor: '[]'}
+					});
+			}
+		}();
 		return A2(
 			_rundis$elm_bootstrap$Bootstrap_ListGroup$li,
 			{
@@ -17896,7 +17939,7 @@ var _user$project$View$viewInfoLine = F2(
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(value),
+									_0: text_,
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
@@ -17905,12 +17948,6 @@ var _user$project$View$viewInfoLine = F2(
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$View$viewNodeLabel = function (labels) {
-	return A2(
-		_user$project$View$viewInfoLine,
-		'Label',
-		A2(_elm_lang$core$String$join, ',', labels));
-};
 var _user$project$View$viewNodeInfos = function (infoLines) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -17925,162 +17962,10 @@ var _user$project$View$viewNodeInfos = function (infoLines) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$View$viewPersonNodeData = function (nodeData) {
-	return _user$project$View$viewNodeInfos(
-		{
-			ctor: '::',
-			_0: _user$project$View$viewNodeLabel(nodeData.labels),
-			_1: {
-				ctor: '::',
-				_0: A2(_user$project$View$viewInfoLine, 'Prénom', nodeData.firstName),
-				_1: {
-					ctor: '::',
-					_0: A2(_user$project$View$viewInfoLine, 'Nom', nodeData.lastName),
-					_1: {
-						ctor: '::',
-						_0: A2(_user$project$View$viewInfoLine, 'Pseudonymes', nodeData.aka),
-						_1: {
-							ctor: '::',
-							_0: A2(_user$project$View$viewInfoLine, 'Lien Ars Margica', nodeData.internalLink),
-							_1: {
-								ctor: '::',
-								_0: A2(_user$project$View$viewInfoLine, 'Lien externe', nodeData.externalLink),
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				}
-			}
-		});
-};
-var _user$project$View$viewPublicationNodeData = function (nodeData) {
-	return _user$project$View$viewNodeInfos(
-		{
-			ctor: '::',
-			_0: _user$project$View$viewNodeLabel(nodeData.labels),
-			_1: {
-				ctor: '::',
-				_0: A2(_user$project$View$viewInfoLine, 'Titre', nodeData.title),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$View$viewValueNodeData = function (nodeData) {
-	return _user$project$View$viewNodeInfos(
-		{
-			ctor: '::',
-			_0: _user$project$View$viewNodeLabel(nodeData.labels),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_user$project$View$viewInfoLine,
-					'Valeur',
-					_elm_lang$core$Basics$toString(nodeData.value)),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$View$viewGenericNodeData = function (nodeData) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('p-1 m-0'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: _rundis$elm_bootstrap$Bootstrap_ListGroup$ul(
-				{
-					ctor: '::',
-					_0: _user$project$View$viewNodeLabel(nodeData.labels),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$View$viewNodeData = function (nodetoDisplay) {
-	var dataToDisplay = function () {
-		var _p0 = nodetoDisplay;
-		if (_p0.ctor === 'Nothing') {
-			return A2(
-				_elm_lang$html$Html$div,
-				{ctor: '[]'},
-				{ctor: '[]'});
-		} else {
-			var _p1 = _p0._0.data;
-			switch (_p1.ctor) {
-				case 'GenericNode':
-					return _user$project$View$viewGenericNodeData(_p1._0);
-				case 'PersonNode':
-					return _user$project$View$viewPersonNodeData(_p1._0);
-				case 'PublicationNode':
-					return _user$project$View$viewPublicationNodeData(_p1._0);
-				default:
-					return _user$project$View$viewValueNodeData(_p1._0);
-			}
-		}
-	}();
-	return _rundis$elm_bootstrap$Bootstrap_Card$view(
-		A3(
-			_rundis$elm_bootstrap$Bootstrap_Card$block,
-			{
-				ctor: '::',
-				_0: _rundis$elm_bootstrap$Bootstrap_Card$blockAttrs(
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('element-infos'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_rundis$elm_bootstrap$Bootstrap_Card$text,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: dataToDisplay,
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			},
-			A3(
-				_rundis$elm_bootstrap$Bootstrap_Card$header,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('text-center bg-node p-0'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$h5,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Noeud'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				},
-				_rundis$elm_bootstrap$Bootstrap_Card$config(
-					{
-						ctor: '::',
-						_0: _rundis$elm_bootstrap$Bootstrap_Card$attrs(
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('border-node m-1 bg-node'),
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}))));
-};
 var _user$project$View$viewEdgeData = function (edgeToDisplay) {
 	var dataToDisplay = function () {
-		var _p2 = edgeToDisplay;
-		if (_p2.ctor === 'Nothing') {
+		var _p1 = edgeToDisplay;
+		if (_p1.ctor === 'Nothing') {
 			return A2(
 				_elm_lang$html$Html$div,
 				{ctor: '[]'},
@@ -18096,7 +17981,7 @@ var _user$project$View$viewEdgeData = function (edgeToDisplay) {
 				{
 					ctor: '::',
 					_0: _elm_lang$html$Html$text(
-						_user$project$Accessors_Edge$getGenericData(_p2._0).edge_type),
+						_user$project$Accessors_Edge$getGenericData(_p1._0).edge_type),
 					_1: {ctor: '[]'}
 				});
 		}
@@ -18158,25 +18043,25 @@ var _user$project$View$viewEdgeData = function (edgeToDisplay) {
 					}))));
 };
 var _user$project$View$edgeToDisplay = function (currentEdge) {
-	var _p3 = currentEdge.browsed;
-	if (_p3.ctor === 'Just') {
-		return _elm_lang$core$Maybe$Just(_p3._0);
+	var _p2 = currentEdge.browsed;
+	if (_p2.ctor === 'Just') {
+		return _elm_lang$core$Maybe$Just(_p2._0);
 	} else {
 		return currentEdge.pinned;
 	}
 };
 var _user$project$View$nodeToDisplay = function (currentNode) {
-	var _p4 = currentNode.browsed;
-	if (_p4.ctor === 'Just') {
-		return _elm_lang$core$Maybe$Just(_p4._0);
+	var _p3 = currentNode.browsed;
+	if (_p3.ctor === 'Just') {
+		return _elm_lang$core$Maybe$Just(_p3._0);
 	} else {
 		return currentNode.pinned;
 	}
 };
 var _user$project$View$viewError = function (errorMessage) {
 	var div_ = function () {
-		var _p5 = errorMessage;
-		if (_p5.ctor === 'Nothing') {
+		var _p4 = errorMessage;
+		if (_p4.ctor === 'Nothing') {
 			return A2(
 				_elm_lang$html$Html$div,
 				{ctor: '[]'},
@@ -18199,7 +18084,7 @@ var _user$project$View$viewError = function (errorMessage) {
 							_0: _rundis$elm_bootstrap$Bootstrap_Alert$danger(
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(_p5._0),
+									_0: _elm_lang$html$Html$text(_p4._0),
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
@@ -18209,6 +18094,174 @@ var _user$project$View$viewError = function (errorMessage) {
 		}
 	}();
 	return div_;
+};
+var _user$project$View$Url = {ctor: 'Url'};
+var _user$project$View$viewInfoLineUrl = F2(
+	function (label, value) {
+		return A3(_user$project$View$viewInfoLine, label, value, _user$project$View$Url);
+	});
+var _user$project$View$SimpleText = {ctor: 'SimpleText'};
+var _user$project$View$viewInfoLineText = F2(
+	function (label, value) {
+		return A3(_user$project$View$viewInfoLine, label, value, _user$project$View$SimpleText);
+	});
+var _user$project$View$viewNodeLabel = function (labels) {
+	return A2(
+		_user$project$View$viewInfoLineText,
+		'Label',
+		A2(_elm_lang$core$String$join, ',', labels));
+};
+var _user$project$View$viewGenericNodeData = function (nodeData) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('p-1 m-0'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _rundis$elm_bootstrap$Bootstrap_ListGroup$ul(
+				{
+					ctor: '::',
+					_0: _user$project$View$viewNodeLabel(nodeData.labels),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$View$viewPersonNodeData = function (nodeData) {
+	return _user$project$View$viewNodeInfos(
+		{
+			ctor: '::',
+			_0: _user$project$View$viewNodeLabel(nodeData.labels),
+			_1: {
+				ctor: '::',
+				_0: A2(_user$project$View$viewInfoLineText, 'Prénom', nodeData.firstName),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$View$viewInfoLineText, 'Nom', nodeData.lastName),
+					_1: {
+						ctor: '::',
+						_0: A2(_user$project$View$viewInfoLineText, 'Pseudonymes', nodeData.aka),
+						_1: {
+							ctor: '::',
+							_0: A2(_user$project$View$viewInfoLineUrl, 'Lien Ars Margica', nodeData.internalLink),
+							_1: {
+								ctor: '::',
+								_0: A2(_user$project$View$viewInfoLineUrl, 'Lien externe', nodeData.externalLink),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			}
+		});
+};
+var _user$project$View$viewPublicationNodeData = function (nodeData) {
+	return _user$project$View$viewNodeInfos(
+		{
+			ctor: '::',
+			_0: _user$project$View$viewNodeLabel(nodeData.labels),
+			_1: {
+				ctor: '::',
+				_0: A2(_user$project$View$viewInfoLineText, 'Titre', nodeData.title),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$View$viewValueNodeData = function (nodeData) {
+	return _user$project$View$viewNodeInfos(
+		{
+			ctor: '::',
+			_0: _user$project$View$viewNodeLabel(nodeData.labels),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_user$project$View$viewInfoLineText,
+					'Valeur',
+					_elm_lang$core$Basics$toString(nodeData.value)),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$View$viewNodeData = function (nodetoDisplay) {
+	var dataToDisplay = function () {
+		var _p5 = nodetoDisplay;
+		if (_p5.ctor === 'Nothing') {
+			return A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{ctor: '[]'});
+		} else {
+			var _p6 = _p5._0.data;
+			switch (_p6.ctor) {
+				case 'GenericNode':
+					return _user$project$View$viewGenericNodeData(_p6._0);
+				case 'PersonNode':
+					return _user$project$View$viewPersonNodeData(_p6._0);
+				case 'PublicationNode':
+					return _user$project$View$viewPublicationNodeData(_p6._0);
+				default:
+					return _user$project$View$viewValueNodeData(_p6._0);
+			}
+		}
+	}();
+	return _rundis$elm_bootstrap$Bootstrap_Card$view(
+		A3(
+			_rundis$elm_bootstrap$Bootstrap_Card$block,
+			{
+				ctor: '::',
+				_0: _rundis$elm_bootstrap$Bootstrap_Card$blockAttrs(
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('element-infos'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_rundis$elm_bootstrap$Bootstrap_Card$text,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: dataToDisplay,
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			A3(
+				_rundis$elm_bootstrap$Bootstrap_Card$header,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('text-center bg-node p-0'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$h5,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Noeud'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				},
+				_rundis$elm_bootstrap$Bootstrap_Card$config(
+					{
+						ctor: '::',
+						_0: _rundis$elm_bootstrap$Bootstrap_Card$attrs(
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('border-node m-1 bg-node'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}))));
 };
 var _user$project$View$view = function (model) {
 	return A2(
