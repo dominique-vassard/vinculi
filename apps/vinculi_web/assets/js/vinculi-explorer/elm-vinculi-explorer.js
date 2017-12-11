@@ -16721,9 +16721,9 @@ var _user$project$Types$ValueNodeData = F5(
 	function (a, b, c, d, e) {
 		return {id: a, labels: b, name: c, parentNode: d, value: e};
 	});
-var _user$project$Types$PublicationNodeData = F5(
-	function (a, b, c, d, e) {
-		return {id: a, labels: b, name: c, parentNode: d, title: e};
+var _user$project$Types$PublicationNodeData = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, labels: b, name: c, parentNode: d, title: e, titleFr: f};
 	});
 var _user$project$Types$Position = F2(
 	function (a, b) {
@@ -17327,9 +17327,13 @@ var _user$project$Decoders_Node$personDataDecoder = A4(
 var _user$project$Decoders_Node$personDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$PersonNode, _user$project$Decoders_Node$personDataDecoder);
 var _user$project$Decoders_Node$publicationDataDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'title',
+	'titleFr',
 	_elm_lang$core$Json_Decode$string,
-	_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$PublicationNodeData));
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'title',
+		_elm_lang$core$Json_Decode$string,
+		_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$PublicationNodeData)));
 var _user$project$Decoders_Node$publicationDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$PublicationNode, _user$project$Decoders_Node$publicationDataDecoder);
 var _user$project$Decoders_Node$valueDataDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -17721,15 +17725,26 @@ var _user$project$Encoders_Node$publicationEncoder = function (publicationData) 
 		A2(
 			_elm_lang$core$Basics_ops['++'],
 			_user$project$Encoders_Node$commonEncoder(publicationData),
-			{
-				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'title',
-					_1: _elm_lang$core$Json_Encode$string(publicationData.title)
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'title',
+						_1: _elm_lang$core$Json_Encode$string(publicationData.title)
+					},
+					_1: {ctor: '[]'}
 				},
-				_1: {ctor: '[]'}
-			}));
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'titleFr',
+						_1: _elm_lang$core$Json_Encode$string(publicationData.titleFr)
+					},
+					_1: {ctor: '[]'}
+				})));
 };
 var _user$project$Encoders_Node$valueEncoder = function (valueData) {
 	return _elm_lang$core$Json_Encode$object(
@@ -18196,7 +18211,11 @@ var _user$project$View$viewPublicationNodeData = function (nodeData) {
 			_1: {
 				ctor: '::',
 				_0: A2(_user$project$View$viewInfoLineText, 'Titre', nodeData.title),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$View$viewInfoLineText, 'TitreFr', nodeData.titleFr),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };
@@ -18907,7 +18926,7 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Types.NodeData":{"args":[],"tags":{"PersonNode":["Types.PersonNodeData"],"ValueNode":["Types.ValueNodeData"],"PublicationNode":["Types.PublicationNodeData"],"GenericNode":["Types.GenericNodeData"]}},"Types.ElementType":{"args":[],"tags":{"NodeElt":[],"EdgeElt":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Types.EdgeData":{"args":[],"tags":{"InfluencedEdge":["Types.InfluencedEdgeData"],"GenericEdge":["Types.GenericEdgeData"]}},"Types.Msg":{"args":[],"tags":{"SetPinnedElement":["Result.Result String Types.PinnedElement"],"SetSearchNode":["Result.Result String Types.SearchNodeType"],"GetNodeLocalGraph":[],"JoinError":[],"Join":[],"UnsetBrowsedElement":["Result.Result String Types.ElementType"],"HandleSendError":["Json.Encode.Value"],"SetGraphState":["Result.Result String Types.Snapshot"],"PhoenixMsg":["Phoenix.Socket.Msg Types.Msg"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"SendGraph":[],"InitGraph":[],"SetBrowsedElement":["Result.Result String Types.BrowsedElement"]}},"Types.Element":{"args":[],"tags":{"Node":["Types.NodeType"],"Edge":["Types.EdgeType"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Types.GenericNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String }"},"Types.InfluencedEdgeData":{"args":[],"type":"{ id : String , source : String , target : String , edge_type : String , strength : Int }"},"Types.PersonNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lastName : String , firstName : String , aka : String , internalLink : String , externalLink : String }"},"Types.ValueNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , value : Int }"},"Types.Snapshot":{"args":[],"type":"{ graph : Types.Graph, description : String }"},"Types.PublicationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , title : String }"},"Types.BrowsedElement":{"args":[],"type":"{ id : String, elementType : Types.ElementType }"},"Types.Position":{"args":[],"type":"{ x : Float, y : Float }"},"Types.GenericEdgeData":{"args":[],"type":"{ id : String, source : String, target : String, edge_type : String }"},"Types.NodeType":{"args":[],"type":"{ group : String , data : Types.NodeData , classes : String , position : Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.SearchNodeType":{"args":[],"type":"{ uuid : String, labels : List String }"},"Types.PinnedElement":{"args":[],"type":"{ elementType : Types.ElementType, pin : Bool }"},"Time.Time":{"args":[],"type":"Float"},"Types.EdgeType":{"args":[],"type":"{ group : String , data : Types.EdgeData , classes : String , position : Maybe.Maybe Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.Graph":{"args":[],"type":"List Types.Element"}},"message":"Types.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Types.NodeData":{"args":[],"tags":{"PersonNode":["Types.PersonNodeData"],"ValueNode":["Types.ValueNodeData"],"PublicationNode":["Types.PublicationNodeData"],"GenericNode":["Types.GenericNodeData"]}},"Types.ElementType":{"args":[],"tags":{"NodeElt":[],"EdgeElt":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Types.EdgeData":{"args":[],"tags":{"InfluencedEdge":["Types.InfluencedEdgeData"],"GenericEdge":["Types.GenericEdgeData"]}},"Types.Msg":{"args":[],"tags":{"SetPinnedElement":["Result.Result String Types.PinnedElement"],"SetSearchNode":["Result.Result String Types.SearchNodeType"],"GetNodeLocalGraph":[],"JoinError":[],"Join":[],"UnsetBrowsedElement":["Result.Result String Types.ElementType"],"HandleSendError":["Json.Encode.Value"],"SetGraphState":["Result.Result String Types.Snapshot"],"PhoenixMsg":["Phoenix.Socket.Msg Types.Msg"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"SendGraph":[],"InitGraph":[],"SetBrowsedElement":["Result.Result String Types.BrowsedElement"]}},"Types.Element":{"args":[],"tags":{"Node":["Types.NodeType"],"Edge":["Types.EdgeType"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Types.GenericNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String }"},"Types.InfluencedEdgeData":{"args":[],"type":"{ id : String , source : String , target : String , edge_type : String , strength : Int }"},"Types.PersonNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lastName : String , firstName : String , aka : String , internalLink : String , externalLink : String }"},"Types.ValueNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , value : Int }"},"Types.Snapshot":{"args":[],"type":"{ graph : Types.Graph, description : String }"},"Types.PublicationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , title : String , titleFr : String }"},"Types.BrowsedElement":{"args":[],"type":"{ id : String, elementType : Types.ElementType }"},"Types.Position":{"args":[],"type":"{ x : Float, y : Float }"},"Types.GenericEdgeData":{"args":[],"type":"{ id : String, source : String, target : String, edge_type : String }"},"Types.NodeType":{"args":[],"type":"{ group : String , data : Types.NodeData , classes : String , position : Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.SearchNodeType":{"args":[],"type":"{ uuid : String, labels : List String }"},"Types.PinnedElement":{"args":[],"type":"{ elementType : Types.ElementType, pin : Bool }"},"Time.Time":{"args":[],"type":"Float"},"Types.EdgeType":{"args":[],"type":"{ group : String , data : Types.EdgeData , classes : String , position : Maybe.Maybe Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.Graph":{"args":[],"type":"List Types.Element"}},"message":"Types.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])

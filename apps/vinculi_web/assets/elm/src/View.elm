@@ -202,8 +202,8 @@ viewPublicationNodeData nodeData =
     viewNodeInfos
         [ viewNodeLabel nodeData.labels
         , viewInfoLineText "Titre" nodeData.title
+        , viewInfoLineText "TitreFr" nodeData.titleFr
 
-        --, viewInfoLine "Lien Ars Margica" nodeData.titleFr
         --, viewInfoLine "Lien Ars Margica" nodeData.internalLink
         --, viewInfoLine "Lien externe" nodeData.externalLink
         ]

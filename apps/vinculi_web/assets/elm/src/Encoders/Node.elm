@@ -87,6 +87,7 @@ publicationEncoder publicationData =
     Encode.object
         (commonEncoder publicationData
             ++ [ ( "title", Encode.string publicationData.title ) ]
+            ++ [ ( "titleFr", Encode.string publicationData.titleFr ) ]
         )
 
 

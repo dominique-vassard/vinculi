@@ -105,6 +105,7 @@ publicationDataDecoder : Decoder PublicationNodeData
 publicationDataDecoder =
     commonDataDecoder PublicationNodeData
         |> required "title" Decode.string
+        |> required "titleFr" Decode.string
 
 
 valueDecoder : Decoder NodeData

@@ -69,6 +69,7 @@ type alias PublicationNodeData =
     , name : String
     , parentNode : Maybe String
     , title : String
+    , titleFr : String
     }
 
 
