@@ -13,7 +13,7 @@ defmodule VinculiGraph.TestFixtures do
   def get_fixtures_cql() do
     """
 //Towns
-CREATE (edinburgh:Town      {uuid: 'town-1', name:'Edinburgh'}) //Add geoloc
+CREATE (edinburgh:Town      {uuid: 'town-1', name:'Edinburgh', lat:toFloat(55.953251), long:toFloat(-3.188267)}) //Add geoloc
 CREATE (kirkcaldy:Town      {uuid: 'town-2', name:'Kirkcaldy'}) //Add geoloc
 CREATE (konigsberg:Town     {uuid: 'town-3', name:'Königsberg'}) //Add geoloc
 CREATE (wien:Town           {uuid: 'town-4', name:'Wien'}) //Add geoloc
@@ -28,7 +28,7 @@ CREATE (epinal:Town         {uuid: 'town-12', name:'Épinal'})
 CREATE (paris:Town          {uuid: 'town-13', name:'Paris'})
 
 //Countries
-CREATE (scotland:Country        {uuid: 'country-1', name:'Scotland'}) //Add geoloc
+CREATE (scotland:Country        {uuid: 'country-1', name:'Scotland', lat:tofloat(56.4907), long:toFloat(-4.2026)}) //Add geoloc
 CREATE (prussia:Country         {uuid: 'country-2', name:'Prussia'}) //Add geoloc
 CREATE (germany:Country         {uuid: 'country-3', name:'Germany'}) //Add geoloc
 CREATE (austrian_emp:Country    {uuid: 'country-4', name:'Austrian Empire'}) //Add geoloc
@@ -38,7 +38,7 @@ CREATE (poland:Country          {uuid: 'country-7', name:'Poland'})
 CREATE (france:Country          {uuid: 'country-8', name:'France'})
 
 //Continent
-CREATE (europe:Continent {uuid: 'continent-1', name:'Europe'}) //Add geoloc
+CREATE (europe:Continent {uuid: 'continent-1', name:'Europe', lat: toFloat(53.0000), long: toFloat(9.0000)}) //Add geoloc
 
 //Definition of location
 CREATE (edinburgh)-[:IS_IN_COUNTRY]->(scotland)
@@ -83,6 +83,7 @@ CREATE (y1755:Year {uuid:'year-7', value:1755})
 CREATE (y1757:Year {uuid:'year-8', value:1757})
 CREATE (y1759:Year {uuid:'year-9', value:1759})
 CREATE (y1776:Year {uuid:'year-10', value:1776})
+CREATE (y1779:Year {uuid:'year-43', value:1779})
 CREATE (y1781:Year {uuid:'year-11', value:1781})
 CREATE (y1786:Year {uuid:'year-12', value:1786})
 CREATE (y1788:Year {uuid:'year-13', value:1788})
@@ -148,6 +149,7 @@ CREATE (thn:Publication     {uuid:'publication-1', type:'book', title:'A Treatis
 CREATE (echu:Publication    {uuid:'publication-2', type:'book', title:'An Enquiry Concerning Human Understanding', titleFr:'Enquête sur l\\'entendement humain'})
 CREATE (ecpm:Publication    {uuid:'publication-3', type:'book', title:'An Enquiry Concerning the Principles of Morals', titleFr:'Enquête sur les principes de la morale'})
 CREATE (nhr:Publication     {uuid:'publication-4', type:'book', title:'The Natural History of Religion', titleFr:'Histoire de la religion naturelle'})
+CREATE (drn:Publication     {uuid:'publication-h5', type:'book', title:'  Dialogues Concerning Natural Religion', titleFr:'Dialogues sur la religion naturelle', internalLink:'http://arsmagica.fr/sites/default/files/Textes/dialogues_religion_naturelle_hume_1779.pdf', externalLink:'https://fr.wikipedia.org/wiki/Dialogues_sur_la_religion_naturelle'})
 
 //Adam Smith
 CREATE (adam_smith:Person   {uuid:'person-2', lastName:'SMITH', firstName:'Adam'})
@@ -265,7 +267,12 @@ CREATE (david_hume)-[:WROTE]->(thn),
        (nhr)-[:WHEN_WRITTEN]->(y1757),
        (nhr)-[:IS_OF_DOMAIN]->(philo),
        (nhr)-[:IS_OF_SCHOOL]->(empiricism),
-       (nhr)-[:HAS_ORIGINAL_LANGUAGE]->(english)
+       (nhr)-[:HAS_ORIGINAL_LANGUAGE]->(english),
+       (david_hume)-[:WROTE]->(drn),
+       (drn)-[:WHEN_WRITTEN]->(y1779),
+       (drn)-[:IS_OF_DOMAIN]->(philo),
+       (drn)-[:IS_OF_SCHOOL]->(empiricism),
+       (drn)-[:HAS_ORIGINAL_LANGUAGE]->(english)
 
 //Adam Smith writings
 CREATE (adam_smith)-[:WROTE]->(tms),
