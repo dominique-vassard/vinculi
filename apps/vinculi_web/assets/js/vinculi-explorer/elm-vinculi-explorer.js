@@ -16713,17 +16713,25 @@ var _user$project$Types$GenericNodeData = F4(
 	function (a, b, c, d) {
 		return {id: a, labels: b, name: c, parentNode: d};
 	});
+var _user$project$Types$InstitutionNodeData = F5(
+	function (a, b, c, d, e) {
+		return {id: a, labels: b, name: c, parentNode: d, institution_type: e};
+	});
+var _user$project$Types$LocationNodeData = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, labels: b, name: c, parentNode: d, lat: e, $long: f};
+	});
 var _user$project$Types$PersonNodeData = F9(
 	function (a, b, c, d, e, f, g, h, i) {
 		return {id: a, labels: b, name: c, parentNode: d, lastName: e, firstName: f, aka: g, internalLink: h, externalLink: i};
 	});
+var _user$project$Types$PublicationNodeData = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {id: a, labels: b, name: c, parentNode: d, title: e, titleFr: f, internalLink: g, externalLink: h};
+	});
 var _user$project$Types$ValueNodeData = F5(
 	function (a, b, c, d, e) {
 		return {id: a, labels: b, name: c, parentNode: d, value: e};
-	});
-var _user$project$Types$PublicationNodeData = F6(
-	function (a, b, c, d, e, f) {
-		return {id: a, labels: b, name: c, parentNode: d, title: e, titleFr: f};
 	});
 var _user$project$Types$Position = F2(
 	function (a, b) {
@@ -16789,6 +16797,12 @@ var _user$project$Types$PublicationNode = function (a) {
 };
 var _user$project$Types$PersonNode = function (a) {
 	return {ctor: 'PersonNode', _0: a};
+};
+var _user$project$Types$LocationNode = function (a) {
+	return {ctor: 'LocationNode', _0: a};
+};
+var _user$project$Types$InstitutionNode = function (a) {
+	return {ctor: 'InstitutionNode', _0: a};
 };
 var _user$project$Types$GenericNode = function (a) {
 	return {ctor: 'GenericNode', _0: a};
@@ -16869,22 +16883,28 @@ var _user$project$Accessors_Edge$setClassesFromType = function (edge) {
 var _user$project$Accessors_Node$getGenericData = function (node) {
 	var _p0 = node.data;
 	switch (_p0.ctor) {
-		case 'PersonNode':
-			var _p1 = _p0._0;
-			return A4(_user$project$Types$GenericNodeData, _p1.id, _p1.labels, _p1.name, _p1.parentNode);
 		case 'GenericNode':
 			return _p0._0;
-		case 'PublicationNode':
+		case 'InstitutionNode':
+			var _p1 = _p0._0;
+			return A4(_user$project$Types$GenericNodeData, _p1.id, _p1.labels, _p1.name, _p1.parentNode);
+		case 'LocationNode':
 			var _p2 = _p0._0;
 			return A4(_user$project$Types$GenericNodeData, _p2.id, _p2.labels, _p2.name, _p2.parentNode);
-		default:
+		case 'PersonNode':
 			var _p3 = _p0._0;
 			return A4(_user$project$Types$GenericNodeData, _p3.id, _p3.labels, _p3.name, _p3.parentNode);
+		case 'PublicationNode':
+			var _p4 = _p0._0;
+			return A4(_user$project$Types$GenericNodeData, _p4.id, _p4.labels, _p4.name, _p4.parentNode);
+		default:
+			var _p5 = _p0._0;
+			return A4(_user$project$Types$GenericNodeData, _p5.id, _p5.labels, _p5.name, _p5.parentNode);
 	}
 };
 var _user$project$Accessors_Node$getLabels = function (node) {
-	var _p4 = _user$project$Accessors_Node$getGenericData(node);
-	var labels = _p4.labels;
+	var _p6 = _user$project$Accessors_Node$getGenericData(node);
+	var labels = _p6.labels;
 	return labels;
 };
 var _user$project$Accessors_Node$setClasses = F2(
@@ -16904,43 +16924,53 @@ var _user$project$Accessors_Node$setClassesFromLabels = function (node) {
 };
 var _user$project$Accessors_Node$setParentNodeData = F2(
 	function (parentNode, nodeData) {
-		var _p5 = nodeData;
-		switch (_p5.ctor) {
-			case 'PersonNode':
-				return _user$project$Types$PersonNode(
-					_elm_lang$core$Native_Utils.update(
-						_p5._0,
-						{parentNode: parentNode}));
+		var _p7 = nodeData;
+		switch (_p7.ctor) {
 			case 'GenericNode':
 				return _user$project$Types$GenericNode(
 					_elm_lang$core$Native_Utils.update(
-						_p5._0,
+						_p7._0,
+						{parentNode: parentNode}));
+			case 'InstitutionNode':
+				return _user$project$Types$InstitutionNode(
+					_elm_lang$core$Native_Utils.update(
+						_p7._0,
+						{parentNode: parentNode}));
+			case 'LocationNode':
+				return _user$project$Types$LocationNode(
+					_elm_lang$core$Native_Utils.update(
+						_p7._0,
+						{parentNode: parentNode}));
+			case 'PersonNode':
+				return _user$project$Types$PersonNode(
+					_elm_lang$core$Native_Utils.update(
+						_p7._0,
 						{parentNode: parentNode}));
 			case 'PublicationNode':
 				return _user$project$Types$PublicationNode(
 					_elm_lang$core$Native_Utils.update(
-						_p5._0,
+						_p7._0,
 						{parentNode: parentNode}));
 			default:
 				return _user$project$Types$ValueNode(
 					_elm_lang$core$Native_Utils.update(
-						_p5._0,
+						_p7._0,
 						{parentNode: parentNode}));
 		}
 	});
 var _user$project$Accessors_Node$setParentNode = F2(
 	function (parentNode, node) {
-		var _p6 = parentNode;
-		if (_p6.ctor === 'Just') {
-			var _p7 = _p6._0;
+		var _p8 = parentNode;
+		if (_p8.ctor === 'Just') {
+			var _p9 = _p8._0;
 			if (_elm_lang$core$Native_Utils.eq(
-				_p7.uuid,
+				_p9.uuid,
 				_user$project$Accessors_Node$getGenericData(node).id)) {
 				return node;
 			} else {
 				var newNodeData = A2(
 					_user$project$Accessors_Node$setParentNodeData,
-					_elm_lang$core$Maybe$Just(_p7.uuid),
+					_elm_lang$core$Maybe$Just(_p9.uuid),
 					node.data);
 				var nodeData = node.data;
 				return _elm_lang$core$Native_Utils.update(
@@ -17300,6 +17330,24 @@ var _user$project$Decoders_Node$commonDataDecoder = function (dataType) {
 };
 var _user$project$Decoders_Node$genericDataDecoder = _user$project$Decoders_Node$commonDataDecoder(_user$project$Types$GenericNodeData);
 var _user$project$Decoders_Node$genericDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$GenericNode, _user$project$Decoders_Node$genericDataDecoder);
+var _user$project$Decoders_Node$institutionDataDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'type',
+	_elm_lang$core$Json_Decode$string,
+	_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$InstitutionNodeData));
+var _user$project$Decoders_Node$institutionDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$InstitutionNode, _user$project$Decoders_Node$institutionDataDecoder);
+var _user$project$Decoders_Node$locationDataDecoder = A4(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+	'long',
+	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$float),
+	_elm_lang$core$Maybe$Nothing,
+	A4(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+		'lat',
+		_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$float),
+		_elm_lang$core$Maybe$Nothing,
+		_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$LocationNodeData)));
+var _user$project$Decoders_Node$locationDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$LocationNode, _user$project$Decoders_Node$locationDataDecoder);
 var _user$project$Decoders_Node$personDataDecoder = A4(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
 	'externalLink',
@@ -17325,15 +17373,25 @@ var _user$project$Decoders_Node$personDataDecoder = A4(
 					_elm_lang$core$Json_Decode$string,
 					_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$PersonNodeData))))));
 var _user$project$Decoders_Node$personDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$PersonNode, _user$project$Decoders_Node$personDataDecoder);
-var _user$project$Decoders_Node$publicationDataDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'titleFr',
+var _user$project$Decoders_Node$publicationDataDecoder = A4(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+	'externalLink',
 	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'title',
+	'',
+	A4(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+		'internalLink',
 		_elm_lang$core$Json_Decode$string,
-		_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$PublicationNodeData)));
+		'',
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'titleFr',
+			_elm_lang$core$Json_Decode$string,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'title',
+				_elm_lang$core$Json_Decode$string,
+				_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$PublicationNodeData)))));
 var _user$project$Decoders_Node$publicationDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$PublicationNode, _user$project$Decoders_Node$publicationDataDecoder);
 var _user$project$Decoders_Node$valueDataDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -17343,21 +17401,29 @@ var _user$project$Decoders_Node$valueDataDecoder = A3(
 var _user$project$Decoders_Node$valueDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$ValueNode, _user$project$Decoders_Node$valueDataDecoder);
 var _user$project$Decoders_Node$dataDecoderHelper = function (labels) {
 	var _p0 = labels;
-	_v0_3:
+	_v0_7:
 	do {
 		if ((_p0.ctor === '::') && (_p0._1.ctor === '[]')) {
 			switch (_p0._0) {
-				case 'Year':
-					return _user$project$Decoders_Node$valueDecoder;
+				case 'Continent':
+					return _user$project$Decoders_Node$locationDecoder;
+				case 'Country':
+					return _user$project$Decoders_Node$locationDecoder;
+				case 'Institution':
+					return _user$project$Decoders_Node$institutionDecoder;
 				case 'Person':
 					return _user$project$Decoders_Node$personDecoder;
 				case 'Publication':
 					return _user$project$Decoders_Node$publicationDecoder;
+				case 'Town':
+					return _user$project$Decoders_Node$locationDecoder;
+				case 'Year':
+					return _user$project$Decoders_Node$valueDecoder;
 				default:
-					break _v0_3;
+					break _v0_7;
 			}
 		} else {
-			break _v0_3;
+			break _v0_7;
 		}
 	} while(false);
 	return _user$project$Decoders_Node$genericDecoder;
@@ -17673,6 +17739,60 @@ var _user$project$Encoders_Node$genericEncoder = function (genericData) {
 	return _elm_lang$core$Json_Encode$object(
 		_user$project$Encoders_Node$commonEncoder(genericData));
 };
+var _user$project$Encoders_Node$institutionEncoder = function (institutionData) {
+	return _elm_lang$core$Json_Encode$object(
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_user$project$Encoders_Node$commonEncoder(institutionData),
+			{
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'type',
+					_1: _elm_lang$core$Json_Encode$string(institutionData.institution_type)
+				},
+				_1: {ctor: '[]'}
+			}));
+};
+var _user$project$Encoders_Node$locationEncoder = function (locationData) {
+	var longData = function () {
+		var _p1 = locationData.$long;
+		if (_p1.ctor === 'Just') {
+			return {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'long',
+					_1: _elm_lang$core$Json_Encode$float(_p1._0)
+				},
+				_1: {ctor: '[]'}
+			};
+		} else {
+			return {ctor: '[]'};
+		}
+	}();
+	var latData = function () {
+		var _p2 = locationData.lat;
+		if (_p2.ctor === 'Just') {
+			return {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'lat',
+					_1: _elm_lang$core$Json_Encode$float(_p2._0)
+				},
+				_1: {ctor: '[]'}
+			};
+		} else {
+			return {ctor: '[]'};
+		}
+	}();
+	return _elm_lang$core$Json_Encode$object(
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_user$project$Encoders_Node$commonEncoder(locationData),
+			A2(_elm_lang$core$Basics_ops['++'], latData, longData)));
+};
 var _user$project$Encoders_Node$personEncoder = function (personData) {
 	return _elm_lang$core$Json_Encode$object(
 		A2(
@@ -17725,26 +17845,39 @@ var _user$project$Encoders_Node$publicationEncoder = function (publicationData) 
 		A2(
 			_elm_lang$core$Basics_ops['++'],
 			_user$project$Encoders_Node$commonEncoder(publicationData),
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				{
-					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'title',
-						_1: _elm_lang$core$Json_Encode$string(publicationData.title)
-					},
-					_1: {ctor: '[]'}
+			{
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'title',
+					_1: _elm_lang$core$Json_Encode$string(publicationData.title)
 				},
-				{
+				_1: {
 					ctor: '::',
 					_0: {
 						ctor: '_Tuple2',
 						_0: 'titleFr',
 						_1: _elm_lang$core$Json_Encode$string(publicationData.titleFr)
 					},
-					_1: {ctor: '[]'}
-				})));
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'internalLink',
+							_1: _elm_lang$core$Json_Encode$string(publicationData.internalLink)
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'externalLink',
+								_1: _elm_lang$core$Json_Encode$string(publicationData.externalLink)
+							},
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			}));
 };
 var _user$project$Encoders_Node$valueEncoder = function (valueData) {
 	return _elm_lang$core$Json_Encode$object(
@@ -17762,16 +17895,20 @@ var _user$project$Encoders_Node$valueEncoder = function (valueData) {
 			}));
 };
 var _user$project$Encoders_Node$dataEncoder = function (nodeData) {
-	var _p1 = nodeData;
-	switch (_p1.ctor) {
-		case 'PersonNode':
-			return _user$project$Encoders_Node$personEncoder(_p1._0);
+	var _p3 = nodeData;
+	switch (_p3.ctor) {
 		case 'GenericNode':
-			return _user$project$Encoders_Node$genericEncoder(_p1._0);
+			return _user$project$Encoders_Node$genericEncoder(_p3._0);
+		case 'InstitutionNode':
+			return _user$project$Encoders_Node$institutionEncoder(_p3._0);
+		case 'LocationNode':
+			return _user$project$Encoders_Node$locationEncoder(_p3._0);
+		case 'PersonNode':
+			return _user$project$Encoders_Node$personEncoder(_p3._0);
 		case 'PublicationNode':
-			return _user$project$Encoders_Node$publicationEncoder(_p1._0);
+			return _user$project$Encoders_Node$publicationEncoder(_p3._0);
 		default:
-			return _user$project$Encoders_Node$valueEncoder(_p1._0);
+			return _user$project$Encoders_Node$valueEncoder(_p3._0);
 	}
 };
 var _user$project$Encoders_Node$encoder = function (node) {
@@ -18175,6 +18312,50 @@ var _user$project$View$viewGenericNodeData = function (nodeData) {
 			_1: {ctor: '[]'}
 		});
 };
+var _user$project$View$viewInstitutionNodeData = function (nodeData) {
+	return _user$project$View$viewNodeInfos(
+		{
+			ctor: '::',
+			_0: _user$project$View$viewNodeLabel(nodeData.labels),
+			_1: {
+				ctor: '::',
+				_0: A2(_user$project$View$viewInfoLineText, 'Type', nodeData.institution_type),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$View$viewLocationNodeData = function (nodeData) {
+	var $long = function () {
+		var _p6 = nodeData.$long;
+		if (_p6.ctor === 'Just') {
+			return _elm_lang$core$Basics$toString(_p6._0);
+		} else {
+			return '';
+		}
+	}();
+	var lat = function () {
+		var _p7 = nodeData.lat;
+		if (_p7.ctor === 'Just') {
+			return _elm_lang$core$Basics$toString(_p7._0);
+		} else {
+			return '';
+		}
+	}();
+	return _user$project$View$viewNodeInfos(
+		{
+			ctor: '::',
+			_0: _user$project$View$viewNodeLabel(nodeData.labels),
+			_1: {
+				ctor: '::',
+				_0: A2(_user$project$View$viewInfoLineText, 'Latitude', lat),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$View$viewInfoLineText, 'Longitude', $long),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
 var _user$project$View$viewPersonNodeData = function (nodeData) {
 	return _user$project$View$viewNodeInfos(
 		{
@@ -18214,7 +18395,15 @@ var _user$project$View$viewPublicationNodeData = function (nodeData) {
 				_1: {
 					ctor: '::',
 					_0: A2(_user$project$View$viewInfoLineText, 'TitreFr', nodeData.titleFr),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: A2(_user$project$View$viewInfoLineUrl, 'Lien Ars Margica', nodeData.internalLink),
+						_1: {
+							ctor: '::',
+							_0: A2(_user$project$View$viewInfoLineUrl, 'Lien externe', nodeData.externalLink),
+							_1: {ctor: '[]'}
+						}
+					}
 				}
 			}
 		});
@@ -18236,23 +18425,27 @@ var _user$project$View$viewValueNodeData = function (nodeData) {
 };
 var _user$project$View$viewNodeData = function (nodetoDisplay) {
 	var dataToDisplay = function () {
-		var _p6 = nodetoDisplay;
-		if (_p6.ctor === 'Nothing') {
+		var _p8 = nodetoDisplay;
+		if (_p8.ctor === 'Nothing') {
 			return A2(
 				_elm_lang$html$Html$div,
 				{ctor: '[]'},
 				{ctor: '[]'});
 		} else {
-			var _p7 = _p6._0.data;
-			switch (_p7.ctor) {
+			var _p9 = _p8._0.data;
+			switch (_p9.ctor) {
 				case 'GenericNode':
-					return _user$project$View$viewGenericNodeData(_p7._0);
+					return _user$project$View$viewGenericNodeData(_p9._0);
+				case 'InstitutionNode':
+					return _user$project$View$viewInstitutionNodeData(_p9._0);
+				case 'LocationNode':
+					return _user$project$View$viewLocationNodeData(_p9._0);
 				case 'PersonNode':
-					return _user$project$View$viewPersonNodeData(_p7._0);
+					return _user$project$View$viewPersonNodeData(_p9._0);
 				case 'PublicationNode':
-					return _user$project$View$viewPublicationNodeData(_p7._0);
+					return _user$project$View$viewPublicationNodeData(_p9._0);
 				default:
-					return _user$project$View$viewValueNodeData(_p7._0);
+					return _user$project$View$viewValueNodeData(_p9._0);
 			}
 		}
 	}();
@@ -18926,7 +19119,7 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Types.NodeData":{"args":[],"tags":{"PersonNode":["Types.PersonNodeData"],"ValueNode":["Types.ValueNodeData"],"PublicationNode":["Types.PublicationNodeData"],"GenericNode":["Types.GenericNodeData"]}},"Types.ElementType":{"args":[],"tags":{"NodeElt":[],"EdgeElt":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Types.EdgeData":{"args":[],"tags":{"InfluencedEdge":["Types.InfluencedEdgeData"],"GenericEdge":["Types.GenericEdgeData"]}},"Types.Msg":{"args":[],"tags":{"SetPinnedElement":["Result.Result String Types.PinnedElement"],"SetSearchNode":["Result.Result String Types.SearchNodeType"],"GetNodeLocalGraph":[],"JoinError":[],"Join":[],"UnsetBrowsedElement":["Result.Result String Types.ElementType"],"HandleSendError":["Json.Encode.Value"],"SetGraphState":["Result.Result String Types.Snapshot"],"PhoenixMsg":["Phoenix.Socket.Msg Types.Msg"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"SendGraph":[],"InitGraph":[],"SetBrowsedElement":["Result.Result String Types.BrowsedElement"]}},"Types.Element":{"args":[],"tags":{"Node":["Types.NodeType"],"Edge":["Types.EdgeType"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Types.GenericNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String }"},"Types.InfluencedEdgeData":{"args":[],"type":"{ id : String , source : String , target : String , edge_type : String , strength : Int }"},"Types.PersonNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lastName : String , firstName : String , aka : String , internalLink : String , externalLink : String }"},"Types.ValueNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , value : Int }"},"Types.Snapshot":{"args":[],"type":"{ graph : Types.Graph, description : String }"},"Types.PublicationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , title : String , titleFr : String }"},"Types.BrowsedElement":{"args":[],"type":"{ id : String, elementType : Types.ElementType }"},"Types.Position":{"args":[],"type":"{ x : Float, y : Float }"},"Types.GenericEdgeData":{"args":[],"type":"{ id : String, source : String, target : String, edge_type : String }"},"Types.NodeType":{"args":[],"type":"{ group : String , data : Types.NodeData , classes : String , position : Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.SearchNodeType":{"args":[],"type":"{ uuid : String, labels : List String }"},"Types.PinnedElement":{"args":[],"type":"{ elementType : Types.ElementType, pin : Bool }"},"Time.Time":{"args":[],"type":"Float"},"Types.EdgeType":{"args":[],"type":"{ group : String , data : Types.EdgeData , classes : String , position : Maybe.Maybe Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.Graph":{"args":[],"type":"List Types.Element"}},"message":"Types.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Types.NodeData":{"args":[],"tags":{"InstitutionNode":["Types.InstitutionNodeData"],"LocationNode":["Types.LocationNodeData"],"PersonNode":["Types.PersonNodeData"],"ValueNode":["Types.ValueNodeData"],"PublicationNode":["Types.PublicationNodeData"],"GenericNode":["Types.GenericNodeData"]}},"Types.ElementType":{"args":[],"tags":{"NodeElt":[],"EdgeElt":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Types.EdgeData":{"args":[],"tags":{"InfluencedEdge":["Types.InfluencedEdgeData"],"GenericEdge":["Types.GenericEdgeData"]}},"Types.Msg":{"args":[],"tags":{"SetPinnedElement":["Result.Result String Types.PinnedElement"],"SetSearchNode":["Result.Result String Types.SearchNodeType"],"GetNodeLocalGraph":[],"JoinError":[],"Join":[],"UnsetBrowsedElement":["Result.Result String Types.ElementType"],"HandleSendError":["Json.Encode.Value"],"SetGraphState":["Result.Result String Types.Snapshot"],"PhoenixMsg":["Phoenix.Socket.Msg Types.Msg"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"SendGraph":[],"InitGraph":[],"SetBrowsedElement":["Result.Result String Types.BrowsedElement"]}},"Types.Element":{"args":[],"tags":{"Node":["Types.NodeType"],"Edge":["Types.EdgeType"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Types.GenericNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String }"},"Types.InfluencedEdgeData":{"args":[],"type":"{ id : String , source : String , target : String , edge_type : String , strength : Int }"},"Types.LocationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lat : Maybe.Maybe Float , long : Maybe.Maybe Float }"},"Types.PersonNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lastName : String , firstName : String , aka : String , internalLink : String , externalLink : String }"},"Types.ValueNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , value : Int }"},"Types.Snapshot":{"args":[],"type":"{ graph : Types.Graph, description : String }"},"Types.PublicationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , title : String , titleFr : String , internalLink : String , externalLink : String }"},"Types.BrowsedElement":{"args":[],"type":"{ id : String, elementType : Types.ElementType }"},"Types.Position":{"args":[],"type":"{ x : Float, y : Float }"},"Types.GenericEdgeData":{"args":[],"type":"{ id : String, source : String, target : String, edge_type : String }"},"Types.NodeType":{"args":[],"type":"{ group : String , data : Types.NodeData , classes : String , position : Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.SearchNodeType":{"args":[],"type":"{ uuid : String, labels : List String }"},"Types.PinnedElement":{"args":[],"type":"{ elementType : Types.ElementType, pin : Bool }"},"Time.Time":{"args":[],"type":"Float"},"Types.EdgeType":{"args":[],"type":"{ group : String , data : Types.EdgeData , classes : String , position : Maybe.Maybe Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.InstitutionNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , institution_type : String }"},"Types.Graph":{"args":[],"type":"List Types.Element"}},"message":"Types.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])

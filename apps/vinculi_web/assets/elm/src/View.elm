@@ -19,8 +19,17 @@ import Types
         , EdgeData(GenericEdge, InfluencedEdge)
         , GenericEdgeData
         , InfluencedEdgeData
-        , NodeData(GenericNode, PersonNode, PublicationNode, ValueNode)
+        , NodeData
+            ( GenericNode
+            , InstitutionNode
+            , LocationNode
+            , PersonNode
+            , PublicationNode
+            , ValueNode
+            )
         , GenericNodeData
+        , InstitutionNodeData
+        , LocationNodeData
         , PersonNodeData
         , PublicationNodeData
         , ValueNodeData
@@ -151,6 +160,12 @@ viewNodeData nodetoDisplay =
                         GenericNode nodeData ->
                             viewGenericNodeData nodeData
 
+                        InstitutionNode nodeData ->
+                            viewInstitutionNodeData nodeData
+
+                        LocationNode nodeData ->
+                            viewLocationNodeData nodeData
+
                         PersonNode nodeData ->
                             viewPersonNodeData nodeData
 
@@ -168,6 +183,13 @@ viewNodeData nodetoDisplay =
             |> Card.view
 
 
+viewNodeInfos : List (ListGroup.Item Msg) -> Html Msg
+viewNodeInfos infoLines =
+    div [ class "p-1 m-0" ]
+        [ ListGroup.ul infoLines
+        ]
+
+
 viewGenericNodeData : GenericNodeData -> Html Msg
 viewGenericNodeData nodeData =
     div [ class "p-1 m-0" ]
@@ -178,11 +200,38 @@ viewGenericNodeData nodeData =
         ]
 
 
-viewNodeInfos : List (ListGroup.Item Msg) -> Html Msg
-viewNodeInfos infoLines =
-    div [ class "p-1 m-0" ]
-        [ ListGroup.ul infoLines
+viewInstitutionNodeData : InstitutionNodeData -> Html Msg
+viewInstitutionNodeData nodeData =
+    viewNodeInfos
+        [ viewNodeLabel nodeData.labels
+        , viewInfoLineText "Type" nodeData.institution_type
         ]
+
+
+viewLocationNodeData : LocationNodeData -> Html Msg
+viewLocationNodeData nodeData =
+    let
+        lat =
+            case nodeData.lat of
+                Just lat ->
+                    toString lat
+
+                Nothing ->
+                    ""
+
+        long =
+            case nodeData.long of
+                Just long ->
+                    toString long
+
+                Nothing ->
+                    ""
+    in
+        viewNodeInfos
+            [ viewNodeLabel nodeData.labels
+            , viewInfoLineText "Latitude" lat
+            , viewInfoLineText "Longitude" long
+            ]
 
 
 viewPersonNodeData : PersonNodeData -> Html Msg
@@ -203,9 +252,8 @@ viewPublicationNodeData nodeData =
         [ viewNodeLabel nodeData.labels
         , viewInfoLineText "Titre" nodeData.title
         , viewInfoLineText "TitreFr" nodeData.titleFr
-
-        --, viewInfoLine "Lien Ars Margica" nodeData.internalLink
-        --, viewInfoLine "Lien externe" nodeData.externalLink
+        , viewInfoLineUrl "Lien Ars Margica" nodeData.internalLink
+        , viewInfoLineUrl "Lien externe" nodeData.externalLink
         ]
 
 

@@ -11,7 +11,14 @@ import Types
     exposing
         ( CommonNodeData
         , NodeType
-        , NodeData(GenericNode, PersonNode, PublicationNode, ValueNode)
+        , NodeData
+            ( GenericNode
+            , InstitutionNode
+            , LocationNode
+            , PersonNode
+            , PublicationNode
+            , ValueNode
+            )
         , GenericNodeData
         , SearchNodeType
         )
@@ -45,11 +52,17 @@ setParentNode parentNode node =
 setParentNodeData : Maybe String -> NodeData -> NodeData
 setParentNodeData parentNode nodeData =
     case nodeData of
-        PersonNode data ->
-            PersonNode { data | parentNode = parentNode }
-
         GenericNode data ->
             GenericNode { data | parentNode = parentNode }
+
+        InstitutionNode data ->
+            InstitutionNode { data | parentNode = parentNode }
+
+        LocationNode data ->
+            LocationNode { data | parentNode = parentNode }
+
+        PersonNode data ->
+            PersonNode { data | parentNode = parentNode }
 
         PublicationNode data ->
             PublicationNode { data | parentNode = parentNode }
@@ -89,11 +102,17 @@ getLabels node =
 getGenericData : NodeType -> GenericNodeData
 getGenericData node =
     case node.data of
-        PersonNode data ->
-            GenericNodeData data.id data.labels data.name data.parentNode
-
         GenericNode data ->
             data
+
+        InstitutionNode data ->
+            GenericNodeData data.id data.labels data.name data.parentNode
+
+        LocationNode data ->
+            GenericNodeData data.id data.labels data.name data.parentNode
+
+        PersonNode data ->
+            GenericNodeData data.id data.labels data.name data.parentNode
 
         PublicationNode data ->
             GenericNodeData data.id data.labels data.name data.parentNode

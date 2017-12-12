@@ -20,14 +20,6 @@ type alias Flags =
 --- NODES
 
 
-type alias GenericNodeData =
-    { id : String
-    , labels : List String
-    , name : String
-    , parentNode : Maybe String
-    }
-
-
 type alias CommonNodeData a =
     { a
         | id : String
@@ -39,6 +31,33 @@ type alias CommonNodeData a =
 
 type alias CommonElementData a =
     { a | classes : String }
+
+
+type alias GenericNodeData =
+    { id : String
+    , labels : List String
+    , name : String
+    , parentNode : Maybe String
+    }
+
+
+type alias InstitutionNodeData =
+    { id : String
+    , labels : List String
+    , name : String
+    , parentNode : Maybe String
+    , institution_type : String
+    }
+
+
+type alias LocationNodeData =
+    { id : String
+    , labels : List String
+    , name : String
+    , parentNode : Maybe String
+    , lat : Maybe Float
+    , long : Maybe Float
+    }
 
 
 type alias PersonNodeData =
@@ -54,6 +73,18 @@ type alias PersonNodeData =
     }
 
 
+type alias PublicationNodeData =
+    { id : String
+    , labels : List String
+    , name : String
+    , parentNode : Maybe String
+    , title : String
+    , titleFr : String
+    , internalLink : String
+    , externalLink : String
+    }
+
+
 type alias ValueNodeData =
     { id : String
     , labels : List String
@@ -63,18 +94,10 @@ type alias ValueNodeData =
     }
 
 
-type alias PublicationNodeData =
-    { id : String
-    , labels : List String
-    , name : String
-    , parentNode : Maybe String
-    , title : String
-    , titleFr : String
-    }
-
-
 type NodeData
     = GenericNode GenericNodeData
+    | InstitutionNode InstitutionNodeData
+    | LocationNode LocationNodeData
     | PersonNode PersonNodeData
     | PublicationNode PublicationNodeData
     | ValueNode ValueNodeData
