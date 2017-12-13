@@ -37,11 +37,36 @@ defmodule VinculiWeb.ConstellationChannelTest do
 
   test "node_local_graph reply to constellation:explore", %{socket: socket} do
     ref = push socket, "node_local_graph", %{"uuid" => "town-2", "labels" => ["Town"]}
-    data = [%{data: %{id: "country-1", labels: ["Country"], name: "Scotland"},
-       group: "nodes"},
-     %{data: %{id: "town-2", labels: ["Town"], name: "Kirkcaldy"}, group: "nodes"},
-     %{data: %{id: "town-2+country-1", source: "town-2", target: "country-1", type: "IS_IN_COUNTRY"},
-       group: "edges"}]
+    data = [
+      %{data: %{id: "country-1", labels: ["Country"], lat: 56.4907,
+      long: -4.2026, name: "Scotland"}, group: "nodes"},
+      %{data: %{id: "town-2", labels: ["Town"], name: "Kirkcaldy"},
+      group: "nodes"},
+      %{data: %{id: "town-2+country-1", source: "town-2", target:
+      "country-1", type: "IS_IN_COUNTRY"}, group: "edges"}]
+
+    assert_reply ref, :ok, %{data: ^data}
+  end
+
+  test "node:labels reply with node labels list", %{socket: socket} do
+    ref = push socket, "node:labels"
+    data = [
+      "Town", "Country", "Continent", "Language", "Degree", "Year",
+      "Institution", "Profession", "Domain", "School", "Person", "Publication",
+      "Translation"]
+    assert_reply ref, :ok, %{data: ^data}
+  end
+
+  test "edge:types reply with relationship types list", %{socket: socket} do
+    ref = push socket, "edge:types"
+
+    data = [
+      "IS_IN_COUNTRY", "IS_IN_CONTINENT", "WHERE_BORN", "WHEN_BORN",
+      "WHERE_DIED", "WHEN_DIED", "WROTE", "WHEN_WRITTEN", "IS_OF_DOMAIN",
+      "IS_OF_SCHOOL", "HAS_ORIGINAL_LANGUAGE", "HAS_DEGREE", "DEGREE_FROM",
+      "HAS_PROFESSION", "EMPLOYED_BY", "EMPLOYED_FROM", "EMPLOYED_TO",
+      "TRANSLATED", "TRANSLATED_IN_LANGUAGE", "WHEN_TRANSLATED", "CO_WROTE",
+      "INFLUENCED"]
 
     assert_reply ref, :ok, %{data: ^data}
   end

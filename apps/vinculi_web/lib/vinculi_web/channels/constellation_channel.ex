@@ -2,6 +2,7 @@ defmodule VinculiWeb.ConstellationChannel do
   use VinculiWeb, :channel
 
   alias VinculiGraph.Node
+  alias VinculiGraph.Relationship
 
   def join("constellation:explore", %{"token" => token}, socket) do
     salt = VinculiWeb.Endpoint.config(:secret_key_base)
@@ -36,6 +37,22 @@ defmodule VinculiWeb.ConstellationChannel do
   """
   def handle_in("node_local_graph", %{"uuid" => uuid, "labels" => labels}, socket) do
     data = Node.get_local_graph(List.first(labels), uuid, :cytoscape)
+    {:reply, {:ok, %{data: data}}, socket}
+  end
+
+  @doc """
+  Reply with the list of node labels used in database.
+  """
+  def handle_in("node:labels", _, socket) do
+    data = Node.get_labels()
+    {:reply, {:ok, %{data: data}}, socket}
+  end
+
+  @doc """
+  Reply with the list of relationship typs used in database.
+  """
+  def handle_in("edge:types", _, socket) do
+    data = Relationship.get_types()
     {:reply, {:ok, %{data: data}}, socket}
   end
 
