@@ -4,6 +4,18 @@ defmodule VinculiGraph.Meta.Node do
   """
 
   @doc """
+  Returns cypher query to retrieve all node labels
+
+  ### Example
+
+      iex> VinculiGraph.Meta.Node.get_labels_cql()
+      "CALL db.labels()"
+  """
+  def get_labels_cql() do
+    "CALL db.labels()"
+  end
+
+  @doc """
   Returns Cypher query to get one node given its uuid
 
   ### Parameters

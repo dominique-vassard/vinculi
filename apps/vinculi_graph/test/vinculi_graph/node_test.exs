@@ -25,6 +25,14 @@ defmodule VinculiGraph.TestNode do
     assert Enum.count(filtered) == Enum.count(expected)
   end
 
+  test "Test get_labels/0" do
+    expected = [
+      "Town", "Country", "Continent", "Language", "Degree", "Year",
+      "Institution", "Profession", "Domain", "School", "Person", "Publication",
+      "Translation"]
+    assert Node.get_labels() == expected
+  end
+
   describe "Test get_fuzzy_by/1:" do
     test "Return valid result with valid params" do
       search = %{label: "Person", properties: %{firstName: "da"}}
