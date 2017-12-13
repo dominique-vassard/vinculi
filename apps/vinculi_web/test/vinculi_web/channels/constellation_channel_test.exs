@@ -35,8 +35,8 @@ defmodule VinculiWeb.ConstellationChannelTest do
     assert_broadcast "shout", %{"hello" => "all"}
   end
 
-  test "node_local_graph reply to constellation:explore", %{socket: socket} do
-    ref = push socket, "node_local_graph", %{"uuid" => "town-2", "labels" => ["Town"]}
+  test "node:local_graph reply to constellation:explore", %{socket: socket} do
+    ref = push socket, "node:local_graph", %{"uuid" => "town-2", "labels" => ["Town"]}
     data = [
       %{data: %{id: "country-1", labels: ["Country"], lat: 56.4907,
       long: -4.2026, name: "Scotland"}, group: "nodes"},
