@@ -106,20 +106,25 @@ getGenericData node =
             data
 
         InstitutionNode data ->
-            GenericNodeData data.id data.labels data.name data.parentNode
+            extractGenericData data
 
         LocationNode data ->
-            GenericNodeData data.id data.labels data.name data.parentNode
+            extractGenericData data
 
         PersonNode data ->
-            GenericNodeData data.id data.labels data.name data.parentNode
+            extractGenericData data
 
         PublicationNode data ->
-            GenericNodeData data.id data.labels data.name data.parentNode
+            extractGenericData data
 
         ValueNode data ->
-            GenericNodeData data.id data.labels data.name data.parentNode
+            extractGenericData data
 
 
 
 --- HELPERS
+
+
+extractGenericData : CommonNodeData a -> GenericNodeData
+extractGenericData data =
+    GenericNodeData data.id data.labels data.name data.parentNode

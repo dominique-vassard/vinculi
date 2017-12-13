@@ -250,7 +250,7 @@ update msg model =
                 ( phxSocket, phxCmd ) =
                     PhxSocket.init model.socketUrl
                         |> PhxSocket.withDebug
-                        |> PhxSocket.on "node_local_graph"
+                        |> PhxSocket.on "node:local_graph"
                             channelName
                             ReceiveNodeLocalGraph
                         |> PhxSocket.join channel
@@ -284,7 +284,7 @@ update msg model =
                                 ]
 
                         phxPush =
-                            PhxPush.init "node_local_graph" channelName
+                            PhxPush.init "node:local_graph" channelName
                                 |> PhxPush.withPayload payload
                                 |> PhxPush.onOk ReceiveNodeLocalGraph
                                 |> PhxPush.onError HandleSendError

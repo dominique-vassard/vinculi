@@ -16880,31 +16880,29 @@ var _user$project$Accessors_Edge$setClassesFromType = function (edge) {
 		edge);
 };
 
+var _user$project$Accessors_Node$extractGenericData = function (data) {
+	return A4(_user$project$Types$GenericNodeData, data.id, data.labels, data.name, data.parentNode);
+};
 var _user$project$Accessors_Node$getGenericData = function (node) {
 	var _p0 = node.data;
 	switch (_p0.ctor) {
 		case 'GenericNode':
 			return _p0._0;
 		case 'InstitutionNode':
-			var _p1 = _p0._0;
-			return A4(_user$project$Types$GenericNodeData, _p1.id, _p1.labels, _p1.name, _p1.parentNode);
+			return _user$project$Accessors_Node$extractGenericData(_p0._0);
 		case 'LocationNode':
-			var _p2 = _p0._0;
-			return A4(_user$project$Types$GenericNodeData, _p2.id, _p2.labels, _p2.name, _p2.parentNode);
+			return _user$project$Accessors_Node$extractGenericData(_p0._0);
 		case 'PersonNode':
-			var _p3 = _p0._0;
-			return A4(_user$project$Types$GenericNodeData, _p3.id, _p3.labels, _p3.name, _p3.parentNode);
+			return _user$project$Accessors_Node$extractGenericData(_p0._0);
 		case 'PublicationNode':
-			var _p4 = _p0._0;
-			return A4(_user$project$Types$GenericNodeData, _p4.id, _p4.labels, _p4.name, _p4.parentNode);
+			return _user$project$Accessors_Node$extractGenericData(_p0._0);
 		default:
-			var _p5 = _p0._0;
-			return A4(_user$project$Types$GenericNodeData, _p5.id, _p5.labels, _p5.name, _p5.parentNode);
+			return _user$project$Accessors_Node$extractGenericData(_p0._0);
 	}
 };
 var _user$project$Accessors_Node$getLabels = function (node) {
-	var _p6 = _user$project$Accessors_Node$getGenericData(node);
-	var labels = _p6.labels;
+	var _p1 = _user$project$Accessors_Node$getGenericData(node);
+	var labels = _p1.labels;
 	return labels;
 };
 var _user$project$Accessors_Node$setClasses = F2(
@@ -16924,53 +16922,53 @@ var _user$project$Accessors_Node$setClassesFromLabels = function (node) {
 };
 var _user$project$Accessors_Node$setParentNodeData = F2(
 	function (parentNode, nodeData) {
-		var _p7 = nodeData;
-		switch (_p7.ctor) {
+		var _p2 = nodeData;
+		switch (_p2.ctor) {
 			case 'GenericNode':
 				return _user$project$Types$GenericNode(
 					_elm_lang$core$Native_Utils.update(
-						_p7._0,
+						_p2._0,
 						{parentNode: parentNode}));
 			case 'InstitutionNode':
 				return _user$project$Types$InstitutionNode(
 					_elm_lang$core$Native_Utils.update(
-						_p7._0,
+						_p2._0,
 						{parentNode: parentNode}));
 			case 'LocationNode':
 				return _user$project$Types$LocationNode(
 					_elm_lang$core$Native_Utils.update(
-						_p7._0,
+						_p2._0,
 						{parentNode: parentNode}));
 			case 'PersonNode':
 				return _user$project$Types$PersonNode(
 					_elm_lang$core$Native_Utils.update(
-						_p7._0,
+						_p2._0,
 						{parentNode: parentNode}));
 			case 'PublicationNode':
 				return _user$project$Types$PublicationNode(
 					_elm_lang$core$Native_Utils.update(
-						_p7._0,
+						_p2._0,
 						{parentNode: parentNode}));
 			default:
 				return _user$project$Types$ValueNode(
 					_elm_lang$core$Native_Utils.update(
-						_p7._0,
+						_p2._0,
 						{parentNode: parentNode}));
 		}
 	});
 var _user$project$Accessors_Node$setParentNode = F2(
 	function (parentNode, node) {
-		var _p8 = parentNode;
-		if (_p8.ctor === 'Just') {
-			var _p9 = _p8._0;
+		var _p3 = parentNode;
+		if (_p3.ctor === 'Just') {
+			var _p4 = _p3._0;
 			if (_elm_lang$core$Native_Utils.eq(
-				_p9.uuid,
+				_p4.uuid,
 				_user$project$Accessors_Node$getGenericData(node).id)) {
 				return node;
 			} else {
 				var newNodeData = A2(
 					_user$project$Accessors_Node$setParentNodeData,
-					_elm_lang$core$Maybe$Just(_p9.uuid),
+					_elm_lang$core$Maybe$Just(_p4.uuid),
 					node.data);
 				var nodeData = node.data;
 				return _elm_lang$core$Native_Utils.update(
@@ -18960,7 +18958,7 @@ var _user$project$Main$update = F2(
 					channel,
 					A4(
 						_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
-						'node_local_graph',
+						'node:local_graph',
 						_user$project$Main$channelName,
 						_user$project$Types$ReceiveNodeLocalGraph,
 						_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
@@ -19018,7 +19016,7 @@ var _user$project$Main$update = F2(
 							A2(
 								_fbonetti$elm_phoenix_socket$Phoenix_Push$withPayload,
 								payload,
-								A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'node_local_graph', _user$project$Main$channelName))));
+								A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'node:local_graph', _user$project$Main$channelName))));
 					var _p16 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
 					var phxSocket = _p16._0;
 					var phxCmd = _p16._1;
