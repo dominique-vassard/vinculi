@@ -20,6 +20,7 @@ import Ports exposing (addToGraph, initGraph)
 import View exposing (view)
 import Subscriptions exposing (subscriptions)
 import Decoders.Graph as GraphDecode exposing (fromWsDecoder)
+import Decoders.Element as ElementDecode exposing (filterDecoder)
 import Encoders.Common as GraphEncode exposing (userEncoder)
 import Encoders.Graph as GraphEncode exposing (encoder)
 import Accessors.Graph as Graph exposing (..)
@@ -60,6 +61,7 @@ initOperations flags =
                 }
         , browsed = Nothing
         , pinned = Nothing
+        , filtered = ElementFilter [] []
         }
     , graph =
         { data = Nothing
@@ -127,7 +129,10 @@ update msg model =
         InitGraph ->
             case model.operations.graph.data of
                 Just graph ->
-                    ( model, Ports.initGraph (GraphEncode.encoder graph) )
+                    (model)
+                        ! [ Task.perform (always GetNodeLabels) (Task.succeed ())
+                          , Ports.initGraph (GraphEncode.encoder graph)
+                          ]
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -253,6 +258,9 @@ update msg model =
                         |> PhxSocket.on "node:local_graph"
                             channelName
                             ReceiveNodeLocalGraph
+                        |> PhxSocket.on "node:labels"
+                            channelName
+                            ReceiveNodeLabels
                         |> PhxSocket.join channel
             in
                 ( { model | phxSocket = phxSocket }
@@ -351,6 +359,51 @@ update msg model =
                             | errorMessage =
                                 Just
                                     ("Cannot decode received graph. -["
+                                        ++ error
+                                        ++ "]"
+                                    )
+                          }
+                        , Cmd.none
+                        )
+
+        GetNodeLabels ->
+            let
+                phxPush =
+                    PhxPush.init "node:labels" channelName
+                        |> PhxPush.onOk ReceiveNodeLabels
+                        |> PhxPush.onError HandleSendError
+
+                ( phxSocket, phxCmd ) =
+                    PhxSocket.push phxPush model.phxSocket
+            in
+                ( { model
+                    | phxSocket = phxSocket
+                    , errorMessage = Nothing
+                  }
+                , Cmd.map PhoenixMsg phxCmd
+                )
+
+        ReceiveNodeLabels raw ->
+            let
+                decodedLabels =
+                    Json.Decode.decodeValue ElementDecode.filterDecoder raw
+            in
+                case decodedLabels of
+                    Ok labelsList ->
+                        let
+                            newOps =
+                                (Operations.setNodeFilter
+                                    (ElementFilter labelsList [])
+                                    model.operations
+                                )
+                        in
+                            ( { model | operations = newOps }, Cmd.none )
+
+                    Err error ->
+                        ( { model
+                            | errorMessage =
+                                Just
+                                    ("Cannot decode received node labels. -["
                                         ++ error
                                         ++ "]"
                                     )

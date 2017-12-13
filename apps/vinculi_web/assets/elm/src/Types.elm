@@ -192,6 +192,12 @@ type ElementType
     | EdgeElt
 
 
+type alias ElementFilter =
+    { visible : List String
+    , notVisible : List String
+    }
+
+
 type alias BrowsedElement =
     { id : String
     , elementType : ElementType
@@ -208,6 +214,7 @@ type alias NodeOperations =
     { searched : Maybe SearchNodeType
     , browsed : Maybe NodeType
     , pinned : Maybe NodeType
+    , filtered : ElementFilter
     }
 
 
@@ -256,7 +263,9 @@ type Msg
     = PhoenixMsg (PhxSocket.Msg Msg)
     | HandleSendError Json.Encode.Value
     | GetNodeLocalGraph
+    | GetNodeLabels
     | ReceiveNodeLocalGraph Json.Encode.Value
+    | ReceiveNodeLabels Json.Encode.Value
     | InitGraph
     | SendGraph
     | Join

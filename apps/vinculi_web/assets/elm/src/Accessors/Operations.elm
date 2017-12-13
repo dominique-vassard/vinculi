@@ -1,6 +1,14 @@
 module Accessors.Operations exposing (..)
 
-import Types exposing (Operations, EdgeType, NodeType, SearchNodeType, Graph)
+import Types
+    exposing
+        ( EdgeType
+        , NodeType
+        , ElementFilter
+        , Graph
+        , Operations
+        , SearchNodeType
+        )
 
 
 setBrowsedNode : Maybe NodeType -> Operations -> Operations
@@ -35,6 +43,18 @@ setSearchedNode newSearchNode operations =
 
         newNodeOps =
             { oldNodeOps | searched = newSearchNode }
+    in
+        { operations | node = newNodeOps }
+
+
+setNodeFilter : ElementFilter -> Operations -> Operations
+setNodeFilter newNodeFilter operations =
+    let
+        oldNodeOps =
+            operations.node
+
+        newNodeOps =
+            { oldNodeOps | filtered = newNodeFilter }
     in
         { operations | node = newNodeOps }
 

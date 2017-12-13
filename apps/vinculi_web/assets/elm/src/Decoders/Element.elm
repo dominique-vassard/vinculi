@@ -2,15 +2,25 @@ module Decoders.Element
     exposing
         ( browsedDecoder
         , elementTypeDecoder
+        , filterDecoder
         , pinnedDecoder
         )
 
 import Json.Decode.Pipeline exposing (decode, required)
-import Json.Decode as Decode exposing (Decoder, bool, fail, string, succeed)
+import Json.Decode as Decode
+    exposing
+        ( Decoder
+        , bool
+        , fail
+        , list
+        , string
+        , succeed
+        )
 import Types
     exposing
         ( BrowsedElement
         , PinnedElement
+        , ElementFilter
         , ElementType(NodeElt, EdgeElt)
         )
 
@@ -27,6 +37,11 @@ pinnedDecoder =
     Json.Decode.Pipeline.decode PinnedElement
         |> required "elementType" elementTypeDecoder
         |> required "pin" Decode.bool
+
+
+filterDecoder : Decoder (List String)
+filterDecoder =
+    Decode.field "data" (Decode.list Decode.string)
 
 
 elementTypeDecoder : Decoder ElementType
