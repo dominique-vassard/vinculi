@@ -1,6 +1,7 @@
 module Accessors.Node
     exposing
-        ( getLabels
+        ( getId
+        , getLabels
         , getGenericData
         , setClasses
         , setClassesFromLabels
@@ -10,6 +11,7 @@ module Accessors.Node
 import Types
     exposing
         ( CommonNodeData
+        , ElementId
         , NodeType
         , NodeData
             ( GenericNode
@@ -97,6 +99,15 @@ getLabels node =
             getGenericData node
     in
         labels
+
+
+getId : NodeType -> ElementId
+getId node =
+    let
+        { id } =
+            getGenericData node
+    in
+        id
 
 
 getGenericData : NodeType -> GenericNodeData

@@ -15,6 +15,7 @@ import Phoenix.Socket as PhxSocket
 import Phoenix.Channel as PhxChannel exposing (init, onJoin)
 import Phoenix.Push as PhxPush exposing (init, onError, onOk, withPayload)
 import Task
+import Dict
 import Types exposing (..)
 import Ports exposing (addToGraph, initGraph)
 import View exposing (view)
@@ -61,7 +62,7 @@ initOperations flags =
                 }
         , browsed = Nothing
         , pinned = Nothing
-        , filtered = ElementFilter [] []
+        , filtered = Dict.empty
         }
     , graph =
         { data = Nothing
@@ -391,11 +392,21 @@ update msg model =
                 case decodedLabels of
                     Ok labelsList ->
                         let
+                            elementFilters =
+                                Dict.fromList <|
+                                    List.map (\x -> ( x, True )) labelsList
+
                             newOps =
                                 (Operations.setNodeFilter
-                                    (ElementFilter labelsList [])
+                                    elementFilters
                                     model.operations
                                 )
+
+                            --newSnapshot =
+                            --    (Snapshot.setNodeFilter
+                            --        elementFilters
+                            --        model.snapshots
+                            --    )
                         in
                             ( { model | operations = newOps }, Cmd.none )
 
@@ -410,6 +421,16 @@ update msg model =
                           }
                         , Cmd.none
                         )
+
+        ToggleFilter NodeElt filterName ->
+            let
+                newOps =
+                    Operations.toggleNodeFilterState filterName model.operations
+            in
+                ( { model | operations = newOps }, Cmd.none )
+
+        ToggleFilter EdgeElt filterName ->
+            ( model, Cmd.none )
 
 
 updateBrowsedEdge : BrowsedElement -> Model -> Model

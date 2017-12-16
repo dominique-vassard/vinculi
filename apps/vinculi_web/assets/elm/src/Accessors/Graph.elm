@@ -10,14 +10,16 @@ module Accessors.Graph
 import Types
     exposing
         ( Element(Edge, Node)
+        , ElementId
         , EdgeType
+        , FilterName
         , NodeType
         , Graph
         , SearchNodeType
         )
 import Accessors.Element as Element exposing (setClasses, setParentNode)
 import Accessors.Edge as Edge exposing (getGenericData)
-import Accessors.Node as Node exposing (getGenericData)
+import Accessors.Node as Node exposing (getGenericData, getId, getLabels)
 
 
 --- SETTERS
@@ -132,3 +134,14 @@ substractGraph receivedGraph graph =
             not (elementOf x graph)
         )
         receivedGraph
+
+
+getFilteredElements : FilterName -> Graph -> List ElementId
+getFilteredElements filterName graph =
+    List.map (\x -> Node.getId x) <|
+        List.filter
+            (\x ->
+                List.member filterName <|
+                    Node.getLabels x
+            )
+            (nodes graph)

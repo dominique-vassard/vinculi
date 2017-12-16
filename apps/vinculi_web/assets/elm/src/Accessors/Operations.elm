@@ -1,10 +1,13 @@
 module Accessors.Operations exposing (..)
 
+import Dict
 import Types
     exposing
         ( EdgeType
         , NodeType
-        , ElementFilter
+        , ElementFilters
+        , FilterName
+        , Visible
         , Graph
         , Operations
         , SearchNodeType
@@ -47,7 +50,7 @@ setSearchedNode newSearchNode operations =
         { operations | node = newNodeOps }
 
 
-setNodeFilter : ElementFilter -> Operations -> Operations
+setNodeFilter : ElementFilters -> Operations -> Operations
 setNodeFilter newNodeFilter operations =
     let
         oldNodeOps =
@@ -57,6 +60,25 @@ setNodeFilter newNodeFilter operations =
             { oldNodeOps | filtered = newNodeFilter }
     in
         { operations | node = newNodeOps }
+
+
+toggleNodeFilterState : FilterName -> Operations -> Operations
+toggleNodeFilterState filterName operations =
+    let
+        newFilters =
+            Dict.update filterName updateFilter operations.node.filtered
+    in
+        setNodeFilter newFilters operations
+
+
+updateFilter : Maybe Visible -> Maybe Visible
+updateFilter visible =
+    case visible of
+        Just v ->
+            Just (not v)
+
+        Nothing ->
+            Just False
 
 
 setBrowsedEdge : Maybe EdgeType -> Operations -> Operations

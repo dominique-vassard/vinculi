@@ -14,6 +14,13 @@ port addToGraph : Json.Encode.Value -> Cmd msg
 
 
 
+-- {elementType, idList, visible}
+
+
+port setVisibleElments : Json.Encode.Value -> Cmd msg
+
+
+
 --- INPUT PORTS
 
 

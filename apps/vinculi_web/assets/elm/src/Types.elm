@@ -2,6 +2,7 @@ module Types exposing (..)
 
 import Phoenix.Socket as PhxSocket exposing (Socket)
 import Json.Encode exposing (Value)
+import Dict exposing (Dict)
 import Utils.ZipList as ZipList exposing (ZipList)
 
 
@@ -179,6 +180,10 @@ type Element
     | Edge EdgeType
 
 
+type alias ElementId =
+    String
+
+
 type alias Graph =
     List Element
 
@@ -192,10 +197,16 @@ type ElementType
     | EdgeElt
 
 
-type alias ElementFilter =
-    { visible : List String
-    , notVisible : List String
-    }
+type alias Visible =
+    Bool
+
+
+type alias FilterName =
+    String
+
+
+type alias ElementFilters =
+    Dict FilterName Visible
 
 
 type alias BrowsedElement =
@@ -214,7 +225,7 @@ type alias NodeOperations =
     { searched : Maybe SearchNodeType
     , browsed : Maybe NodeType
     , pinned : Maybe NodeType
-    , filtered : ElementFilter
+    , filtered : ElementFilters
     }
 
 
@@ -237,9 +248,17 @@ type alias Operations =
     }
 
 
+type alias ElementState =
+    { filters : ElementFilters
+    }
+
+
 type alias Snapshot =
     { graph : Graph
     , description : String
+
+    --, node : ElementState
+    --, edge: ElementState
     }
 
 
@@ -275,3 +294,4 @@ type Msg
     | UnsetBrowsedElement (Result String ElementType)
     | SetPinnedElement (Result String PinnedElement)
     | SetGraphState (Result String Snapshot)
+    | ToggleFilter ElementType FilterName

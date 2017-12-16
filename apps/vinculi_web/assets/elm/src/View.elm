@@ -6,17 +6,23 @@ import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Row as Row
 import Bootstrap.Grid.Col as Col
 import Bootstrap.ListGroup as ListGroup
-import Html exposing (Html, a, button, div, h5, h6, span, text)
+import Dict
+import Html exposing (Html, a, button, div, i, h5, text)
 import Html.Attributes exposing (class, href, id)
+import Html.Events exposing (onClick)
 import Types
     exposing
         ( Model
-        , Msg
+        , Msg(ToggleFilter)
         , EdgeType
         , NodeType
         , EdgeOperations
         , NodeOperations
         , EdgeData(GenericEdge, InfluencedEdge)
+        , ElementFilters
+        , FilterName
+        , Visible
+        , ElementType(EdgeElt, NodeElt)
         , GenericEdgeData
         , InfluencedEdgeData
         , NodeData
@@ -60,6 +66,10 @@ view model =
                         , viewEdgeData <| edgeToDisplay model.operations.edge
                         ]
                     ]
+                , Grid.row []
+                    [ Grid.col [ Col.lg12 ]
+                        [ viewNodeFilters <| model.operations.node.filtered ]
+                    ]
                 ]
             ]
         ]
@@ -80,6 +90,28 @@ viewError errorMessage =
                         ]
     in
         div_
+
+
+viewNodeFilters : ElementFilters -> Html Msg
+viewNodeFilters elementFilters =
+    div [] <| List.map viewNodeFilter <| Dict.toList elementFilters
+
+
+viewNodeFilter : ( FilterName, Visible ) -> Html Msg
+viewNodeFilter ( filterName, visible ) =
+    let
+        iconClass =
+            case visible of
+                True ->
+                    "fa fa-eye"
+
+                False ->
+                    "fa fa-eye-slash"
+    in
+        div [ onClick (ToggleFilter NodeElt filterName) ]
+            [ i [ class iconClass ] []
+            , text filterName
+            ]
 
 
 nodeToDisplay : NodeOperations -> Maybe NodeType

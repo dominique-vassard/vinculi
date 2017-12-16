@@ -20,7 +20,6 @@ import Types
     exposing
         ( BrowsedElement
         , PinnedElement
-        , ElementFilter
         , ElementType(NodeElt, EdgeElt)
         )
 

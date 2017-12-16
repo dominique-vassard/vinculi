@@ -12766,6 +12766,121 @@ var _elm_lang$html$Html_Attributes$classList = function (list) {
 };
 var _elm_lang$html$Html_Attributes$style = _elm_lang$virtual_dom$VirtualDom$style;
 
+var _elm_lang$html$Html_Events$keyCode = A2(_elm_lang$core$Json_Decode$field, 'keyCode', _elm_lang$core$Json_Decode$int);
+var _elm_lang$html$Html_Events$targetChecked = A2(
+	_elm_lang$core$Json_Decode$at,
+	{
+		ctor: '::',
+		_0: 'target',
+		_1: {
+			ctor: '::',
+			_0: 'checked',
+			_1: {ctor: '[]'}
+		}
+	},
+	_elm_lang$core$Json_Decode$bool);
+var _elm_lang$html$Html_Events$targetValue = A2(
+	_elm_lang$core$Json_Decode$at,
+	{
+		ctor: '::',
+		_0: 'target',
+		_1: {
+			ctor: '::',
+			_0: 'value',
+			_1: {ctor: '[]'}
+		}
+	},
+	_elm_lang$core$Json_Decode$string);
+var _elm_lang$html$Html_Events$defaultOptions = _elm_lang$virtual_dom$VirtualDom$defaultOptions;
+var _elm_lang$html$Html_Events$onWithOptions = _elm_lang$virtual_dom$VirtualDom$onWithOptions;
+var _elm_lang$html$Html_Events$on = _elm_lang$virtual_dom$VirtualDom$on;
+var _elm_lang$html$Html_Events$onFocus = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'focus',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onBlur = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'blur',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onSubmitOptions = _elm_lang$core$Native_Utils.update(
+	_elm_lang$html$Html_Events$defaultOptions,
+	{preventDefault: true});
+var _elm_lang$html$Html_Events$onSubmit = function (msg) {
+	return A3(
+		_elm_lang$html$Html_Events$onWithOptions,
+		'submit',
+		_elm_lang$html$Html_Events$onSubmitOptions,
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onCheck = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'change',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetChecked));
+};
+var _elm_lang$html$Html_Events$onInput = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'input',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetValue));
+};
+var _elm_lang$html$Html_Events$onMouseOut = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseout',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseOver = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseover',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseLeave = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseleave',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseEnter = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseenter',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseUp = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseup',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseDown = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mousedown',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onDoubleClick = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'dblclick',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onClick = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'click',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$Options = F2(
+	function (a, b) {
+		return {stopPropagation: a, preventDefault: b};
+	});
+
 var _elm_lang$html$Html_Keyed$node = _elm_lang$virtual_dom$VirtualDom$keyedNode;
 var _elm_lang$html$Html_Keyed$ol = _elm_lang$html$Html_Keyed$node('ol');
 var _elm_lang$html$Html_Keyed$ul = _elm_lang$html$Html_Keyed$node('ul');
@@ -16753,10 +16868,6 @@ var _user$project$Types$InfluencedEdgeData = F5(
 	function (a, b, c, d, e) {
 		return {id: a, source: b, target: c, edge_type: d, strength: e};
 	});
-var _user$project$Types$ElementFilter = F2(
-	function (a, b) {
-		return {visible: a, notVisible: b};
-	});
 var _user$project$Types$BrowsedElement = F2(
 	function (a, b) {
 		return {id: a, elementType: b};
@@ -16781,6 +16892,9 @@ var _user$project$Types$Operations = F3(
 	function (a, b, c) {
 		return {node: a, graph: b, edge: c};
 	});
+var _user$project$Types$ElementState = function (a) {
+	return {filters: a};
+};
 var _user$project$Types$Snapshot = F2(
 	function (a, b) {
 		return {graph: a, description: b};
@@ -16825,6 +16939,10 @@ var _user$project$Types$Node = function (a) {
 };
 var _user$project$Types$EdgeElt = {ctor: 'EdgeElt'};
 var _user$project$Types$NodeElt = {ctor: 'NodeElt'};
+var _user$project$Types$ToggleFilter = F2(
+	function (a, b) {
+		return {ctor: 'ToggleFilter', _0: a, _1: b};
+	});
 var _user$project$Types$SetGraphState = function (a) {
 	return {ctor: 'SetGraphState', _0: a};
 };
@@ -16908,9 +17026,14 @@ var _user$project$Accessors_Node$getGenericData = function (node) {
 			return _user$project$Accessors_Node$extractGenericData(_p0._0);
 	}
 };
-var _user$project$Accessors_Node$getLabels = function (node) {
+var _user$project$Accessors_Node$getId = function (node) {
 	var _p1 = _user$project$Accessors_Node$getGenericData(node);
-	var labels = _p1.labels;
+	var id = _p1.id;
+	return id;
+};
+var _user$project$Accessors_Node$getLabels = function (node) {
+	var _p2 = _user$project$Accessors_Node$getGenericData(node);
+	var labels = _p2.labels;
 	return labels;
 };
 var _user$project$Accessors_Node$setClasses = F2(
@@ -16930,53 +17053,53 @@ var _user$project$Accessors_Node$setClassesFromLabels = function (node) {
 };
 var _user$project$Accessors_Node$setParentNodeData = F2(
 	function (parentNode, nodeData) {
-		var _p2 = nodeData;
-		switch (_p2.ctor) {
+		var _p3 = nodeData;
+		switch (_p3.ctor) {
 			case 'GenericNode':
 				return _user$project$Types$GenericNode(
 					_elm_lang$core$Native_Utils.update(
-						_p2._0,
+						_p3._0,
 						{parentNode: parentNode}));
 			case 'InstitutionNode':
 				return _user$project$Types$InstitutionNode(
 					_elm_lang$core$Native_Utils.update(
-						_p2._0,
+						_p3._0,
 						{parentNode: parentNode}));
 			case 'LocationNode':
 				return _user$project$Types$LocationNode(
 					_elm_lang$core$Native_Utils.update(
-						_p2._0,
+						_p3._0,
 						{parentNode: parentNode}));
 			case 'PersonNode':
 				return _user$project$Types$PersonNode(
 					_elm_lang$core$Native_Utils.update(
-						_p2._0,
+						_p3._0,
 						{parentNode: parentNode}));
 			case 'PublicationNode':
 				return _user$project$Types$PublicationNode(
 					_elm_lang$core$Native_Utils.update(
-						_p2._0,
+						_p3._0,
 						{parentNode: parentNode}));
 			default:
 				return _user$project$Types$ValueNode(
 					_elm_lang$core$Native_Utils.update(
-						_p2._0,
+						_p3._0,
 						{parentNode: parentNode}));
 		}
 	});
 var _user$project$Accessors_Node$setParentNode = F2(
 	function (parentNode, node) {
-		var _p3 = parentNode;
-		if (_p3.ctor === 'Just') {
-			var _p4 = _p3._0;
+		var _p4 = parentNode;
+		if (_p4.ctor === 'Just') {
+			var _p5 = _p4._0;
 			if (_elm_lang$core$Native_Utils.eq(
-				_p4.uuid,
+				_p5.uuid,
 				_user$project$Accessors_Node$getGenericData(node).id)) {
 				return node;
 			} else {
 				var newNodeData = A2(
 					_user$project$Accessors_Node$setParentNodeData,
-					_elm_lang$core$Maybe$Just(_p4.uuid),
+					_elm_lang$core$Maybe$Just(_p5.uuid),
 					node.data);
 				var nodeData = node.data;
 				return _elm_lang$core$Native_Utils.update(
@@ -17106,6 +17229,23 @@ var _user$project$Accessors_Graph$substractGraph = F2(
 			},
 			receivedGraph);
 	});
+var _user$project$Accessors_Graph$getFilteredElements = F2(
+	function (filterName, graph) {
+		return A2(
+			_elm_lang$core$List$map,
+			function (x) {
+				return _user$project$Accessors_Node$getId(x);
+			},
+			A2(
+				_elm_lang$core$List$filter,
+				function (x) {
+					return A2(
+						_elm_lang$core$List$member,
+						filterName,
+						_user$project$Accessors_Node$getLabels(x));
+				},
+				_user$project$Accessors_Graph$nodes(graph)));
+	});
 var _user$project$Accessors_Graph$updateMetaData = F2(
 	function (parentNode, graph) {
 		return A2(
@@ -17159,6 +17299,14 @@ var _user$project$Accessors_Operations$setBrowsedEdge = F2(
 			operations,
 			{edge: newOps});
 	});
+var _user$project$Accessors_Operations$updateFilter = function (visible) {
+	var _p0 = visible;
+	if (_p0.ctor === 'Just') {
+		return _elm_lang$core$Maybe$Just(!_p0._0);
+	} else {
+		return _elm_lang$core$Maybe$Just(false);
+	}
+};
 var _user$project$Accessors_Operations$setNodeFilter = F2(
 	function (newNodeFilter, operations) {
 		var oldNodeOps = operations.node;
@@ -17168,6 +17316,11 @@ var _user$project$Accessors_Operations$setNodeFilter = F2(
 		return _elm_lang$core$Native_Utils.update(
 			operations,
 			{node: newNodeOps});
+	});
+var _user$project$Accessors_Operations$toggleNodeFilterState = F2(
+	function (filterName, operations) {
+		var newFilters = A3(_elm_lang$core$Dict$update, filterName, _user$project$Accessors_Operations$updateFilter, operations.node.filtered);
+		return A2(_user$project$Accessors_Operations$setNodeFilter, newFilters, operations);
 	});
 var _user$project$Accessors_Operations$setSearchedNode = F2(
 	function (newSearchNode, operations) {
@@ -18031,6 +18184,11 @@ var _user$project$Ports$addToGraph = _elm_lang$core$Native_Platform.outgoingPort
 	function (v) {
 		return v;
 	});
+var _user$project$Ports$setVisibleElments = _elm_lang$core$Native_Platform.outgoingPort(
+	'setVisibleElments',
+	function (v) {
+		return v;
+	});
 var _user$project$Ports$getLocalGraph = _elm_lang$core$Native_Platform.incomingPort('getLocalGraph', _elm_lang$core$Json_Decode$value);
 var _user$project$Ports$newGraphState = _elm_lang$core$Native_Platform.incomingPort('newGraphState', _elm_lang$core$Json_Decode$value);
 var _user$project$Ports$hideElementInfos = _elm_lang$core$Native_Platform.incomingPort('hideElementInfos', _elm_lang$core$Json_Decode$value);
@@ -18150,10 +18308,55 @@ var _user$project$View$nodeToDisplay = function (currentNode) {
 		return currentNode.pinned;
 	}
 };
+var _user$project$View$viewNodeFilter = function (_p3) {
+	var _p4 = _p3;
+	var _p6 = _p4._0;
+	var iconClass = function () {
+		var _p5 = _p4._1;
+		if (_p5 === true) {
+			return 'fa fa-eye';
+		} else {
+			return 'fa fa-eye-slash';
+		}
+	}();
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Events$onClick(
+				A2(_user$project$Types$ToggleFilter, _user$project$Types$NodeElt, _p6)),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$i,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class(iconClass),
+					_1: {ctor: '[]'}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(_p6),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$View$viewNodeFilters = function (elementFilters) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$View$viewNodeFilter,
+			_elm_lang$core$Dict$toList(elementFilters)));
+};
 var _user$project$View$viewError = function (errorMessage) {
 	var div_ = function () {
-		var _p3 = errorMessage;
-		if (_p3.ctor === 'Nothing') {
+		var _p7 = errorMessage;
+		if (_p7.ctor === 'Nothing') {
 			return A2(
 				_elm_lang$html$Html$div,
 				{ctor: '[]'},
@@ -18176,7 +18379,7 @@ var _user$project$View$viewError = function (errorMessage) {
 							_0: _rundis$elm_bootstrap$Bootstrap_Alert$danger(
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(_p3._0),
+									_0: _elm_lang$html$Html$text(_p7._0),
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
@@ -18236,18 +18439,18 @@ var _user$project$View$viewInfluencedEdgeData = function (edgeData) {
 };
 var _user$project$View$viewEdgeData = function (edgeToDisplay) {
 	var dataToDisplay = function () {
-		var _p4 = edgeToDisplay;
-		if (_p4.ctor === 'Nothing') {
+		var _p8 = edgeToDisplay;
+		if (_p8.ctor === 'Nothing') {
 			return A2(
 				_elm_lang$html$Html$div,
 				{ctor: '[]'},
 				{ctor: '[]'});
 		} else {
-			var _p5 = _p4._0.data;
-			if (_p5.ctor === 'GenericEdge') {
-				return _user$project$View$viewGenericEdgeData(_p5._0);
+			var _p9 = _p8._0.data;
+			if (_p9.ctor === 'GenericEdge') {
+				return _user$project$View$viewGenericEdgeData(_p9._0);
 			} else {
-				return _user$project$View$viewInfluencedEdgeData(_p5._0);
+				return _user$project$View$viewInfluencedEdgeData(_p9._0);
 			}
 		}
 	}();
@@ -18346,17 +18549,17 @@ var _user$project$View$viewInstitutionNodeData = function (nodeData) {
 };
 var _user$project$View$viewLocationNodeData = function (nodeData) {
 	var $long = function () {
-		var _p6 = nodeData.$long;
-		if (_p6.ctor === 'Just') {
-			return _elm_lang$core$Basics$toString(_p6._0);
+		var _p10 = nodeData.$long;
+		if (_p10.ctor === 'Just') {
+			return _elm_lang$core$Basics$toString(_p10._0);
 		} else {
 			return '';
 		}
 	}();
 	var lat = function () {
-		var _p7 = nodeData.lat;
-		if (_p7.ctor === 'Just') {
-			return _elm_lang$core$Basics$toString(_p7._0);
+		var _p11 = nodeData.lat;
+		if (_p11.ctor === 'Just') {
+			return _elm_lang$core$Basics$toString(_p11._0);
 		} else {
 			return '';
 		}
@@ -18445,27 +18648,27 @@ var _user$project$View$viewValueNodeData = function (nodeData) {
 };
 var _user$project$View$viewNodeData = function (nodetoDisplay) {
 	var dataToDisplay = function () {
-		var _p8 = nodetoDisplay;
-		if (_p8.ctor === 'Nothing') {
+		var _p12 = nodetoDisplay;
+		if (_p12.ctor === 'Nothing') {
 			return A2(
 				_elm_lang$html$Html$div,
 				{ctor: '[]'},
 				{ctor: '[]'});
 		} else {
-			var _p9 = _p8._0.data;
-			switch (_p9.ctor) {
+			var _p13 = _p12._0.data;
+			switch (_p13.ctor) {
 				case 'GenericNode':
-					return _user$project$View$viewGenericNodeData(_p9._0);
+					return _user$project$View$viewGenericNodeData(_p13._0);
 				case 'InstitutionNode':
-					return _user$project$View$viewInstitutionNodeData(_p9._0);
+					return _user$project$View$viewInstitutionNodeData(_p13._0);
 				case 'LocationNode':
-					return _user$project$View$viewLocationNodeData(_p9._0);
+					return _user$project$View$viewLocationNodeData(_p13._0);
 				case 'PersonNode':
-					return _user$project$View$viewPersonNodeData(_p9._0);
+					return _user$project$View$viewPersonNodeData(_p13._0);
 				case 'PublicationNode':
-					return _user$project$View$viewPublicationNodeData(_p9._0);
+					return _user$project$View$viewPublicationNodeData(_p13._0);
 				default:
-					return _user$project$View$viewValueNodeData(_p9._0);
+					return _user$project$View$viewValueNodeData(_p13._0);
 			}
 		}
 	}();
@@ -18632,7 +18835,29 @@ var _user$project$View$view = function (model) {
 													}),
 												_1: {ctor: '[]'}
 											}),
-										_1: {ctor: '[]'}
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_rundis$elm_bootstrap$Bootstrap_Grid$row,
+												{ctor: '[]'},
+												{
+													ctor: '::',
+													_0: A2(
+														_rundis$elm_bootstrap$Bootstrap_Grid$col,
+														{
+															ctor: '::',
+															_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$lg12,
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: _user$project$View$viewNodeFilters(model.operations.node.filtered),
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
 									}
 								}),
 							_1: {ctor: '[]'}
@@ -18756,10 +18981,7 @@ var _user$project$Main$initOperations = function (flags) {
 				{uuid: flags.originNodeUuid, labels: flags.originNodeLabels}),
 			browsed: _elm_lang$core$Maybe$Nothing,
 			pinned: _elm_lang$core$Maybe$Nothing,
-			filtered: A2(
-				_user$project$Types$ElementFilter,
-				{ctor: '[]'},
-				{ctor: '[]'})
+			filtered: _elm_lang$core$Dict$empty
 		},
 		graph: {data: _elm_lang$core$Maybe$Nothing, isInitial: true},
 		edge: {browsed: _elm_lang$core$Maybe$Nothing, pinned: _elm_lang$core$Maybe$Nothing}
@@ -19144,17 +19366,18 @@ var _user$project$Main$update = F2(
 						{phxSocket: phxSocket, errorMessage: _elm_lang$core$Maybe$Nothing}),
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Types$PhoenixMsg, phxCmd)
 				};
-			default:
+			case 'ReceiveNodeLabels':
 				var decodedLabels = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Element$filterDecoder, _p2._0);
 				var _p22 = decodedLabels;
 				if (_p22.ctor === 'Ok') {
-					var newOps = A2(
-						_user$project$Accessors_Operations$setNodeFilter,
+					var elementFilters = _elm_lang$core$Dict$fromList(
 						A2(
-							_user$project$Types$ElementFilter,
-							_p22._0,
-							{ctor: '[]'}),
-						model.operations);
+							_elm_lang$core$List$map,
+							function (x) {
+								return {ctor: '_Tuple2', _0: x, _1: true};
+							},
+							_p22._0));
+					var newOps = A2(_user$project$Accessors_Operations$setNodeFilter, elementFilters, model.operations);
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -19176,6 +19399,19 @@ var _user$project$Main$update = F2(
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
+				}
+			default:
+				if (_p2._0.ctor === 'NodeElt') {
+					var newOps = A2(_user$project$Accessors_Operations$toggleNodeFilterState, _p2._1, model.operations);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{operations: newOps}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}
 	});
@@ -19210,7 +19446,7 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Types.NodeData":{"args":[],"tags":{"InstitutionNode":["Types.InstitutionNodeData"],"LocationNode":["Types.LocationNodeData"],"PersonNode":["Types.PersonNodeData"],"ValueNode":["Types.ValueNodeData"],"PublicationNode":["Types.PublicationNodeData"],"GenericNode":["Types.GenericNodeData"]}},"Types.ElementType":{"args":[],"tags":{"NodeElt":[],"EdgeElt":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Types.EdgeData":{"args":[],"tags":{"InfluencedEdge":["Types.InfluencedEdgeData"],"GenericEdge":["Types.GenericEdgeData"]}},"Types.Msg":{"args":[],"tags":{"SetPinnedElement":["Result.Result String Types.PinnedElement"],"SetSearchNode":["Result.Result String Types.SearchNodeType"],"GetNodeLocalGraph":[],"JoinError":[],"Join":[],"UnsetBrowsedElement":["Result.Result String Types.ElementType"],"GetNodeLabels":[],"HandleSendError":["Json.Encode.Value"],"ReceiveNodeLabels":["Json.Encode.Value"],"SetGraphState":["Result.Result String Types.Snapshot"],"PhoenixMsg":["Phoenix.Socket.Msg Types.Msg"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"SendGraph":[],"InitGraph":[],"SetBrowsedElement":["Result.Result String Types.BrowsedElement"]}},"Types.Element":{"args":[],"tags":{"Node":["Types.NodeType"],"Edge":["Types.EdgeType"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Types.GenericNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String }"},"Types.InfluencedEdgeData":{"args":[],"type":"{ id : String , source : String , target : String , edge_type : String , strength : Int }"},"Types.LocationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lat : Maybe.Maybe Float , long : Maybe.Maybe Float }"},"Types.PersonNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lastName : String , firstName : String , aka : String , internalLink : String , externalLink : String }"},"Types.ValueNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , value : Int }"},"Types.Snapshot":{"args":[],"type":"{ graph : Types.Graph, description : String }"},"Types.PublicationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , title : String , titleFr : String , internalLink : String , externalLink : String }"},"Types.BrowsedElement":{"args":[],"type":"{ id : String, elementType : Types.ElementType }"},"Types.Position":{"args":[],"type":"{ x : Float, y : Float }"},"Types.GenericEdgeData":{"args":[],"type":"{ id : String, source : String, target : String, edge_type : String }"},"Types.NodeType":{"args":[],"type":"{ group : String , data : Types.NodeData , classes : String , position : Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.SearchNodeType":{"args":[],"type":"{ uuid : String, labels : List String }"},"Types.PinnedElement":{"args":[],"type":"{ elementType : Types.ElementType, pin : Bool }"},"Time.Time":{"args":[],"type":"Float"},"Types.EdgeType":{"args":[],"type":"{ group : String , data : Types.EdgeData , classes : String , position : Maybe.Maybe Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.InstitutionNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , institution_type : String }"},"Types.Graph":{"args":[],"type":"List Types.Element"}},"message":"Types.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Types.NodeData":{"args":[],"tags":{"InstitutionNode":["Types.InstitutionNodeData"],"LocationNode":["Types.LocationNodeData"],"PersonNode":["Types.PersonNodeData"],"ValueNode":["Types.ValueNodeData"],"PublicationNode":["Types.PublicationNodeData"],"GenericNode":["Types.GenericNodeData"]}},"Types.ElementType":{"args":[],"tags":{"NodeElt":[],"EdgeElt":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Types.EdgeData":{"args":[],"tags":{"InfluencedEdge":["Types.InfluencedEdgeData"],"GenericEdge":["Types.GenericEdgeData"]}},"Types.Msg":{"args":[],"tags":{"SetPinnedElement":["Result.Result String Types.PinnedElement"],"SetSearchNode":["Result.Result String Types.SearchNodeType"],"GetNodeLocalGraph":[],"JoinError":[],"Join":[],"UnsetBrowsedElement":["Result.Result String Types.ElementType"],"GetNodeLabels":[],"HandleSendError":["Json.Encode.Value"],"ReceiveNodeLabels":["Json.Encode.Value"],"SetGraphState":["Result.Result String Types.Snapshot"],"PhoenixMsg":["Phoenix.Socket.Msg Types.Msg"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"ToggleFilter":["Types.ElementType","Types.FilterName"],"SendGraph":[],"InitGraph":[],"SetBrowsedElement":["Result.Result String Types.BrowsedElement"]}},"Types.Element":{"args":[],"tags":{"Node":["Types.NodeType"],"Edge":["Types.EdgeType"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Types.GenericNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String }"},"Types.InfluencedEdgeData":{"args":[],"type":"{ id : String , source : String , target : String , edge_type : String , strength : Int }"},"Types.FilterName":{"args":[],"type":"String"},"Types.LocationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lat : Maybe.Maybe Float , long : Maybe.Maybe Float }"},"Types.PersonNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lastName : String , firstName : String , aka : String , internalLink : String , externalLink : String }"},"Types.ValueNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , value : Int }"},"Types.Snapshot":{"args":[],"type":"{ graph : Types.Graph, description : String }"},"Types.PublicationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , title : String , titleFr : String , internalLink : String , externalLink : String }"},"Types.BrowsedElement":{"args":[],"type":"{ id : String, elementType : Types.ElementType }"},"Types.Position":{"args":[],"type":"{ x : Float, y : Float }"},"Types.GenericEdgeData":{"args":[],"type":"{ id : String, source : String, target : String, edge_type : String }"},"Types.NodeType":{"args":[],"type":"{ group : String , data : Types.NodeData , classes : String , position : Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.SearchNodeType":{"args":[],"type":"{ uuid : String, labels : List String }"},"Types.PinnedElement":{"args":[],"type":"{ elementType : Types.ElementType, pin : Bool }"},"Time.Time":{"args":[],"type":"Float"},"Types.EdgeType":{"args":[],"type":"{ group : String , data : Types.EdgeData , classes : String , position : Maybe.Maybe Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.InstitutionNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , institution_type : String }"},"Types.Graph":{"args":[],"type":"List Types.Element"}},"message":"Types.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])
