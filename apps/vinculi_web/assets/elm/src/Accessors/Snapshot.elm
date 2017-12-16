@@ -1,20 +1,15 @@
 module Accessors.Snapshot exposing (..)
 
-import Types exposing (ElementFilters, ElementState, Snapshot)
+import Types exposing (ElementFilters, Snapshot)
 
 
-t : String
-t =
-    "hello"
+setNodeFilter : ElementFilters -> Snapshot -> Snapshot
+setNodeFilter nodeFilters snapshot =
+    let
+        oldNodeState =
+            snapshot.node
 
-
-
---setNodeFilter : ElementFilters -> Snapshot -> Snapshot
---setNodeFilter nodeFilters snapshot =
---    let
---        oldNodeState =
---            snapshot.node
---        newNodeState =
---            { oldNodeState | filters = nodeFilters }
---    in
---        { snapshot | node = newNodeState }
+        newNodeState =
+            { oldNodeState | filters = nodeFilters }
+    in
+        { snapshot | node = newNodeState }

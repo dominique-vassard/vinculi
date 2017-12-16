@@ -16,7 +16,7 @@ import Types
         )
 import Ports exposing (..)
 import Decoders.Port as PortDecoder exposing (localGraphDecoder)
-import Decoders.Snapshot as SnapshotDecoder exposing (decoder)
+import Decoders.Graph as GraphDecoder exposing (snapshotDecoder)
 import Decoders.Element as ElementDecoder
     exposing
         ( browsedDecoder
@@ -34,7 +34,7 @@ subscriptions model =
                 >> SetSearchNode
             )
         , Ports.newGraphState
-            (Json.Decode.decodeValue SnapshotDecoder.decoder
+            (Json.Decode.decodeValue GraphDecoder.snapshotDecoder
                 >> SetGraphState
             )
         , Ports.displayElementInfos

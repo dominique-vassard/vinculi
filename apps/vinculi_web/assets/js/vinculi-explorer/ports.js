@@ -98,7 +98,7 @@ var Ports = /** @class */ (function () {
             var _b = _a[_i], callbackName = _b[0], callbackFunc = _b[1];
             this._elmApp.ports[callbackName].unsubscribe(callbackFunc);
         }
-        // Activate all ports required at runtile
+        // Activate all ports required at runtime
         for (var _c = 0, _d = Object.entries(this._callbacks["runtime"]); _c < _d.length; _c++) {
             var _e = _d[_c], callbackName = _e[0], callbackFunc = _e[1];
             this._elmApp.ports[callbackName].subscribe(callbackFunc);

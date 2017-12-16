@@ -6,8 +6,6 @@ import Types exposing (Snapshot)
 import Decoders.Graph as GraphDecoder exposing (decoder)
 
 
-decoder : Decoder Snapshot
-decoder =
-    Json.Decode.Pipeline.decode Snapshot
-        |> required "data" GraphDecoder.decoder
-        |> required "description" Decode.string
+todo : String
+todo =
+    "hello"

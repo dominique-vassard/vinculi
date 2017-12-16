@@ -3,6 +3,7 @@ module Accessors.Graph
         ( elementOf
         , getEdge
         , getNode
+        , getFilteredElements
         , substractGraph
         , updateMetaData
         )

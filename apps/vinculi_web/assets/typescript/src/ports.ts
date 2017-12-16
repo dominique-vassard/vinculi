@@ -12,6 +12,15 @@ export interface GraphState {
     description: string
 }
 
+export interface VisibleElements {
+    // The type of elements to show/hide: 'node' or 'edge'
+    elementType: string,
+    // List of elements ids to show/hide
+    elementIds: string[],
+    // Wether elements have to be shown (true) or hide (false)
+    visible: boolean
+}
+
 /**
  * NodeSearchData type definition
  * @type {Object}
@@ -109,7 +118,7 @@ export class Ports {
             this._elmApp.ports[callbackName].unsubscribe(callbackFunc)
         }
 
-        // Activate all ports required at runtile
+        // Activate all ports required at runtime
         for (let [callbackName, callbackFunc] of Object.entries(this._callbacks["runtime"])) {
             this._elmApp.ports[callbackName].subscribe(callbackFunc)
         }

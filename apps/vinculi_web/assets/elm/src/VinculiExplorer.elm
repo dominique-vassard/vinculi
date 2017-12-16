@@ -17,15 +17,17 @@ import Phoenix.Push as PhxPush exposing (init, onError, onOk, withPayload)
 import Task
 import Dict
 import Types exposing (..)
-import Ports exposing (addToGraph, initGraph)
+import Ports exposing (addToGraph, initGraph, setVisibleElements)
 import View exposing (view)
 import Subscriptions exposing (subscriptions)
 import Decoders.Graph as GraphDecode exposing (fromWsDecoder)
 import Decoders.Element as ElementDecode exposing (filterDecoder)
 import Encoders.Common as GraphEncode exposing (userEncoder)
 import Encoders.Graph as GraphEncode exposing (encoder)
+import Encoders.Operations as OperationsEncode exposing (visibleElementsEncoder)
 import Accessors.Graph as Graph exposing (..)
 import Accessors.Operations as Operations exposing (..)
+import Accessors.Snapshot as Snapshot exposing (..)
 import Utils.ZipList as ZipList exposing (..)
 
 
@@ -67,6 +69,7 @@ initOperations flags =
     , graph =
         { data = Nothing
         , isInitial = True
+        , snapshot = Nothing
         }
     , edge =
         { browsed = Nothing
@@ -82,7 +85,7 @@ init flags =
       , errorMessage = Nothing
       , userToken = flags.userToken
       , operations = initOperations flags
-      , snapshots = ZipList.init (Snapshot [] "init") []
+      , snapshots = ZipList.init (Snapshot [] "init" (ElementState Dict.empty)) []
       }
     , joinChannel
     )
@@ -215,13 +218,29 @@ update msg model =
 
         SetGraphState (Ok snapshot) ->
             let
+                nodeFilters =
+                    model.operations.node.filtered
+
+                --edgeFilters =
+                --    Dict.empty
+                snap =
+                    { graph = snapshot.graph
+                    , description = snapshot.description
+                    , node =
+                        ElementState nodeFilters
+
+                    --, edge =
+                    --    { filters = edgeFilters
+                    --    }
+                    }
+
                 newSnapshots =
                     case model.operations.graph.isInitial of
                         True ->
-                            ZipList.update snapshot model.snapshots
+                            ZipList.update snap model.snapshots
 
                         False ->
-                            ZipList.add snapshot model.snapshots
+                            ZipList.add snap model.snapshots
 
                 newOps =
                     (Operations.setGraphIsInitial False
@@ -397,18 +416,24 @@ update msg model =
                                     List.map (\x -> ( x, True )) labelsList
 
                             newOps =
-                                (Operations.setNodeFilter
+                                Operations.setNodeFilter
                                     elementFilters
                                     model.operations
-                                )
 
-                            --newSnapshot =
-                            --    (Snapshot.setNodeFilter
-                            --        elementFilters
-                            --        model.snapshots
-                            --    )
+                            newSnapshot =
+                                Snapshot.setNodeFilter
+                                    elementFilters
+                                    (ZipList.current model.snapshots)
+
+                            newSnapshots =
+                                ZipList.update newSnapshot model.snapshots
                         in
-                            ( { model | operations = newOps }, Cmd.none )
+                            ( { model
+                                | operations = newOps
+                                , snapshots = newSnapshots
+                              }
+                            , Cmd.none
+                            )
 
                     Err error ->
                         ( { model
@@ -426,8 +451,21 @@ update msg model =
             let
                 newOps =
                     Operations.toggleNodeFilterState filterName model.operations
+
+                filteredElements =
+                    Graph.getFilteredElements filterName (ZipList.current model.snapshots).graph
+
+                visible =
+                    Operations.getNodeFilterState filterName newOps
+
+                cmd =
+                    Ports.setVisibleElements <|
+                        OperationsEncode.visibleElementsEncoder
+                            NodeElt
+                            filteredElements
+                            visible
             in
-                ( { model | operations = newOps }, Cmd.none )
+                ( { model | operations = newOps }, cmd )
 
         ToggleFilter EdgeElt filterName ->
             ( model, Cmd.none )

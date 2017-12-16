@@ -9,6 +9,7 @@ import Types
         , FilterName
         , Visible
         , Graph
+        , GraphSnapshot
         , Operations
         , SearchNodeType
         )
@@ -81,6 +82,16 @@ updateFilter visible =
             Just False
 
 
+getNodeFilterState : FilterName -> Operations -> Visible
+getNodeFilterState filterName operations =
+    case Dict.get filterName operations.node.filtered of
+        Just visible ->
+            visible
+
+        Nothing ->
+            True
+
+
 setBrowsedEdge : Maybe EdgeType -> Operations -> Operations
 setBrowsedEdge newBrowsedEdge operations =
     let
@@ -127,6 +138,20 @@ setGraphData graph operations =
 
         newGraphOps =
             { oldGraphOps | data = graph }
+    in
+        { operations
+            | graph = newGraphOps
+        }
+
+
+setGraphSnapshot : Maybe GraphSnapshot -> Operations -> Operations
+setGraphSnapshot snapshot operations =
+    let
+        oldGraphOps =
+            operations.graph
+
+        newGraphOps =
+            { oldGraphOps | snapshot = snapshot }
     in
         { operations
             | graph = newGraphOps

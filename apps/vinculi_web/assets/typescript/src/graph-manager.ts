@@ -62,6 +62,9 @@ export class GraphManager {
         "runtime": {
             "addToGraph": (localGraph: cytoscape.ElementDefinition[]) => {
                 this.addData(localGraph)
+            },
+            "setVisibleElements": (visibleElements: Ports.VisibleElements) => {
+                this.setVisibleElements(visibleElements)
             }
         }
     }
@@ -376,7 +379,7 @@ export class GraphManager {
 
     /**
      * Add new local graph to current graph
-     * If ther is some:
+     * If there is some:
      *     - display lcoal graph nodes and edges
      *     - focus on them
      *
@@ -397,7 +400,7 @@ export class GraphManager {
     /**
      * Send new graph state to Elm
      *
-     * @param  {string}       The action relted to the new graph state
+     * @param  {string}       The action related to the new graph state
      *
      * @returns void
      */
@@ -407,6 +410,26 @@ export class GraphManager {
             description: description
         }
         this._ports.sendNewGraphState(data)
+    }
+
+    /**
+     * Hide / show elements
+     *
+     * @param {Ports.VisibleElements} elements    Data about elements to show/hide
+     */
+    setVisibleElements(elements:Ports.VisibleElements): void {
+        if (elements.elementIds.length == 0) {
+            return
+        }
+        const ids = elements.elementIds.map(x => elements.elementType + "#" + x).join(", ")
+        let elts = this._cy.elements(ids)
+        if (elements.visible) {
+            elts.show()
+        } else {
+            elts.hide()
+        }
+
+        this.sendNewGraphState("Filter")
     }
 
     /**

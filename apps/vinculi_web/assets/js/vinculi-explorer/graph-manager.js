@@ -81,6 +81,9 @@ var GraphManager = /** @class */ (function () {
             "runtime": {
                 "addToGraph": function (localGraph) {
                     _this.addData(localGraph);
+                },
+                "setVisibleElements": function (visibleElements) {
+                    _this.setVisibleElements(visibleElements);
                 }
             }
         };
@@ -348,7 +351,7 @@ var GraphManager = /** @class */ (function () {
     };
     /**
      * Add new local graph to current graph
-     * If ther is some:
+     * If there is some:
      *     - display lcoal graph nodes and edges
      *     - focus on them
      *
@@ -367,7 +370,7 @@ var GraphManager = /** @class */ (function () {
     /**
      * Send new graph state to Elm
      *
-     * @param  {string}       The action relted to the new graph state
+     * @param  {string}       The action related to the new graph state
      *
      * @returns void
      */
@@ -377,6 +380,25 @@ var GraphManager = /** @class */ (function () {
             description: description
         };
         this._ports.sendNewGraphState(data);
+    };
+    /**
+     * Hide / show elements
+     *
+     * @param {Ports.VisibleElements} elements    Data about elements to show/hide
+     */
+    GraphManager.prototype.setVisibleElements = function (elements) {
+        if (elements.elementIds.length == 0) {
+            return;
+        }
+        var ids = elements.elementIds.map(function (x) { return elements.elementType + "#" + x; }).join(", ");
+        var elts = this._cy.elements(ids);
+        if (elements.visible) {
+            elts.show();
+        }
+        else {
+            elts.hide();
+        }
+        this.sendNewGraphState("Filter");
     };
     /**
      * Add event "doubleTap" to cy

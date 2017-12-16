@@ -1,7 +1,7 @@
 module Encoders.Operations exposing (visibleElementsEncoder)
 
 import Json.Encode as Encode exposing (Value, list, string)
-import Types exposing (ElementType(NodeElt, EdgeElt), Visible)
+import Types exposing (ElementType(NodeElt, EdgeElt), Visible, ElementId)
 
 
 --type alias VisibleElements =
@@ -9,13 +9,6 @@ import Types exposing (ElementType(NodeElt, EdgeElt), Visible)
 --    , elementIds : List String
 --    , visible : Visible
 --    }
-
-
-type alias ElementId =
-    String
-
-
-
 --visibleElementsEncoder : VisibleElements -> Encode.Value
 --visibleElementsEncoder visibleElements =
 --    Encode.object
@@ -38,7 +31,7 @@ elementTypeEncoder : ElementType -> Encode.Value
 elementTypeEncoder elementType =
     case elementType of
         NodeElt ->
-            Encode.string "nodes"
+            Encode.string "node"
 
         EdgeElt ->
-            Encode.string "edges"
+            Encode.string "edge"

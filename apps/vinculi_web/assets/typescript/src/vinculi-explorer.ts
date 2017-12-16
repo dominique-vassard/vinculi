@@ -34,4 +34,3 @@ async function initGraphManager(elmApp, serverUrl: string) {
     await graphManager.init()
     nextOperation(graphManager)
 }
-

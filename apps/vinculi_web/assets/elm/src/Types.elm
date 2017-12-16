@@ -238,6 +238,7 @@ type alias EdgeOperations =
 type alias GraphOperations =
     { data : Maybe Graph
     , isInitial : Bool
+    , snapshot : Maybe GraphSnapshot
     }
 
 
@@ -253,12 +254,18 @@ type alias ElementState =
     }
 
 
+type alias GraphSnapshot =
+    { graph : Graph
+    , description : String
+    }
+
+
 type alias Snapshot =
     { graph : Graph
     , description : String
+    , node : ElementState
 
-    --, node : ElementState
-    --, edge: ElementState
+    --, edge : ElementState
     }
 
 
@@ -293,5 +300,5 @@ type Msg
     | SetBrowsedElement (Result String BrowsedElement)
     | UnsetBrowsedElement (Result String ElementType)
     | SetPinnedElement (Result String PinnedElement)
-    | SetGraphState (Result String Snapshot)
+    | SetGraphState (Result String GraphSnapshot)
     | ToggleFilter ElementType FilterName
