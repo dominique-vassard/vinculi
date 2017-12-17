@@ -335,7 +335,8 @@ export class GraphManager {
                 // fit: false,
                 animate: true,
                 avoidOverlap: true,
-                spacingFactor: 3
+                spacingFactor: 3,
+                animationDuration: 300
             }
         })
         this._currentNode = undefined
@@ -391,7 +392,8 @@ export class GraphManager {
                 name: 'concentric',
                 boundingBox: this.getBoundingBox(),
                 animate: true,
-                spacingFactor: 3
+                spacingFactor: 3,
+                animationDuration: 300,
             }
         this._cy.add(localGraph).layout(layout_config).run()
         this.sendNewGraphState("Expand node")
@@ -400,16 +402,21 @@ export class GraphManager {
     /**
      * Send new graph state to Elm
      *
+     * WARNING: Data must be send AFTER the animation has finished
+     * otherwise elements postion won't be the right ones!
+     *
      * @param  {string}       The action related to the new graph state
      *
      * @returns void
      */
     sendNewGraphState(description: string): void {
-        const data = {
-            data: this._cy.elements().jsons(),
-            description: description
-        }
-        this._ports.sendNewGraphState(data)
+        setTimeout(()=>{
+            const data = {
+                data: this._cy.elements().jsons(),
+                description: description
+            }
+            this._ports.sendNewGraphState(data)
+        }, 300)
     }
 
     /**
@@ -435,9 +442,9 @@ export class GraphManager {
         }
         let elts = this._cy.elements(selectors)
         if (elements.visible) {
-            elts.show()
+            elts.style('display', 'element')
         } else {
-            elts.hide()
+            elts.style('display', 'none')
         }
 
         this.sendNewGraphState("Filter")

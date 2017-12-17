@@ -14,6 +14,7 @@ import Types
         ( ElementFilters
         , ElementType(EdgeElt, NodeElt)
         , GraphSnapshot
+        , GraphOperationName(..)
         , Operations
         , Snapshot
         )
@@ -73,11 +74,14 @@ addNewSnapshot graphSnapshot operations snapshots =
             <|
                 Snapshot.createEmpty
     in
-        case operations.graph.isInitial of
-            True ->
+        case operations.graph.current of
+            Init ->
                 ZipList.update newSnapshot snapshots
 
-            False ->
+            FilterLocal _ ->
+                ZipList.update newSnapshot snapshots
+
+            _ ->
                 ZipList.add newSnapshot snapshots
 
 

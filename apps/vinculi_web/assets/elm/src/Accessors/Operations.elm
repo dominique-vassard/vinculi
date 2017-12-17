@@ -8,6 +8,7 @@ import Types
         , ElementFilters
         , ElementType(EdgeElt, NodeElt)
         , FilterName
+        , GraphOperationName
         , Visible
         , Graph
         , GraphSnapshot
@@ -83,6 +84,14 @@ getNodeFilterState filterName operations =
             True
 
 
+getNodeActiveFilters : Operations -> List FilterName
+getNodeActiveFilters operations =
+    Dict.keys <|
+        Dict.filter
+            (\_ visible -> not visible)
+            operations.node.filtered
+
+
 resetNodeFilters : Operations -> Operations
 resetNodeFilters operations =
     let
@@ -156,14 +165,22 @@ getEdgeFilterState filterName operations =
             True
 
 
-setGraphIsInitial : Bool -> Operations -> Operations
-setGraphIsInitial isInitial operations =
+getEdgeActiveFilters : Operations -> List FilterName
+getEdgeActiveFilters operations =
+    Dict.keys <|
+        Dict.filter
+            (\_ visible -> not visible)
+            operations.edge.filtered
+
+
+setGraphCurrentOperation : GraphOperationName -> Operations -> Operations
+setGraphCurrentOperation currentOpName operations =
     let
         oldGraphOps =
             operations.graph
 
         newGraphOps =
-            { oldGraphOps | isInitial = isInitial }
+            { oldGraphOps | current = currentOpName }
     in
         { operations
             | graph = newGraphOps

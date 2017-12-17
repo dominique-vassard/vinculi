@@ -6,14 +6,15 @@ import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Row as Row
 import Bootstrap.Grid.Col as Col
 import Bootstrap.ListGroup as ListGroup
+import Bootstrap.Tab as Tab
 import Dict
-import Html exposing (Html, a, button, div, i, h5, text)
-import Html.Attributes exposing (class, href, id)
+import Html exposing (Html, a, button, div, i, h5, h6, text)
+import Html.Attributes exposing (class, href, id, style)
 import Html.Events exposing (onClick)
 import Types
     exposing
         ( Model
-        , Msg(ToggleFilter, ResetFilters)
+        , Msg(ToggleFilter, ResetFilters, FilterTabMsg)
         , EdgeType
         , NodeType
         , Operations
@@ -52,24 +53,27 @@ view : Model -> Html Msg
 view model =
     div []
         [ viewError model.errorMessage
-        , div [ class "row bg-silver rounded fill" ]
-            [ div
-                [ class "col-lg-9" ]
-                [ div [ class "row cy-graph", id "cy" ]
+        , Grid.row [ Row.attrs [ class "bg-silver rounded fill" ] ]
+            [ Grid.col
+                [ Col.lg9 ]
+                [ Grid.row [ Row.attrs [ class "cy-graph", id "cy" ] ]
                     []
                 ]
-            , div [ class "col-lg-3 bg-gray rounded-right" ]
-                [ Grid.row [ Row.attrs [ class "rounded bg-secondary" ] ]
-                    [ Grid.col [ Col.lg12 ] [ text "Browse" ] ]
+            , Grid.col [ Col.lg3, Col.attrs [ class "bg-gray rounded-right" ] ]
+                [ Grid.row [ Row.attrs [ class "rounded-top bg-darken-2 control-panel-panel" ] ]
+                    [ Grid.col [ Col.lg12, Col.attrs [ class "text-center" ] ] [ h6 [] [ text "Navigateur" ] ] ]
                 , Grid.row []
-                    [ Grid.col [ Col.lg12 ]
+                    [ Grid.col [ Col.lg12, Col.attrs [ style [ ( "height", "360px" ) ] ] ]
                         [ viewNodeData <| nodeToDisplay model.operations.node
                         , viewEdgeData <| edgeToDisplay model.operations.edge
                         ]
                     ]
+                , Grid.row [ Row.attrs [ class "bg-darken-2 control-panel-panel" ] ]
+                    [ Grid.col [ Col.lg12, Col.attrs [ class "text-center" ] ] [ h6 [] [ text "Filtres" ] ] ]
                 , Grid.row []
                     [ Grid.col [ Col.lg12 ]
-                        [ viewFilters model.operations ]
+                        [ viewTabFilters model
+                        ]
                     ]
                 ]
             ]
@@ -93,17 +97,37 @@ viewError errorMessage =
         div_
 
 
-viewFilters : Operations -> Html Msg
-viewFilters operations =
-    div []
-        [ viewElementFilters NodeElt operations.node.filtered
-        , viewElementFilters EdgeElt operations.edge.filtered
-        ]
+viewTabFilters : Model -> Html Msg
+viewTabFilters model =
+    Tab.config FilterTabMsg
+        |> Tab.items
+            [ viewTabFilterItems NodeElt model.operations.node.filtered
+            , viewTabFilterItems EdgeElt model.operations.edge.filtered
+            ]
+        |> Tab.view model.filterTabState
+
+
+viewTabFilterItems : ElementType -> ElementFilters -> Tab.Item Msg
+viewTabFilterItems elementType elementFilters =
+    let
+        data =
+            case elementType of
+                NodeElt ->
+                    { title = "Noeuds", id = "filter-node", linkClass = "node", bgClass = "bg-node" }
+
+                EdgeElt ->
+                    { title = "Relations", id = "filter-edge", linkClass = "edge", bgClass = "bg-edge" }
+    in
+        Tab.item
+            { id = data.id
+            , link = Tab.link [ class <| "ml-1 text-dark nav-filter-" ++ data.linkClass ] [ text data.title ]
+            , pane = Tab.pane [ class <| "p1 rounded-bottom filter-pane " ++ data.bgClass ] [ viewElementFilters elementType elementFilters ]
+            }
 
 
 viewElementFilters : ElementType -> ElementFilters -> Html Msg
 viewElementFilters elementType elementFilters =
-    div []
+    div [ class "p-1" ]
         ([ button [ class "btn btn-secondary", onClick (ResetFilters elementType) ]
             [ text "Tout voir" ]
          ]
@@ -125,8 +149,7 @@ viewElementFilter elementType ( filterName, visible ) =
                     "fa fa-eye-slash"
     in
         div [ onClick (ToggleFilter elementType filterName) ]
-            [ i [ class iconClass ] []
-            , text filterName
+            [ i [ class iconClass ] [ text <| " " ++ filterName ]
             ]
 
 

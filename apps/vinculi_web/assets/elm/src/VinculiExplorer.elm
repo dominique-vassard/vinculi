@@ -14,6 +14,7 @@ import Phoenix.Socket as PhxSocket
         )
 import Phoenix.Channel as PhxChannel exposing (init, onJoin)
 import Phoenix.Push as PhxPush exposing (init, onError, onOk, withPayload)
+import Bootstrap.Tab as Tab
 import Task
 import Dict
 import Types exposing (..)
@@ -72,7 +73,7 @@ initOperations flags =
         }
     , graph =
         { data = Nothing
-        , isInitial = True
+        , current = Init
         , snapshot = Nothing
         }
     , edge =
@@ -91,6 +92,7 @@ init flags =
       , userToken = flags.userToken
       , operations = initOperations flags
       , snapshots = Snapshots.init
+      , filterTabState = Tab.initialState
       }
     , joinChannel
     )
@@ -151,7 +153,9 @@ update msg model =
         SetSearchNode (Ok searchNode) ->
             let
                 newOps =
-                    (Operations.setSearchedNode (Just searchNode)
+                    ((Operations.setSearchedNode (Just searchNode)
+                        >> Operations.setGraphCurrentOperation AddLocal
+                     )
                         model.operations
                     )
             in
@@ -227,17 +231,35 @@ update msg model =
                 newSnapshots =
                     Snapshots.addNewSnapshot snapshot model.operations model.snapshots
 
+                cmds =
+                    case model.operations.graph.current of
+                        AddLocal ->
+                            Cmd.batch
+                                [ Task.perform (always <| ApplyFiltersOnLocalGraph NodeElt) (Task.succeed ())
+                                , Task.perform (always <| ApplyFiltersOnLocalGraph EdgeElt) (Task.succeed ())
+                                ]
+
+                        _ ->
+                            Cmd.none
+
                 newOps =
-                    (Operations.setGraphIsInitial False
-                        >> Operations.setGraphData Nothing
-                    )
-                        model.operations
+                    case model.operations.graph.current of
+                        AddLocal ->
+                            Operations.setGraphCurrentOperation
+                                (FilterLocal 1)
+                                model.operations
+
+                        _ ->
+                            (Operations.setGraphCurrentOperation Waiting
+                                >> Operations.setGraphData Nothing
+                            )
+                                model.operations
             in
                 ( { model
                     | snapshots = newSnapshots
                     , operations = newOps
                   }
-                , Cmd.none
+                , cmds
                 )
 
         SetGraphState (Err error) ->
@@ -321,11 +343,11 @@ update msg model =
                     Json.Decode.decodeValue GraphDecode.fromWsDecoder raw
 
                 localGraphCmd =
-                    case model.operations.graph.isInitial of
-                        True ->
+                    case model.operations.graph.current of
+                        Init ->
                             Task.perform (always InitGraph) (Task.succeed ())
 
-                        False ->
+                        _ ->
                             Task.perform (always SendGraph) (Task.succeed ())
 
                 newOps =
@@ -334,14 +356,14 @@ update msg model =
                 case decodedGraph of
                     Ok graph ->
                         let
-                            filteredGraph =
+                            deDupedGraph =
                                 Graph.substractGraph graph
                                     (Snapshots.getCurrent
                                         model.snapshots
                                     ).graph
 
                             graphCmd =
-                                if List.length filteredGraph > 0 then
+                                if List.length deDupedGraph > 0 then
                                     localGraphCmd
                                 else
                                     Cmd.none
@@ -487,7 +509,7 @@ update msg model =
                     Operations.toggleNodeFilterState filterName model.operations
 
                 filteredElements =
-                    Graph.getFilteredNodes filterName (Snapshots.getCurrent model.snapshots).graph
+                    Graph.getFilteredNodes [ filterName ] (Snapshots.getCurrent model.snapshots).graph
 
                 visible =
                     Operations.getNodeFilterState filterName newOps
@@ -507,7 +529,7 @@ update msg model =
                     Operations.toggleEdgeFilterState filterName model.operations
 
                 filteredElements =
-                    Graph.getFilteredEdges filterName (Snapshots.getCurrent model.snapshots).graph
+                    Graph.getFilteredEdges [ filterName ] (Snapshots.getCurrent model.snapshots).graph
 
                 visible =
                     Operations.getEdgeFilterState filterName newOps
@@ -520,6 +542,48 @@ update msg model =
                             visible
             in
                 ( { model | operations = newOps }, cmd )
+
+        ApplyFiltersOnLocalGraph NodeElt ->
+            let
+                filteredElements =
+                    case model.operations.graph.data of
+                        Just graph ->
+                            Graph.getFilteredNodes
+                                (Operations.getNodeActiveFilters model.operations)
+                                graph
+
+                        Nothing ->
+                            []
+
+                cmd =
+                    Ports.setVisibleElements <|
+                        OperationsEncode.visibleElementsEncoder
+                            NodeElt
+                            filteredElements
+                            False
+            in
+                ( model, cmd )
+
+        ApplyFiltersOnLocalGraph EdgeElt ->
+            let
+                filteredElements =
+                    case model.operations.graph.data of
+                        Just graph ->
+                            Graph.getFilteredEdges
+                                (Operations.getEdgeActiveFilters model.operations)
+                                graph
+
+                        Nothing ->
+                            []
+
+                cmd =
+                    Ports.setVisibleElements <|
+                        OperationsEncode.visibleElementsEncoder
+                            EdgeElt
+                            filteredElements
+                            False
+            in
+                ( model, cmd )
 
         ResetFilters NodeElt ->
             let
@@ -546,6 +610,9 @@ update msg model =
                         [ "all" ]
                         True
                 )
+
+        FilterTabMsg state ->
+            ( { model | filterTabState = state }, Cmd.none )
 
 
 errorMessage : String -> Model -> ( Model, Cmd Msg )

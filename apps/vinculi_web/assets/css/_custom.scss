@@ -51,3 +51,49 @@ body {
 .element-border-infos {
     border-color: lightgrey;
 }
+
+.control-panel-panel {
+  margin-bottom: 0.25em;
+  box-shadow: 0px 2px 3px grey;
+}
+
+.nav-filter-node {
+  border: 1px solid #7F7F7F !important;
+  background-color: $node-color !important;
+}
+
+.nav-filter-node:hover {
+  border: 1px solid #7F7F7F !important;
+  background-color: rgba(235, 211, 114, 0.5) !important;
+}
+
+.nav > li > a.active.nav-filter-node {
+  border: 1px solid #7F7F7F !important;
+  border-bottom-color: transparent !important;
+  background-color: $node-color !important;
+}
+
+.nav-filter-edge {
+  border: 1px solid #7F7F7F !important;
+  background-color: $edge-color;
+}
+
+.nav-filter-edge:hover {
+  border: 1px solid #7F7F7F !important;
+  background-color: rgba(163, 199, 64, 0.5) !important;
+}
+
+.nav > li > a.active.nav-filter-edge {
+  border: 1px solid #7F7F7F !important;
+  border-bottom-color: transparent !important;
+  background-color: $edge-color !important;
+}
+
+.nav-tabs {
+  border-bottom: 1px solid #7F7F7F;
+}
+
+.filter-pane {
+  border: 1px solid #7F7F7F;
+  border-top-color: transparent;
+}

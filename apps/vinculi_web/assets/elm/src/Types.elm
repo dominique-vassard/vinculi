@@ -4,6 +4,7 @@ import Phoenix.Socket as PhxSocket exposing (Socket)
 import Json.Encode exposing (Value)
 import Dict exposing (Dict)
 import Utils.ZipList as ZipList exposing (ZipList)
+import Bootstrap.Tab as Tab
 
 
 --- FLAGS
@@ -236,9 +237,17 @@ type alias EdgeOperations =
     }
 
 
+type GraphOperationName
+    = Init
+    | Waiting
+    | AddLocal
+    | FilterLocal Int
+    | Filter
+
+
 type alias GraphOperations =
     { data : Maybe Graph
-    , isInitial : Bool
+    , current : GraphOperationName
     , snapshot : Maybe GraphSnapshot
     }
 
@@ -276,6 +285,7 @@ type alias Model =
     , errorMessage : Maybe String
     , operations : Operations
     , snapshots : ZipList Snapshot
+    , filterTabState : Tab.State
     }
 
 
@@ -304,4 +314,6 @@ type Msg
     | SetPinnedElement (Result String PinnedElement)
     | SetGraphState (Result String GraphSnapshot)
     | ToggleFilter ElementType FilterName
+    | ApplyFiltersOnLocalGraph ElementType
     | ResetFilters ElementType
+    | FilterTabMsg Tab.State

@@ -313,7 +313,8 @@ var GraphManager = /** @class */ (function () {
                 // fit: false,
                 animate: true,
                 avoidOverlap: true,
-                spacingFactor: 3
+                spacingFactor: 3,
+                animationDuration: 300
             }
         });
         this._currentNode = undefined;
@@ -362,7 +363,8 @@ var GraphManager = /** @class */ (function () {
             name: 'concentric',
             boundingBox: this.getBoundingBox(),
             animate: true,
-            spacingFactor: 3
+            spacingFactor: 3,
+            animationDuration: 300,
         };
         this._cy.add(localGraph).layout(layout_config).run();
         this.sendNewGraphState("Expand node");
@@ -370,16 +372,22 @@ var GraphManager = /** @class */ (function () {
     /**
      * Send new graph state to Elm
      *
+     * WARNING: Data must be send AFTER the animation has finished
+     * otherwise elements postion won't be the right ones!
+     *
      * @param  {string}       The action related to the new graph state
      *
      * @returns void
      */
     GraphManager.prototype.sendNewGraphState = function (description) {
-        var data = {
-            data: this._cy.elements().jsons(),
-            description: description
-        };
-        this._ports.sendNewGraphState(data);
+        var _this = this;
+        setTimeout(function () {
+            var data = {
+                data: _this._cy.elements().jsons(),
+                description: description
+            };
+            _this._ports.sendNewGraphState(data);
+        }, 300);
     };
     /**
      * Hide / show elements
@@ -402,10 +410,10 @@ var GraphManager = /** @class */ (function () {
         }
         var elts = this._cy.elements(selectors);
         if (elements.visible) {
-            elts.show();
+            elts.style('display', 'element');
         }
         else {
-            elts.hide();
+            elts.style('display', 'none');
         }
         this.sendNewGraphState("Filter");
     };

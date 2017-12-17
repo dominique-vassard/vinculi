@@ -31,7 +31,11 @@ import Accessors.Node as Node exposing (getGenericData, getId, getLabels)
 
 updateMetaData : Maybe SearchNodeType -> Graph -> Graph
 updateMetaData parentNode graph =
-    List.map (Element.setClasses >> (Element.setParentNode parentNode)) graph
+    List.map
+        (Element.setClasses
+            >> Element.setParentNode parentNode
+        )
+        graph
 
 
 
@@ -140,7 +144,7 @@ substractGraph receivedGraph graph =
         receivedGraph
 
 
-getFilteredElements : ElementType -> FilterName -> Graph -> List ElementId
+getFilteredElements : ElementType -> List FilterName -> Graph -> List ElementId
 getFilteredElements elementType =
     case elementType of
         NodeElt ->
@@ -150,20 +154,19 @@ getFilteredElements elementType =
             getFilteredEdges
 
 
-getFilteredNodes : FilterName -> Graph -> List ElementId
-getFilteredNodes filterName graph =
+getFilteredNodes : List FilterName -> Graph -> List ElementId
+getFilteredNodes filterNames graph =
     List.map (\x -> Node.getId x) <|
         List.filter
             (\x ->
-                List.member filterName <|
-                    Node.getLabels x
+                List.any (\x -> List.member x filterNames) (Node.getLabels x)
             )
             (nodes graph)
 
 
-getFilteredEdges : FilterName -> Graph -> List ElementId
-getFilteredEdges filterName graph =
+getFilteredEdges : List FilterName -> Graph -> List ElementId
+getFilteredEdges filterNames graph =
     List.map (\x -> Edge.getId x) <|
         List.filter
-            (\x -> Edge.getType x == filterName)
+            (\x -> List.member (Edge.getType x) filterNames)
             (edges graph)
