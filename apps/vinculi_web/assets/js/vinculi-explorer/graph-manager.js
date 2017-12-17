@@ -383,6 +383,7 @@ var GraphManager = /** @class */ (function () {
     };
     /**
      * Hide / show elements
+     * if send elementIds is ["all"], all elements of the given type should be hidden / shown.
      *
      * @param {Ports.VisibleElements} elements    Data about elements to show/hide
      */
@@ -390,8 +391,16 @@ var GraphManager = /** @class */ (function () {
         if (elements.elementIds.length == 0) {
             return;
         }
-        var ids = elements.elementIds.map(function (x) { return elements.elementType + "#" + x; }).join(", ");
-        var elts = this._cy.elements(ids);
+        // Manage collections
+        var selectors;
+        // Get all element of a type
+        if (elements.elementIds.toString() == "all") {
+            selectors = elements.elementType;
+        }
+        else {
+            selectors = elements.elementIds.map(function (x) { return elements.elementType + '[id="' + x + '"]'; }).join(", ");
+        }
+        var elts = this._cy.elements(selectors);
         if (elements.visible) {
             elts.show();
         }

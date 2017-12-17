@@ -13,9 +13,10 @@ import Html.Events exposing (onClick)
 import Types
     exposing
         ( Model
-        , Msg(ToggleFilter)
+        , Msg(ToggleFilter, ResetFilters)
         , EdgeType
         , NodeType
+        , Operations
         , EdgeOperations
         , NodeOperations
         , EdgeData(GenericEdge, InfluencedEdge)
@@ -54,7 +55,7 @@ view model =
         , div [ class "row bg-silver rounded fill" ]
             [ div
                 [ class "col-lg-9" ]
-                [ div [ class "row border border-primary cy-graph", id "cy" ]
+                [ div [ class "row cy-graph", id "cy" ]
                     []
                 ]
             , div [ class "col-lg-3 bg-gray rounded-right" ]
@@ -68,7 +69,7 @@ view model =
                     ]
                 , Grid.row []
                     [ Grid.col [ Col.lg12 ]
-                        [ viewNodeFilters <| model.operations.node.filtered ]
+                        [ viewFilters model.operations ]
                     ]
                 ]
             ]
@@ -92,13 +93,28 @@ viewError errorMessage =
         div_
 
 
-viewNodeFilters : ElementFilters -> Html Msg
-viewNodeFilters elementFilters =
-    div [] <| List.map viewNodeFilter <| Dict.toList elementFilters
+viewFilters : Operations -> Html Msg
+viewFilters operations =
+    div []
+        [ viewElementFilters NodeElt operations.node.filtered
+        , viewElementFilters EdgeElt operations.edge.filtered
+        ]
 
 
-viewNodeFilter : ( FilterName, Visible ) -> Html Msg
-viewNodeFilter ( filterName, visible ) =
+viewElementFilters : ElementType -> ElementFilters -> Html Msg
+viewElementFilters elementType elementFilters =
+    div []
+        ([ button [ class "btn btn-secondary", onClick (ResetFilters elementType) ]
+            [ text "Tout voir" ]
+         ]
+            ++ (List.map (viewElementFilter elementType) <|
+                    Dict.toList elementFilters
+               )
+        )
+
+
+viewElementFilter : ElementType -> ( FilterName, Visible ) -> Html Msg
+viewElementFilter elementType ( filterName, visible ) =
     let
         iconClass =
             case visible of
@@ -108,7 +124,7 @@ viewNodeFilter ( filterName, visible ) =
                 False ->
                     "fa fa-eye-slash"
     in
-        div [ onClick (ToggleFilter NodeElt filterName) ]
+        div [ onClick (ToggleFilter elementType filterName) ]
             [ i [ class iconClass ] []
             , text filterName
             ]

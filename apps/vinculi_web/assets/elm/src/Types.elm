@@ -232,6 +232,7 @@ type alias NodeOperations =
 type alias EdgeOperations =
     { browsed : Maybe EdgeType
     , pinned : Maybe EdgeType
+    , filtered : ElementFilters
     }
 
 
@@ -264,8 +265,7 @@ type alias Snapshot =
     { graph : Graph
     , description : String
     , node : ElementState
-
-    --, edge : ElementState
+    , edge : ElementState
     }
 
 
@@ -290,8 +290,10 @@ type Msg
     | HandleSendError Json.Encode.Value
     | GetNodeLocalGraph
     | GetNodeLabels
+    | GetEdgeTypes
     | ReceiveNodeLocalGraph Json.Encode.Value
     | ReceiveNodeLabels Json.Encode.Value
+    | ReceiveEdgeTypes Json.Encode.Value
     | InitGraph
     | SendGraph
     | Join
@@ -302,3 +304,4 @@ type Msg
     | SetPinnedElement (Result String PinnedElement)
     | SetGraphState (Result String GraphSnapshot)
     | ToggleFilter ElementType FilterName
+    | ResetFilters ElementType

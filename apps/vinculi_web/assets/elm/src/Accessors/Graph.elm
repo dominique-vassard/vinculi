@@ -4,6 +4,8 @@ module Accessors.Graph
         , getEdge
         , getNode
         , getFilteredElements
+        , getFilteredNodes
+        , getFilteredEdges
         , substractGraph
         , updateMetaData
         )
@@ -11,6 +13,7 @@ module Accessors.Graph
 import Types
     exposing
         ( Element(Edge, Node)
+        , ElementType(EdgeElt, NodeElt)
         , ElementId
         , EdgeType
         , FilterName
@@ -137,8 +140,18 @@ substractGraph receivedGraph graph =
         receivedGraph
 
 
-getFilteredElements : FilterName -> Graph -> List ElementId
-getFilteredElements filterName graph =
+getFilteredElements : ElementType -> FilterName -> Graph -> List ElementId
+getFilteredElements elementType =
+    case elementType of
+        NodeElt ->
+            getFilteredNodes
+
+        EdgeElt ->
+            getFilteredEdges
+
+
+getFilteredNodes : FilterName -> Graph -> List ElementId
+getFilteredNodes filterName graph =
     List.map (\x -> Node.getId x) <|
         List.filter
             (\x ->
@@ -146,3 +159,11 @@ getFilteredElements filterName graph =
                     Node.getLabels x
             )
             (nodes graph)
+
+
+getFilteredEdges : FilterName -> Graph -> List ElementId
+getFilteredEdges filterName graph =
+    List.map (\x -> Edge.getId x) <|
+        List.filter
+            (\x -> Edge.getType x == filterName)
+            (edges graph)

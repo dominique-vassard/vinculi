@@ -17,7 +17,12 @@ import Phoenix.Push as PhxPush exposing (init, onError, onOk, withPayload)
 import Task
 import Dict
 import Types exposing (..)
-import Ports exposing (addToGraph, initGraph, setVisibleElements)
+import Ports
+    exposing
+        ( addToGraph
+        , initGraph
+        , setVisibleElements
+        )
 import View exposing (view)
 import Subscriptions exposing (subscriptions)
 import Decoders.Graph as GraphDecode exposing (fromWsDecoder)
@@ -27,8 +32,7 @@ import Encoders.Graph as GraphEncode exposing (encoder)
 import Encoders.Operations as OperationsEncode exposing (visibleElementsEncoder)
 import Accessors.Graph as Graph exposing (..)
 import Accessors.Operations as Operations exposing (..)
-import Accessors.Snapshot as Snapshot exposing (..)
-import Utils.ZipList as ZipList exposing (..)
+import Accessors.Snapshots as Snapshots exposing (..)
 
 
 main : Program Flags Model Msg
@@ -74,6 +78,7 @@ initOperations flags =
     , edge =
         { browsed = Nothing
         , pinned = Nothing
+        , filtered = Dict.empty
         }
     }
 
@@ -85,7 +90,7 @@ init flags =
       , errorMessage = Nothing
       , userToken = flags.userToken
       , operations = initOperations flags
-      , snapshots = ZipList.init (Snapshot [] "init" (ElementState Dict.empty)) []
+      , snapshots = Snapshots.init
       }
     , joinChannel
     )
@@ -135,6 +140,7 @@ update msg model =
                 Just graph ->
                     (model)
                         ! [ Task.perform (always GetNodeLabels) (Task.succeed ())
+                          , Task.perform (always GetEdgeTypes) (Task.succeed ())
                           , Ports.initGraph (GraphEncode.encoder graph)
                           ]
 
@@ -218,29 +224,8 @@ update msg model =
 
         SetGraphState (Ok snapshot) ->
             let
-                nodeFilters =
-                    model.operations.node.filtered
-
-                --edgeFilters =
-                --    Dict.empty
-                snap =
-                    { graph = snapshot.graph
-                    , description = snapshot.description
-                    , node =
-                        ElementState nodeFilters
-
-                    --, edge =
-                    --    { filters = edgeFilters
-                    --    }
-                    }
-
                 newSnapshots =
-                    case model.operations.graph.isInitial of
-                        True ->
-                            ZipList.update snap model.snapshots
-
-                        False ->
-                            ZipList.add snap model.snapshots
+                    Snapshots.addNewSnapshot snapshot model.operations model.snapshots
 
                 newOps =
                     (Operations.setGraphIsInitial False
@@ -281,6 +266,9 @@ update msg model =
                         |> PhxSocket.on "node:labels"
                             channelName
                             ReceiveNodeLabels
+                        |> PhxSocket.on "edge:types"
+                            channelName
+                            ReceiveEdgeTypes
                         |> PhxSocket.join channel
             in
                 ( { model | phxSocket = phxSocket }
@@ -348,7 +336,7 @@ update msg model =
                         let
                             filteredGraph =
                                 Graph.substractGraph graph
-                                    (ZipList.current
+                                    (Snapshots.getCurrent
                                         model.snapshots
                                     ).graph
 
@@ -368,11 +356,7 @@ update msg model =
                                     )
                                     newOps
                         in
-                            ( { model
-                                | operations = finalOps
-                              }
-                            , graphCmd
-                            )
+                            ( { model | operations = finalOps }, graphCmd )
 
                     Err error ->
                         ( { model
@@ -416,17 +400,13 @@ update msg model =
                                     List.map (\x -> ( x, True )) labelsList
 
                             newOps =
-                                Operations.setNodeFilter
+                                Operations.setNodeFilters
                                     elementFilters
                                     model.operations
 
-                            newSnapshot =
-                                Snapshot.setNodeFilter
-                                    elementFilters
-                                    (ZipList.current model.snapshots)
-
                             newSnapshots =
-                                ZipList.update newSnapshot model.snapshots
+                                Snapshots.setNodeFilters elementFilters
+                                    model.snapshots
                         in
                             ( { model
                                 | operations = newOps
@@ -447,13 +427,67 @@ update msg model =
                         , Cmd.none
                         )
 
+        GetEdgeTypes ->
+            let
+                phxPush =
+                    PhxPush.init "edge:types" channelName
+                        |> PhxPush.onOk ReceiveEdgeTypes
+                        |> PhxPush.onError HandleSendError
+
+                ( phxSocket, phxCmd ) =
+                    PhxSocket.push phxPush model.phxSocket
+            in
+                ( { model
+                    | phxSocket = phxSocket
+                    , errorMessage = Nothing
+                  }
+                , Cmd.map PhoenixMsg phxCmd
+                )
+
+        ReceiveEdgeTypes raw ->
+            let
+                decodedTypes =
+                    Json.Decode.decodeValue ElementDecode.filterDecoder raw
+            in
+                case decodedTypes of
+                    Ok typesList ->
+                        let
+                            elementFilters =
+                                Dict.fromList <|
+                                    List.map (\x -> ( x, True )) typesList
+
+                            newOps =
+                                Operations.setEdgeFilters
+                                    elementFilters
+                                    model.operations
+
+                            newSnapshots =
+                                Snapshots.setEdgeFilters
+                                    elementFilters
+                                    model.snapshots
+                        in
+                            ( { model
+                                | operations = newOps
+                                , snapshots = newSnapshots
+                              }
+                            , Cmd.none
+                            )
+
+                    Err error ->
+                        errorMessage
+                            ("Cannot decode received edge types. -["
+                                ++ error
+                                ++ "]"
+                            )
+                            model
+
         ToggleFilter NodeElt filterName ->
             let
                 newOps =
                     Operations.toggleNodeFilterState filterName model.operations
 
                 filteredElements =
-                    Graph.getFilteredElements filterName (ZipList.current model.snapshots).graph
+                    Graph.getFilteredNodes filterName (Snapshots.getCurrent model.snapshots).graph
 
                 visible =
                     Operations.getNodeFilterState filterName newOps
@@ -468,14 +502,62 @@ update msg model =
                 ( { model | operations = newOps }, cmd )
 
         ToggleFilter EdgeElt filterName ->
-            ( model, Cmd.none )
+            let
+                newOps =
+                    Operations.toggleEdgeFilterState filterName model.operations
+
+                filteredElements =
+                    Graph.getFilteredEdges filterName (Snapshots.getCurrent model.snapshots).graph
+
+                visible =
+                    Operations.getEdgeFilterState filterName newOps
+
+                cmd =
+                    Ports.setVisibleElements <|
+                        OperationsEncode.visibleElementsEncoder
+                            EdgeElt
+                            filteredElements
+                            visible
+            in
+                ( { model | operations = newOps }, cmd )
+
+        ResetFilters NodeElt ->
+            let
+                newOps =
+                    Operations.resetNodeFilters model.operations
+            in
+                ( { model | operations = newOps }
+                , Ports.setVisibleElements <|
+                    OperationsEncode.visibleElementsEncoder
+                        NodeElt
+                        [ "all" ]
+                        True
+                )
+
+        ResetFilters EdgeElt ->
+            let
+                newOps =
+                    Operations.resetEdgeFilters model.operations
+            in
+                ( { model | operations = newOps }
+                , Ports.setVisibleElements <|
+                    OperationsEncode.visibleElementsEncoder
+                        EdgeElt
+                        [ "all" ]
+                        True
+                )
+
+
+errorMessage : String -> Model -> ( Model, Cmd Msg )
+errorMessage message model =
+    ( { model | errorMessage = Just message }, Cmd.none )
 
 
 updateBrowsedEdge : BrowsedElement -> Model -> Model
 updateBrowsedEdge element model =
     let
         browsedEdge =
-            Graph.getEdge element.id (ZipList.current model.snapshots).graph
+            Graph.getEdge element.id (Snapshots.getCurrent model.snapshots).graph
 
         newOps =
             Operations.setBrowsedEdge browsedEdge model.operations
@@ -487,7 +569,7 @@ updateBrowsedNode : BrowsedElement -> Model -> Model
 updateBrowsedNode element model =
     let
         browsedNode =
-            Graph.getNode element.id (ZipList.current model.snapshots).graph
+            Graph.getNode element.id (Snapshots.getCurrent model.snapshots).graph
 
         newOps =
             Operations.setBrowsedNode browsedNode model.operations

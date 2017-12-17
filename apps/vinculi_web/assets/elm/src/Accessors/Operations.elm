@@ -6,6 +6,7 @@ import Types
         ( EdgeType
         , NodeType
         , ElementFilters
+        , ElementType(EdgeElt, NodeElt)
         , FilterName
         , Visible
         , Graph
@@ -51,8 +52,8 @@ setSearchedNode newSearchNode operations =
         { operations | node = newNodeOps }
 
 
-setNodeFilter : ElementFilters -> Operations -> Operations
-setNodeFilter newNodeFilter operations =
+setNodeFilters : ElementFilters -> Operations -> Operations
+setNodeFilters newNodeFilter operations =
     let
         oldNodeOps =
             operations.node
@@ -67,19 +68,9 @@ toggleNodeFilterState : FilterName -> Operations -> Operations
 toggleNodeFilterState filterName operations =
     let
         newFilters =
-            Dict.update filterName updateFilter operations.node.filtered
+            Dict.update filterName toggleFilter operations.node.filtered
     in
-        setNodeFilter newFilters operations
-
-
-updateFilter : Maybe Visible -> Maybe Visible
-updateFilter visible =
-    case visible of
-        Just v ->
-            Just (not v)
-
-        Nothing ->
-            Just False
+        setNodeFilters newFilters operations
 
 
 getNodeFilterState : FilterName -> Operations -> Visible
@@ -90,6 +81,15 @@ getNodeFilterState filterName operations =
 
         Nothing ->
             True
+
+
+resetNodeFilters : Operations -> Operations
+resetNodeFilters operations =
+    let
+        newFilters =
+            Dict.map resetFilter operations.node.filtered
+    in
+        setNodeFilters newFilters operations
 
 
 setBrowsedEdge : Maybe EdgeType -> Operations -> Operations
@@ -114,6 +114,46 @@ setPinnedEdge newPinnedEdge operations =
             { oldOps | pinned = newPinnedEdge }
     in
         { operations | edge = newOps }
+
+
+setEdgeFilters : ElementFilters -> Operations -> Operations
+setEdgeFilters newFilters operations =
+    let
+        oldOps =
+            operations.edge
+
+        newOps =
+            { oldOps | filtered = newFilters }
+    in
+        { operations | edge = newOps }
+
+
+toggleEdgeFilterState : FilterName -> Operations -> Operations
+toggleEdgeFilterState filterName operations =
+    let
+        newFilters =
+            Dict.update filterName toggleFilter operations.edge.filtered
+    in
+        setEdgeFilters newFilters operations
+
+
+resetEdgeFilters : Operations -> Operations
+resetEdgeFilters operations =
+    let
+        newFilters =
+            Dict.map resetFilter operations.edge.filtered
+    in
+        setEdgeFilters newFilters operations
+
+
+getEdgeFilterState : FilterName -> Operations -> Visible
+getEdgeFilterState filterName operations =
+    case Dict.get filterName operations.edge.filtered of
+        Just visible ->
+            visible
+
+        Nothing ->
+            True
 
 
 setGraphIsInitial : Bool -> Operations -> Operations
@@ -156,3 +196,31 @@ setGraphSnapshot snapshot operations =
         { operations
             | graph = newGraphOps
         }
+
+
+
+--- GETTERS
+
+
+toggleFilter : Maybe Visible -> Maybe Visible
+toggleFilter visible =
+    case visible of
+        Just v ->
+            Just (not v)
+
+        Nothing ->
+            Just False
+
+
+resetFilter : FilterName -> Visible -> Visible
+resetFilter _ _ =
+    True
+
+
+
+--- HELPERS
+
+
+resetElementFilters : Operations -> Operations
+resetElementFilters operations =
+    (resetEdgeFilters << resetNodeFilters) operations

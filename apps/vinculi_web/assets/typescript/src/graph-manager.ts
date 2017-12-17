@@ -414,6 +414,7 @@ export class GraphManager {
 
     /**
      * Hide / show elements
+     * if send elementIds is ["all"], all elements of the given type should be hidden / shown.
      *
      * @param {Ports.VisibleElements} elements    Data about elements to show/hide
      */
@@ -421,8 +422,18 @@ export class GraphManager {
         if (elements.elementIds.length == 0) {
             return
         }
-        const ids = elements.elementIds.map(x => elements.elementType + "#" + x).join(", ")
-        let elts = this._cy.elements(ids)
+
+        // Manage collections
+        let selectors
+        // Get all element of a type
+        if (elements.elementIds.toString() == "all") {
+            selectors = elements.elementType
+        }
+        // Get only those with the given ids
+        else {
+            selectors = elements.elementIds.map(x => elements.elementType + '[id="' + x + '"]').join(", ")
+        }
+        let elts = this._cy.elements(selectors)
         if (elements.visible) {
             elts.show()
         } else {

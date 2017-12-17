@@ -1,6 +1,7 @@
 module Accessors.Edge
     exposing
-        ( getType
+        ( getId
+        , getType
         , getGenericData
         , setClasses
         , setClassesFromType
@@ -30,6 +31,15 @@ setClassesFromType edge =
 
 
 --- GETTERS
+
+
+getId : EdgeType -> String
+getId edge =
+    let
+        { id } =
+            getGenericData edge
+    in
+        id
 
 
 getType : EdgeType -> String
