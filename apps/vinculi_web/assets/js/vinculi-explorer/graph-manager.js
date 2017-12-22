@@ -124,15 +124,27 @@ var GraphManager = /** @class */ (function () {
         // Tap on node: pin node infos
         this._cy.on('tap', 'node', function (event) { _this.pinNodeInfosHandler(event); });
         // Mouseover node: display node infos
-        this._cy.on('mouseover', 'node', function (event) { _this.showNodeInfosHandler(event); });
+        this._cy.on('mouseover', 'node', function (event) {
+            _this.showNodeInfosHandler(event);
+            _this.highlightNodeNeighboursOnHandler(event);
+        });
         // Mouseout node :hide node infos
-        this._cy.on('mouseout', 'node', function (event) { _this.hideNodeInfosHandler(event); });
+        this._cy.on('mouseout', 'node', function (event) {
+            _this.hideNodeInfosHandler(event);
+            _this.deActivateHighlight(event);
+        });
         // Tap on node: pin node infos
         this._cy.on('tap', 'edge', function (event) { _this.pinEdgeInfosHandler(event); });
         // Mouseover edge: display edge infos
-        this._cy.on('mouseover', 'edge', function (event) { _this.showEdgeInfosHandler(event); });
+        this._cy.on('mouseover', 'edge', function (event) {
+            _this.showEdgeInfosHandler(event);
+            _this.highlightEdgeNeighboursOnHandler(event);
+        });
         // Mouseout edge :hide edge infos
-        this._cy.on('mouseout', 'edge', function (event) { _this.hideEdgeInfosHandler(event); });
+        this._cy.on('mouseout', 'edge', function (event) {
+            _this.hideEdgeInfosHandler(event);
+            _this.deActivateHighlight(event);
+        });
         return this;
     };
     /**
@@ -291,6 +303,39 @@ var GraphManager = /** @class */ (function () {
      */
     GraphManager.prototype.hideEdgeInfosHandler = function (event) {
         this._ports.hideElementInfos("edge");
+    };
+    /**
+     * Highlight overed node for better visualisation
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover node)
+     * @return void
+     */
+    GraphManager.prototype.highlightNodeNeighboursOnHandler = function (event) {
+        var node = event.target;
+        var neighborhood = node.closedNeighborhood();
+        this._cy.elements().addClass('faded');
+        neighborhood.removeClass('faded');
+    };
+    /**
+     * Highlight overed edge for better visualisation
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover edge)
+     * @return void
+     */
+    GraphManager.prototype.highlightEdgeNeighboursOnHandler = function (event) {
+        var edge = event.target;
+        var neighborhood = edge.closedNeighborhood().add(edge.source()).add(edge.target());
+        this._cy.elements().addClass('faded');
+        neighborhood.removeClass('faded');
+    };
+    /**
+     * De-activate highlighting
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseout node / edge)
+     * @return void
+     */
+    GraphManager.prototype.deActivateHighlight = function (event) {
+        this._cy.elements().removeClass('faded');
     };
     /////////////////////////////////////////////////////////////////
     //                       PORTS CALLBACKS                       //

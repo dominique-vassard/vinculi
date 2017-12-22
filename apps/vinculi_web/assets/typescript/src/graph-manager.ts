@@ -117,12 +117,18 @@ export class GraphManager {
 
         // Mouseover node: display node infos
         this._cy.on('mouseover', 'node',
-            (event) => { this.showNodeInfosHandler(event) }
+            (event) => {
+                this.showNodeInfosHandler(event)
+                this.highlightNodeNeighboursOnHandler(event)
+            }
         )
 
         // Mouseout node :hide node infos
         this._cy.on('mouseout', 'node',
-            (event) => { this.hideNodeInfosHandler(event) }
+            (event) => {
+                this.hideNodeInfosHandler(event)
+                this.deActivateHighlight(event)
+            }
         )
 
         // Tap on node: pin node infos
@@ -132,12 +138,18 @@ export class GraphManager {
 
         // Mouseover edge: display edge infos
         this._cy.on('mouseover', 'edge',
-            (event) => { this.showEdgeInfosHandler(event) }
+            (event) => {
+                this.showEdgeInfosHandler(event)
+                this.highlightEdgeNeighboursOnHandler(event)
+            }
         )
 
         // Mouseout edge :hide edge infos
         this._cy.on('mouseout', 'edge',
-            (event) => { this.hideEdgeInfosHandler(event) }
+            (event) => {
+                this.hideEdgeInfosHandler(event)
+                this.deActivateHighlight(event)
+            }
         )
         return this
     }
@@ -309,6 +321,42 @@ export class GraphManager {
      */
     hideEdgeInfosHandler(event: cytoscape.EventObject): void {
         this._ports.hideElementInfos("edge")
+    }
+
+    /**
+     * Highlight overed node for better visualisation
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover node)
+     * @return void
+     */
+    highlightNodeNeighboursOnHandler(event: cytoscape.EventObject): void {
+        const node = event.target
+        const neighborhood = node.closedNeighborhood()
+        this._cy.elements().addClass('faded')
+        neighborhood.removeClass('faded')
+    }
+
+    /**
+     * Highlight overed edge for better visualisation
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover edge)
+     * @return void
+     */
+    highlightEdgeNeighboursOnHandler(event: cytoscape.EventObject): void {
+        const edge = event.target
+        const neighborhood = edge.closedNeighborhood().add(edge.source()).add(edge.target())
+        this._cy.elements().addClass('faded')
+        neighborhood.removeClass('faded')
+    }
+
+    /**
+     * De-activate highlighting
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseout node / edge)
+     * @return void
+     */
+    deActivateHighlight(event: cytoscape.EventObject): void {
+        this._cy.elements().removeClass('faded');
     }
     /////////////////////////////////////////////////////////////////
     //                       PORTS CALLBACKS                       //
