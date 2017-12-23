@@ -5,6 +5,7 @@ import Json.Encode exposing (Value)
 import Dict exposing (Dict)
 import Utils.ZipList as ZipList exposing (ZipList)
 import Bootstrap.Tab as Tab
+import Bootstrap.Accordion as Accordion
 
 
 --- FLAGS
@@ -286,6 +287,7 @@ type alias Model =
     , operations : Operations
     , snapshots : ZipList Snapshot
     , filterTabState : Tab.State
+    , controlPanelsState : Accordion.State
     }
 
 
@@ -317,3 +319,4 @@ type Msg
     | ApplyFiltersOnLocalGraph ElementType
     | ResetFilters ElementType
     | FilterTabMsg Tab.State
+    | ControlPanelsMsg Accordion.State

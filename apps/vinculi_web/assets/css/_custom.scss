@@ -53,6 +53,7 @@ body {
 }
 
 .control-panel-panel {
+  background-color: lightgrey;
   margin-bottom: 0.25em;
   box-shadow: 0px 2px 3px grey;
 }
@@ -96,4 +97,22 @@ body {
 .filter-pane {
   border: 1px solid #7F7F7F;
   border-top-color: transparent;
+  height: 580px;
+}
+
+.control-panel-title {
+  color: #000;
+}
+
+.control-panel-title:hover {
+  text-decoration: none;
+  color: gray
+}
+
+.control-panel-navigator {
+  height: 365px;
+}
+
+.link {
+  cursor: pointer;
 }

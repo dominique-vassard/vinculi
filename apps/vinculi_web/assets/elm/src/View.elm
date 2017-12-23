@@ -1,5 +1,6 @@
 module View exposing (view)
 
+import Bootstrap.Accordion as Accordion
 import Bootstrap.Alert as Alert
 import Bootstrap.Card as Card
 import Bootstrap.Grid as Grid
@@ -14,7 +15,7 @@ import Html.Events exposing (onClick)
 import Types
     exposing
         ( Model
-        , Msg(ToggleFilter, ResetFilters, FilterTabMsg)
+        , Msg(ToggleFilter, ResetFilters, FilterTabMsg, ControlPanelsMsg)
         , EdgeType
         , NodeType
         , Operations
@@ -63,18 +64,70 @@ view model =
                 [ Grid.row [ Row.attrs [ class "rounded-top bg-darken-2 control-panel-panel" ] ]
                     [ Grid.col [ Col.lg12, Col.attrs [ class "text-center" ] ] [ h6 [] [ text "Navigateur" ] ] ]
                 , Grid.row []
-                    [ Grid.col [ Col.lg12, Col.attrs [ style [ ( "height", "360px" ) ] ] ]
+                    [ Grid.col [ Col.lg12, Col.attrs [ class "control-panel-navigator" ] ]
                         [ viewNodeData <| nodeToDisplay model.operations.node
                         , viewEdgeData <| edgeToDisplay model.operations.edge
                         ]
                     ]
-                , Grid.row [ Row.attrs [ class "bg-darken-2 control-panel-panel" ] ]
-                    [ Grid.col [ Col.lg12, Col.attrs [ class "text-center" ] ] [ h6 [] [ text "Filtres" ] ] ]
                 , Grid.row []
-                    [ Grid.col [ Col.lg12 ]
-                        [ viewTabFilters model
+                    [ Grid.col [ Col.lg12, Col.attrs [ class "p-0" ] ]
+                        [ Accordion.config ControlPanelsMsg
+                            |> Accordion.withAnimation
+                            |> Accordion.cards
+                                [ --Accordion.card
+                                  --    { id = "navigator"
+                                  --    , options = [ Card.attrs [ class "rounded-top" ] ]
+                                  --    , header =
+                                  --        Accordion.header
+                                  --            [ class "p-1 control-panel-panel rounded-top"
+                                  --            ]
+                                  --        <|
+                                  --            Accordion.toggle [ class "control-panel-title" ]
+                                  --                [ text "Navigateur"
+                                  --                ]
+                                  --    , blocks =
+                                  --        [ Accordion.block [ Card.blockAttrs [ class "rounded-0" ] ]
+                                  --            [ Card.text []
+                                  --                [ div [ class "control-panel-navigator" ]
+                                  --                    [ viewNodeData <| nodeToDisplay model.operations.node
+                                  --                    , viewEdgeData <| edgeToDisplay model.operations.edge
+                                  --                    ]
+                                  --                ]
+                                  --            ]
+                                  --        ]
+                                  --    }
+                                  --,
+                                  Accordion.card
+                                    { id = "filters"
+                                    , options = [ Card.attrs [ class "rounded-top" ] ]
+                                    , header =
+                                        Accordion.header
+                                            [ class "p-1 control-panel-panel rounded-top"
+                                            ]
+                                            (Accordion.toggle [ class "control-panel-title" ]
+                                                [ text " Filtres"
+                                                ]
+                                            )
+                                            |> Accordion.prependHeader
+                                                [ i [ class "fa fa-angle-right" ] [] ]
+                                    , blocks =
+                                        [ Accordion.block []
+                                            [ Card.text [] [ viewTabFilters model ]
+                                            ]
+                                        ]
+                                    }
+                                ]
+                            |> Accordion.view model.controlPanelsState
                         ]
                     ]
+
+                --, Grid.row [ Row.attrs [ class "bg-darken-2 control-panel-panel" ] ]
+                --    [ Grid.col [ Col.lg12, Col.attrs [ class "text-center" ] ] [ h6 [] [ text "Filtres" ] ] ]
+                --, Grid.row []
+                --    [ Grid.col [ Col.lg12 ]
+                --        [ viewTabFilters model
+                --        ]
+                --    ]
                 ]
             ]
         ]
@@ -143,10 +196,10 @@ viewElementFilter elementType ( filterName, visible ) =
         iconClass =
             case visible of
                 True ->
-                    "fa fa-eye"
+                    "fa fa-eye link"
 
                 False ->
-                    "fa fa-eye-slash"
+                    "fa fa-eye-slash link"
     in
         div [ onClick (ToggleFilter elementType filterName) ]
             [ i [ class iconClass ] [ text <| " " ++ filterName ]

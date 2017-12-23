@@ -14,6 +14,7 @@ import Phoenix.Socket as PhxSocket
         )
 import Phoenix.Channel as PhxChannel exposing (init, onJoin)
 import Phoenix.Push as PhxPush exposing (init, onError, onOk, withPayload)
+import Bootstrap.Accordion as Accordion
 import Bootstrap.Tab as Tab
 import Task
 import Dict
@@ -93,6 +94,7 @@ init flags =
       , operations = initOperations flags
       , snapshots = Snapshots.init
       , filterTabState = Tab.initialState
+      , controlPanelsState = Accordion.initialState
       }
     , joinChannel
     )
@@ -613,6 +615,9 @@ update msg model =
 
         FilterTabMsg state ->
             ( { model | filterTabState = state }, Cmd.none )
+
+        ControlPanelsMsg state ->
+            ( { model | controlPanelsState = state }, Cmd.none )
 
 
 errorMessage : String -> Model -> ( Model, Cmd Msg )

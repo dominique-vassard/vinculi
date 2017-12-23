@@ -5837,6 +5837,135 @@ var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required = F3(
 			decoder);
 	});
 
+var _debois$elm_dom$DOM$className = A2(
+	_elm_lang$core$Json_Decode$at,
+	{
+		ctor: '::',
+		_0: 'className',
+		_1: {ctor: '[]'}
+	},
+	_elm_lang$core$Json_Decode$string);
+var _debois$elm_dom$DOM$scrollTop = A2(_elm_lang$core$Json_Decode$field, 'scrollTop', _elm_lang$core$Json_Decode$float);
+var _debois$elm_dom$DOM$scrollLeft = A2(_elm_lang$core$Json_Decode$field, 'scrollLeft', _elm_lang$core$Json_Decode$float);
+var _debois$elm_dom$DOM$offsetTop = A2(_elm_lang$core$Json_Decode$field, 'offsetTop', _elm_lang$core$Json_Decode$float);
+var _debois$elm_dom$DOM$offsetLeft = A2(_elm_lang$core$Json_Decode$field, 'offsetLeft', _elm_lang$core$Json_Decode$float);
+var _debois$elm_dom$DOM$offsetHeight = A2(_elm_lang$core$Json_Decode$field, 'offsetHeight', _elm_lang$core$Json_Decode$float);
+var _debois$elm_dom$DOM$offsetWidth = A2(_elm_lang$core$Json_Decode$field, 'offsetWidth', _elm_lang$core$Json_Decode$float);
+var _debois$elm_dom$DOM$childNodes = function (decoder) {
+	var loop = F2(
+		function (idx, xs) {
+			return A2(
+				_elm_lang$core$Json_Decode$andThen,
+				function (_p0) {
+					return A2(
+						_elm_lang$core$Maybe$withDefault,
+						_elm_lang$core$Json_Decode$succeed(xs),
+						A2(
+							_elm_lang$core$Maybe$map,
+							function (x) {
+								return A2(
+									loop,
+									idx + 1,
+									{ctor: '::', _0: x, _1: xs});
+							},
+							_p0));
+				},
+				_elm_lang$core$Json_Decode$maybe(
+					A2(
+						_elm_lang$core$Json_Decode$field,
+						_elm_lang$core$Basics$toString(idx),
+						decoder)));
+		});
+	return A2(
+		_elm_lang$core$Json_Decode$map,
+		_elm_lang$core$List$reverse,
+		A2(
+			_elm_lang$core$Json_Decode$field,
+			'childNodes',
+			A2(
+				loop,
+				0,
+				{ctor: '[]'})));
+};
+var _debois$elm_dom$DOM$childNode = function (idx) {
+	return _elm_lang$core$Json_Decode$at(
+		{
+			ctor: '::',
+			_0: 'childNodes',
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$core$Basics$toString(idx),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _debois$elm_dom$DOM$parentElement = function (decoder) {
+	return A2(_elm_lang$core$Json_Decode$field, 'parentElement', decoder);
+};
+var _debois$elm_dom$DOM$previousSibling = function (decoder) {
+	return A2(_elm_lang$core$Json_Decode$field, 'previousSibling', decoder);
+};
+var _debois$elm_dom$DOM$nextSibling = function (decoder) {
+	return A2(_elm_lang$core$Json_Decode$field, 'nextSibling', decoder);
+};
+var _debois$elm_dom$DOM$offsetParent = F2(
+	function (x, decoder) {
+		return _elm_lang$core$Json_Decode$oneOf(
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$core$Json_Decode$field,
+					'offsetParent',
+					_elm_lang$core$Json_Decode$null(x)),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$core$Json_Decode$field, 'offsetParent', decoder),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _debois$elm_dom$DOM$position = F2(
+	function (x, y) {
+		return A2(
+			_elm_lang$core$Json_Decode$andThen,
+			function (_p1) {
+				var _p2 = _p1;
+				var _p4 = _p2._1;
+				var _p3 = _p2._0;
+				return A2(
+					_debois$elm_dom$DOM$offsetParent,
+					{ctor: '_Tuple2', _0: _p3, _1: _p4},
+					A2(_debois$elm_dom$DOM$position, _p3, _p4));
+			},
+			A5(
+				_elm_lang$core$Json_Decode$map4,
+				F4(
+					function (scrollLeft, scrollTop, offsetLeft, offsetTop) {
+						return {ctor: '_Tuple2', _0: (x + offsetLeft) - scrollLeft, _1: (y + offsetTop) - scrollTop};
+					}),
+				_debois$elm_dom$DOM$scrollLeft,
+				_debois$elm_dom$DOM$scrollTop,
+				_debois$elm_dom$DOM$offsetLeft,
+				_debois$elm_dom$DOM$offsetTop));
+	});
+var _debois$elm_dom$DOM$boundingClientRect = A4(
+	_elm_lang$core$Json_Decode$map3,
+	F3(
+		function (_p5, width, height) {
+			var _p6 = _p5;
+			return {top: _p6._1, left: _p6._0, width: width, height: height};
+		}),
+	A2(_debois$elm_dom$DOM$position, 0, 0),
+	_debois$elm_dom$DOM$offsetWidth,
+	_debois$elm_dom$DOM$offsetHeight);
+var _debois$elm_dom$DOM$target = function (decoder) {
+	return A2(_elm_lang$core$Json_Decode$field, 'target', decoder);
+};
+var _debois$elm_dom$DOM$Rectangle = F4(
+	function (a, b, c, d) {
+		return {top: a, left: b, width: c, height: d};
+	});
+
 var _elm_lang$animation_frame$Native_AnimationFrame = function()
 {
 
@@ -16360,6 +16489,523 @@ var _rundis$elm_bootstrap$Bootstrap_Card$imgBottom = F3(
 				}));
 	});
 
+var _rundis$elm_bootstrap$Bootstrap_Accordion$transitionStyle = function (height) {
+	return _elm_lang$html$Html_Attributes$style(
+		{
+			ctor: '::',
+			_0: {ctor: '_Tuple2', _0: 'position', _1: 'relative'},
+			_1: {
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: 'height', _1: height},
+				_1: {
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'overflow', _1: 'hidden'},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: '-webkit-transition-timing-function', _1: 'ease'},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: '-o-transition-timing-function', _1: 'ease'},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'transition-timing-function', _1: 'ease'},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: '-webkit-transition-duration', _1: '0.35s'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: '-o-transition-duration', _1: '0.35s'},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'transition-duration', _1: '0.35s'},
+											_1: {
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: '-webkit-transition-property', _1: 'height'},
+												_1: {
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: '-o-transition-property', _1: 'height'},
+													_1: {
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'transition-property', _1: 'height'},
+														_1: {ctor: '[]'}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		});
+};
+var _rundis$elm_bootstrap$Bootstrap_Accordion$heightDecoder = _debois$elm_dom$DOM$target(
+	_debois$elm_dom$DOM$parentElement(
+		_debois$elm_dom$DOM$nextSibling(
+			A2(_debois$elm_dom$DOM$childNode, 0, _debois$elm_dom$DOM$offsetHeight))));
+var _rundis$elm_bootstrap$Bootstrap_Accordion$listGroup = _rundis$elm_bootstrap$Bootstrap_Internal_Card$listGroup;
+var _rundis$elm_bootstrap$Bootstrap_Accordion$block = _rundis$elm_bootstrap$Bootstrap_Internal_Card$block;
+var _rundis$elm_bootstrap$Bootstrap_Accordion$CardState = F2(
+	function (a, b) {
+		return {visibility: a, height: b};
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$Config = function (a) {
+	return {ctor: 'Config', _0: a};
+};
+var _rundis$elm_bootstrap$Bootstrap_Accordion$config = function (toMsg) {
+	return _rundis$elm_bootstrap$Bootstrap_Accordion$Config(
+		{
+			toMsg: toMsg,
+			withAnimation: false,
+			cards: {ctor: '[]'}
+		});
+};
+var _rundis$elm_bootstrap$Bootstrap_Accordion$withAnimation = function (_p0) {
+	var _p1 = _p0;
+	return _rundis$elm_bootstrap$Bootstrap_Accordion$Config(
+		_elm_lang$core$Native_Utils.update(
+			_p1._0,
+			{withAnimation: true}));
+};
+var _rundis$elm_bootstrap$Bootstrap_Accordion$cards = F2(
+	function (cards, _p2) {
+		var _p3 = _p2;
+		return _rundis$elm_bootstrap$Bootstrap_Accordion$Config(
+			_elm_lang$core$Native_Utils.update(
+				_p3._0,
+				{cards: cards}));
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$State = function (a) {
+	return {ctor: 'State', _0: a};
+};
+var _rundis$elm_bootstrap$Bootstrap_Accordion$initialState = _rundis$elm_bootstrap$Bootstrap_Accordion$State(_elm_lang$core$Dict$empty);
+var _rundis$elm_bootstrap$Bootstrap_Accordion$Shown = {ctor: 'Shown'};
+var _rundis$elm_bootstrap$Bootstrap_Accordion$AnimatingUp = {ctor: 'AnimatingUp'};
+var _rundis$elm_bootstrap$Bootstrap_Accordion$StartUp = {ctor: 'StartUp'};
+var _rundis$elm_bootstrap$Bootstrap_Accordion$AnimatingDown = {ctor: 'AnimatingDown'};
+var _rundis$elm_bootstrap$Bootstrap_Accordion$StartDown = {ctor: 'StartDown'};
+var _rundis$elm_bootstrap$Bootstrap_Accordion$subscriptions = F2(
+	function (_p4, toMsg) {
+		var _p5 = _p4;
+		var _p10 = _p5._0;
+		var needsSub = A2(
+			_elm_lang$core$List$any,
+			function (_p6) {
+				var _p7 = _p6;
+				return A2(
+					_elm_lang$core$List$member,
+					_p7._1.visibility,
+					{
+						ctor: '::',
+						_0: _rundis$elm_bootstrap$Bootstrap_Accordion$StartDown,
+						_1: {
+							ctor: '::',
+							_0: _rundis$elm_bootstrap$Bootstrap_Accordion$StartUp,
+							_1: {ctor: '[]'}
+						}
+					});
+			},
+			_elm_lang$core$Dict$toList(_p10));
+		var updState = _rundis$elm_bootstrap$Bootstrap_Accordion$State(
+			A2(
+				_elm_lang$core$Dict$map,
+				F2(
+					function (id, state) {
+						var _p8 = state.visibility;
+						switch (_p8.ctor) {
+							case 'StartDown':
+								return _elm_lang$core$Native_Utils.update(
+									state,
+									{visibility: _rundis$elm_bootstrap$Bootstrap_Accordion$AnimatingDown});
+							case 'StartUp':
+								return _elm_lang$core$Native_Utils.update(
+									state,
+									{visibility: _rundis$elm_bootstrap$Bootstrap_Accordion$AnimatingUp});
+							default:
+								return state;
+						}
+					}),
+				_p10));
+		return needsSub ? _elm_lang$animation_frame$AnimationFrame$times(
+			function (_p9) {
+				return toMsg(updState);
+			}) : _elm_lang$core$Platform_Sub$none;
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$Hidden = {ctor: 'Hidden'};
+var _rundis$elm_bootstrap$Bootstrap_Accordion$visibilityTransition = F2(
+	function (withAnimation, visibility) {
+		var _p11 = {ctor: '_Tuple2', _0: withAnimation, _1: visibility};
+		_v5_8:
+		do {
+			if (_p11.ctor === '_Tuple2') {
+				if (_p11._0 === true) {
+					switch (_p11._1.ctor) {
+						case 'Hidden':
+							return _rundis$elm_bootstrap$Bootstrap_Accordion$StartDown;
+						case 'StartDown':
+							return _rundis$elm_bootstrap$Bootstrap_Accordion$AnimatingDown;
+						case 'AnimatingDown':
+							return _rundis$elm_bootstrap$Bootstrap_Accordion$Shown;
+						case 'Shown':
+							return _rundis$elm_bootstrap$Bootstrap_Accordion$StartUp;
+						case 'StartUp':
+							return _rundis$elm_bootstrap$Bootstrap_Accordion$AnimatingUp;
+						default:
+							return _rundis$elm_bootstrap$Bootstrap_Accordion$Hidden;
+					}
+				} else {
+					switch (_p11._1.ctor) {
+						case 'Hidden':
+							return _rundis$elm_bootstrap$Bootstrap_Accordion$Shown;
+						case 'Shown':
+							return _rundis$elm_bootstrap$Bootstrap_Accordion$Hidden;
+						default:
+							break _v5_8;
+					}
+				}
+			} else {
+				break _v5_8;
+			}
+		} while(false);
+		return _rundis$elm_bootstrap$Bootstrap_Accordion$Shown;
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$getOrInitCardState = F2(
+	function (id, _p12) {
+		var _p13 = _p12;
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			{visibility: _rundis$elm_bootstrap$Bootstrap_Accordion$Hidden, height: _elm_lang$core$Maybe$Nothing},
+			A2(_elm_lang$core$Dict$get, id, _p13._0));
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$mapCardState = F3(
+	function (id, mapperFn, _p14) {
+		var _p15 = _p14;
+		var updCardState = mapperFn(
+			A2(_rundis$elm_bootstrap$Bootstrap_Accordion$getOrInitCardState, id, _p15));
+		return _rundis$elm_bootstrap$Bootstrap_Accordion$State(
+			A3(_elm_lang$core$Dict$insert, id, updCardState, _p15._0));
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$clickHandler = F4(
+	function (state, _p17, decoder, _p16) {
+		var _p18 = _p17;
+		var _p19 = _p16;
+		var updState = function (h) {
+			return A3(
+				_rundis$elm_bootstrap$Bootstrap_Accordion$mapCardState,
+				_p19._0.id,
+				function (cardState) {
+					return {
+						height: _elm_lang$core$Maybe$Just(h),
+						visibility: A2(_rundis$elm_bootstrap$Bootstrap_Accordion$visibilityTransition, _p18._0.withAnimation, cardState.visibility)
+					};
+				},
+				state);
+		};
+		return A2(
+			_elm_lang$core$Json_Decode$andThen,
+			function (v) {
+				return _elm_lang$core$Json_Decode$succeed(
+					_p18._0.toMsg(
+						updState(v)));
+			},
+			decoder);
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$renderToggle = F3(
+	function (state, config, _p20) {
+		var _p21 = _p20;
+		var _p22 = _p21._0.header;
+		var toggle = _p22._0.toggle;
+		var _p23 = toggle;
+		var attributes = _p23._0.attributes;
+		var children = _p23._0.children;
+		return A2(
+			_elm_lang$html$Html$a,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$href(
+						A2(_elm_lang$core$Basics_ops['++'], '#', _p21._0.id)),
+					_1: {
+						ctor: '::',
+						_0: A3(
+							_elm_lang$html$Html_Events$onWithOptions,
+							'click',
+							{stopPropagation: false, preventDefault: true},
+							A4(_rundis$elm_bootstrap$Bootstrap_Accordion$clickHandler, state, config, _rundis$elm_bootstrap$Bootstrap_Accordion$heightDecoder, _p21)),
+						_1: {ctor: '[]'}
+					}
+				},
+				attributes),
+			children);
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$renderCardHeader = F3(
+	function (state, config, _p24) {
+		var _p25 = _p24;
+		var _p26 = _p25._0.header;
+		var elemFn = _p26._0.elemFn;
+		var attributes = _p26._0.attributes;
+		var toggle = _p26._0.toggle;
+		var childrenPreToggle = _p26._0.childrenPreToggle;
+		var childrenPostToggle = _p26._0.childrenPostToggle;
+		return A2(
+			elemFn,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				attributes,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('card-header'),
+					_1: {ctor: '[]'}
+				}),
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				childrenPreToggle,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					{
+						ctor: '::',
+						_0: A3(_rundis$elm_bootstrap$Bootstrap_Accordion$renderToggle, state, config, _p25),
+						_1: {ctor: '[]'}
+					},
+					childrenPostToggle)));
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$transitionHandler = F3(
+	function (state, _p28, _p27) {
+		var _p29 = _p28;
+		var _p30 = _p27;
+		return _elm_lang$core$Json_Decode$succeed(
+			_p29._0.toMsg(
+				A3(
+					_rundis$elm_bootstrap$Bootstrap_Accordion$mapCardState,
+					_p30._0.id,
+					function (cardState) {
+						return _elm_lang$core$Native_Utils.update(
+							cardState,
+							{
+								visibility: A2(_rundis$elm_bootstrap$Bootstrap_Accordion$visibilityTransition, _p29._0.withAnimation, cardState.visibility)
+							});
+					},
+					state)));
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$animationAttributes = F3(
+	function (state, config, _p31) {
+		var _p32 = _p31;
+		var _p34 = _p32;
+		var cardState = A2(_rundis$elm_bootstrap$Bootstrap_Accordion$getOrInitCardState, _p32._0.id, state);
+		var pixelHeight = A2(
+			_elm_lang$core$Maybe$withDefault,
+			'0',
+			A2(
+				_elm_lang$core$Maybe$map,
+				function (v) {
+					return A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$core$Basics$toString(v),
+						'px');
+				},
+				cardState.height));
+		var _p33 = cardState.visibility;
+		switch (_p33.ctor) {
+			case 'Hidden':
+				return {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$style(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'overflow', _1: 'hidden'},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'height', _1: '0'},
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {ctor: '[]'}
+				};
+			case 'StartDown':
+				return {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$style(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'overflow', _1: 'hidden'},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'height', _1: '0'},
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {ctor: '[]'}
+				};
+			case 'AnimatingDown':
+				return {
+					ctor: '::',
+					_0: _rundis$elm_bootstrap$Bootstrap_Accordion$transitionStyle(pixelHeight),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html_Events$on,
+							'transitionend',
+							A3(_rundis$elm_bootstrap$Bootstrap_Accordion$transitionHandler, state, config, _p34)),
+						_1: {ctor: '[]'}
+					}
+				};
+			case 'AnimatingUp':
+				return {
+					ctor: '::',
+					_0: _rundis$elm_bootstrap$Bootstrap_Accordion$transitionStyle('0px'),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html_Events$on,
+							'transitionend',
+							A3(_rundis$elm_bootstrap$Bootstrap_Accordion$transitionHandler, state, config, _p34)),
+						_1: {ctor: '[]'}
+					}
+				};
+			case 'StartUp':
+				return {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$style(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'height', _1: pixelHeight},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				};
+			default:
+				return {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$style(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'height', _1: pixelHeight},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				};
+		}
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$renderCardBlock = F3(
+	function (state, config, _p35) {
+		var _p36 = _p35;
+		return A2(
+			_elm_lang$html$Html$div,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id(_p36._0.id),
+					_1: {ctor: '[]'}
+				},
+				A3(_rundis$elm_bootstrap$Bootstrap_Accordion$animationAttributes, state, config, _p36)),
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					_rundis$elm_bootstrap$Bootstrap_Internal_Card$renderBlocks(_p36._0.blocks)),
+				_1: {ctor: '[]'}
+			});
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$renderCard = F3(
+	function (state, config, _p37) {
+		var _p38 = _p37;
+		var _p39 = _p38;
+		return A2(
+			_elm_lang$html$Html$div,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_rundis$elm_bootstrap$Bootstrap_Internal_Card$cardAttributes(_p38._0.options),
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('card'),
+					_1: {ctor: '[]'}
+				}),
+			{
+				ctor: '::',
+				_0: A3(_rundis$elm_bootstrap$Bootstrap_Accordion$renderCardHeader, state, config, _p39),
+				_1: {
+					ctor: '::',
+					_0: A3(_rundis$elm_bootstrap$Bootstrap_Accordion$renderCardBlock, state, config, _p39),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$view = F2(
+	function (state, _p40) {
+		var _p41 = _p40;
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			A2(
+				_elm_lang$core$List$map,
+				A2(_rundis$elm_bootstrap$Bootstrap_Accordion$renderCard, state, _p41),
+				_p41._0.cards));
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$Card = function (a) {
+	return {ctor: 'Card', _0: a};
+};
+var _rundis$elm_bootstrap$Bootstrap_Accordion$card = function (_p42) {
+	var _p43 = _p42;
+	return _rundis$elm_bootstrap$Bootstrap_Accordion$Card(
+		{id: _p43.id, options: _p43.options, header: _p43.header, blocks: _p43.blocks});
+};
+var _rundis$elm_bootstrap$Bootstrap_Accordion$Toggle = function (a) {
+	return {ctor: 'Toggle', _0: a};
+};
+var _rundis$elm_bootstrap$Bootstrap_Accordion$toggle = F2(
+	function (attributes, children) {
+		return _rundis$elm_bootstrap$Bootstrap_Accordion$Toggle(
+			{attributes: attributes, children: children});
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$Header = function (a) {
+	return {ctor: 'Header', _0: a};
+};
+var _rundis$elm_bootstrap$Bootstrap_Accordion$prependHeader = F2(
+	function (elements, _p44) {
+		var _p45 = _p44;
+		var _p46 = _p45._0;
+		return _rundis$elm_bootstrap$Bootstrap_Accordion$Header(
+			_elm_lang$core$Native_Utils.update(
+				_p46,
+				{
+					childrenPreToggle: A2(_elm_lang$core$Basics_ops['++'], elements, _p46.childrenPreToggle)
+				}));
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$appendHeader = F2(
+	function (elements, _p47) {
+		var _p48 = _p47;
+		var _p49 = _p48._0;
+		return _rundis$elm_bootstrap$Bootstrap_Accordion$Header(
+			_elm_lang$core$Native_Utils.update(
+				_p49,
+				{
+					childrenPostToggle: A2(_elm_lang$core$Basics_ops['++'], _p49.childrenPreToggle, elements)
+				}));
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$headerPrivate = F3(
+	function (elemFn, attributes, toggle) {
+		return _rundis$elm_bootstrap$Bootstrap_Accordion$Header(
+			{
+				elemFn: elemFn,
+				attributes: attributes,
+				toggle: toggle,
+				childrenPreToggle: {ctor: '[]'},
+				childrenPostToggle: {ctor: '[]'}
+			});
+	});
+var _rundis$elm_bootstrap$Bootstrap_Accordion$header = _rundis$elm_bootstrap$Bootstrap_Accordion$headerPrivate(_elm_lang$html$Html$div);
+var _rundis$elm_bootstrap$Bootstrap_Accordion$headerH1 = _rundis$elm_bootstrap$Bootstrap_Accordion$headerPrivate(_elm_lang$html$Html$h1);
+var _rundis$elm_bootstrap$Bootstrap_Accordion$headerH2 = _rundis$elm_bootstrap$Bootstrap_Accordion$headerPrivate(_elm_lang$html$Html$h2);
+var _rundis$elm_bootstrap$Bootstrap_Accordion$headerH3 = _rundis$elm_bootstrap$Bootstrap_Accordion$headerPrivate(_elm_lang$html$Html$h3);
+var _rundis$elm_bootstrap$Bootstrap_Accordion$headerH4 = _rundis$elm_bootstrap$Bootstrap_Accordion$headerPrivate(_elm_lang$html$Html$h4);
+var _rundis$elm_bootstrap$Bootstrap_Accordion$headerH5 = _rundis$elm_bootstrap$Bootstrap_Accordion$headerPrivate(_elm_lang$html$Html$h5);
+var _rundis$elm_bootstrap$Bootstrap_Accordion$headerH6 = _rundis$elm_bootstrap$Bootstrap_Accordion$headerPrivate(_elm_lang$html$Html$h6);
+
 var _rundis$elm_bootstrap$Bootstrap_Alert$roleClass = function (role) {
 	var _p0 = role;
 	switch (_p0.ctor) {
@@ -17584,9 +18230,9 @@ var _user$project$Types$Snapshot = F4(
 	function (a, b, c, d) {
 		return {graph: a, description: b, node: c, edge: d};
 	});
-var _user$project$Types$Model = F7(
-	function (a, b, c, d, e, f, g) {
-		return {phxSocket: a, socketUrl: b, userToken: c, errorMessage: d, operations: e, snapshots: f, filterTabState: g};
+var _user$project$Types$Model = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {phxSocket: a, socketUrl: b, userToken: c, errorMessage: d, operations: e, snapshots: f, filterTabState: g, controlPanelsState: h};
 	});
 var _user$project$Types$SearchNodeType = F2(
 	function (a, b) {
@@ -17631,6 +18277,9 @@ var _user$project$Types$FilterLocal = function (a) {
 var _user$project$Types$AddLocal = {ctor: 'AddLocal'};
 var _user$project$Types$Waiting = {ctor: 'Waiting'};
 var _user$project$Types$Init = {ctor: 'Init'};
+var _user$project$Types$ControlPanelsMsg = function (a) {
+	return {ctor: 'ControlPanelsMsg', _0: a};
+};
 var _user$project$Types$FilterTabMsg = function (a) {
 	return {ctor: 'FilterTabMsg', _0: a};
 };
@@ -19265,9 +19914,9 @@ var _user$project$View$viewElementFilter = F2(
 		var iconClass = function () {
 			var _p5 = _p4._1;
 			if (_p5 === true) {
-				return 'fa fa-eye';
+				return 'fa fa-eye link';
 			} else {
-				return 'fa fa-eye-slash';
+				return 'fa fa-eye-slash  link';
 			}
 		}();
 		return A2(
@@ -19898,12 +20547,7 @@ var _user$project$View$view = function (model) {
 															_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$attrs(
 																{
 																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$style(
-																		{
-																			ctor: '::',
-																			_0: {ctor: '_Tuple2', _0: 'height', _1: '360px'},
-																			_1: {ctor: '[]'}
-																		}),
+																	_0: _elm_lang$html$Html_Attributes$class('control-panel-navigator'),
 																	_1: {ctor: '[]'}
 																}),
 															_1: {ctor: '[]'}
@@ -19926,16 +20570,7 @@ var _user$project$View$view = function (model) {
 											ctor: '::',
 											_0: A2(
 												_rundis$elm_bootstrap$Bootstrap_Grid$row,
-												{
-													ctor: '::',
-													_0: _rundis$elm_bootstrap$Bootstrap_Grid_Row$attrs(
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$class('bg-darken-2 control-panel-panel'),
-															_1: {ctor: '[]'}
-														}),
-													_1: {ctor: '[]'}
-												},
+												{ctor: '[]'},
 												{
 													ctor: '::',
 													_0: A2(
@@ -19948,7 +20583,7 @@ var _user$project$View$view = function (model) {
 																_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$attrs(
 																	{
 																		ctor: '::',
-																		_0: _elm_lang$html$Html_Attributes$class('text-center'),
+																		_0: _elm_lang$html$Html_Attributes$class('p-0'),
 																		_1: {ctor: '[]'}
 																	}),
 																_1: {ctor: '[]'}
@@ -19957,40 +20592,87 @@ var _user$project$View$view = function (model) {
 														{
 															ctor: '::',
 															_0: A2(
-																_elm_lang$html$Html$h6,
-																{ctor: '[]'},
-																{
-																	ctor: '::',
-																	_0: _elm_lang$html$Html$text('Filtres'),
-																	_1: {ctor: '[]'}
-																}),
+																_rundis$elm_bootstrap$Bootstrap_Accordion$view,
+																model.controlPanelsState,
+																A2(
+																	_rundis$elm_bootstrap$Bootstrap_Accordion$cards,
+																	{
+																		ctor: '::',
+																		_0: _rundis$elm_bootstrap$Bootstrap_Accordion$card(
+																			{
+																				id: 'filters',
+																				options: {
+																					ctor: '::',
+																					_0: _rundis$elm_bootstrap$Bootstrap_Card$attrs(
+																						{
+																							ctor: '::',
+																							_0: _elm_lang$html$Html_Attributes$class('rounded-top'),
+																							_1: {ctor: '[]'}
+																						}),
+																					_1: {ctor: '[]'}
+																				},
+																				header: A2(
+																					_rundis$elm_bootstrap$Bootstrap_Accordion$prependHeader,
+																					{
+																						ctor: '::',
+																						_0: A2(
+																							_elm_lang$html$Html$i,
+																							{
+																								ctor: '::',
+																								_0: _elm_lang$html$Html_Attributes$class('fa fa-angle-right'),
+																								_1: {ctor: '[]'}
+																							},
+																							{ctor: '[]'}),
+																						_1: {ctor: '[]'}
+																					},
+																					A2(
+																						_rundis$elm_bootstrap$Bootstrap_Accordion$header,
+																						{
+																							ctor: '::',
+																							_0: _elm_lang$html$Html_Attributes$class('p-1 control-panel-panel rounded-top'),
+																							_1: {ctor: '[]'}
+																						},
+																						A2(
+																							_rundis$elm_bootstrap$Bootstrap_Accordion$toggle,
+																							{
+																								ctor: '::',
+																								_0: _elm_lang$html$Html_Attributes$class('control-panel-title'),
+																								_1: {ctor: '[]'}
+																							},
+																							{
+																								ctor: '::',
+																								_0: _elm_lang$html$Html$text(' Filtres'),
+																								_1: {ctor: '[]'}
+																							}))),
+																				blocks: {
+																					ctor: '::',
+																					_0: A2(
+																						_rundis$elm_bootstrap$Bootstrap_Accordion$block,
+																						{ctor: '[]'},
+																						{
+																							ctor: '::',
+																							_0: A2(
+																								_rundis$elm_bootstrap$Bootstrap_Card$text,
+																								{ctor: '[]'},
+																								{
+																									ctor: '::',
+																									_0: _user$project$View$viewTabFilters(model),
+																									_1: {ctor: '[]'}
+																								}),
+																							_1: {ctor: '[]'}
+																						}),
+																					_1: {ctor: '[]'}
+																				}
+																			}),
+																		_1: {ctor: '[]'}
+																	},
+																	_rundis$elm_bootstrap$Bootstrap_Accordion$withAnimation(
+																		_rundis$elm_bootstrap$Bootstrap_Accordion$config(_user$project$Types$ControlPanelsMsg)))),
 															_1: {ctor: '[]'}
 														}),
 													_1: {ctor: '[]'}
 												}),
-											_1: {
-												ctor: '::',
-												_0: A2(
-													_rundis$elm_bootstrap$Bootstrap_Grid$row,
-													{ctor: '[]'},
-													{
-														ctor: '::',
-														_0: A2(
-															_rundis$elm_bootstrap$Bootstrap_Grid$col,
-															{
-																ctor: '::',
-																_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$lg12,
-																_1: {ctor: '[]'}
-															},
-															{
-																ctor: '::',
-																_0: _user$project$View$viewTabFilters(model),
-																_1: {ctor: '[]'}
-															}),
-														_1: {ctor: '[]'}
-													}),
-												_1: {ctor: '[]'}
-											}
+											_1: {ctor: '[]'}
 										}
 									}
 								}),
@@ -20042,7 +20724,11 @@ var _user$project$Subscriptions$subscriptions = function (model) {
 							_1: {
 								ctor: '::',
 								_0: A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$listen, model.phxSocket, _user$project$Types$PhoenixMsg),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: A2(_rundis$elm_bootstrap$Bootstrap_Accordion$subscriptions, model.controlPanelsState, _user$project$Types$ControlPanelsMsg),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}
@@ -20143,7 +20829,8 @@ var _user$project$Main$init = function (flags) {
 			userToken: flags.userToken,
 			operations: _user$project$Main$initOperations(flags),
 			snapshots: _user$project$Accessors_Snapshots$init,
-			filterTabState: _rundis$elm_bootstrap$Bootstrap_Tab$initialState
+			filterTabState: _rundis$elm_bootstrap$Bootstrap_Tab$initialState,
+			controlPanelsState: _rundis$elm_bootstrap$Bootstrap_Accordion$initialState
 		},
 		_1: _user$project$Main$joinChannel
 	};
@@ -20750,12 +21437,20 @@ var _user$project$Main$update = F2(
 								true))
 					};
 				}
-			default:
+			case 'FilterTabMsg':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{filterTabState: _p2._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{controlPanelsState: _p2._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
@@ -20791,7 +21486,7 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Bootstrap.Tab.State":{"args":[],"tags":{"State":["{ activeTab : Maybe.Maybe String , visibility : Bootstrap.Tab.Visibility }"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Types.NodeData":{"args":[],"tags":{"InstitutionNode":["Types.InstitutionNodeData"],"LocationNode":["Types.LocationNodeData"],"PersonNode":["Types.PersonNodeData"],"ValueNode":["Types.ValueNodeData"],"PublicationNode":["Types.PublicationNodeData"],"GenericNode":["Types.GenericNodeData"]}},"Types.ElementType":{"args":[],"tags":{"NodeElt":[],"EdgeElt":[]}},"Bootstrap.Tab.Visibility":{"args":[],"tags":{"Start":[],"Showing":[],"Hidden":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Types.EdgeData":{"args":[],"tags":{"InfluencedEdge":["Types.InfluencedEdgeData"],"GenericEdge":["Types.GenericEdgeData"]}},"Types.Msg":{"args":[],"tags":{"SetPinnedElement":["Result.Result String Types.PinnedElement"],"SetSearchNode":["Result.Result String Types.SearchNodeType"],"GetNodeLocalGraph":[],"JoinError":[],"Join":[],"UnsetBrowsedElement":["Result.Result String Types.ElementType"],"GetNodeLabels":[],"FilterTabMsg":["Bootstrap.Tab.State"],"GetEdgeTypes":[],"HandleSendError":["Json.Encode.Value"],"ReceiveNodeLabels":["Json.Encode.Value"],"SetGraphState":["Result.Result String Types.GraphSnapshot"],"PhoenixMsg":["Phoenix.Socket.Msg Types.Msg"],"ApplyFiltersOnLocalGraph":["Types.ElementType"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"ToggleFilter":["Types.ElementType","Types.FilterName"],"SendGraph":[],"ReceiveEdgeTypes":["Json.Encode.Value"],"ResetFilters":["Types.ElementType"],"InitGraph":[],"SetBrowsedElement":["Result.Result String Types.BrowsedElement"]}},"Types.Element":{"args":[],"tags":{"Node":["Types.NodeType"],"Edge":["Types.EdgeType"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Types.GenericNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String }"},"Types.InfluencedEdgeData":{"args":[],"type":"{ id : String , source : String , target : String , edge_type : String , strength : Int }"},"Types.FilterName":{"args":[],"type":"String"},"Types.LocationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lat : Maybe.Maybe Float , long : Maybe.Maybe Float }"},"Types.PersonNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lastName : String , firstName : String , aka : String , internalLink : String , externalLink : String }"},"Types.ValueNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , value : Int }"},"Types.PublicationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , title : String , titleFr : String , internalLink : String , externalLink : String }"},"Types.BrowsedElement":{"args":[],"type":"{ id : String, elementType : Types.ElementType }"},"Types.Position":{"args":[],"type":"{ x : Float, y : Float }"},"Types.GenericEdgeData":{"args":[],"type":"{ id : String, source : String, target : String, edge_type : String }"},"Types.NodeType":{"args":[],"type":"{ group : String , data : Types.NodeData , classes : String , position : Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.GraphSnapshot":{"args":[],"type":"{ graph : Types.Graph, description : String }"},"Types.SearchNodeType":{"args":[],"type":"{ uuid : String, labels : List String }"},"Types.PinnedElement":{"args":[],"type":"{ elementType : Types.ElementType, pin : Bool }"},"Time.Time":{"args":[],"type":"Float"},"Types.EdgeType":{"args":[],"type":"{ group : String , data : Types.EdgeData , classes : String , position : Maybe.Maybe Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.InstitutionNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , institution_type : String }"},"Types.Graph":{"args":[],"type":"List Types.Element"}},"message":"Types.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Bootstrap.Tab.State":{"args":[],"tags":{"State":["{ activeTab : Maybe.Maybe String , visibility : Bootstrap.Tab.Visibility }"]}},"Bootstrap.Accordion.State":{"args":[],"tags":{"State":["Dict.Dict String Bootstrap.Accordion.CardState"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Types.NodeData":{"args":[],"tags":{"InstitutionNode":["Types.InstitutionNodeData"],"LocationNode":["Types.LocationNodeData"],"PersonNode":["Types.PersonNodeData"],"ValueNode":["Types.ValueNodeData"],"PublicationNode":["Types.PublicationNodeData"],"GenericNode":["Types.GenericNodeData"]}},"Types.ElementType":{"args":[],"tags":{"NodeElt":[],"EdgeElt":[]}},"Bootstrap.Tab.Visibility":{"args":[],"tags":{"Start":[],"Showing":[],"Hidden":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Types.EdgeData":{"args":[],"tags":{"InfluencedEdge":["Types.InfluencedEdgeData"],"GenericEdge":["Types.GenericEdgeData"]}},"Types.Msg":{"args":[],"tags":{"SetPinnedElement":["Result.Result String Types.PinnedElement"],"SetSearchNode":["Result.Result String Types.SearchNodeType"],"GetNodeLocalGraph":[],"JoinError":[],"Join":[],"UnsetBrowsedElement":["Result.Result String Types.ElementType"],"GetNodeLabels":[],"FilterTabMsg":["Bootstrap.Tab.State"],"GetEdgeTypes":[],"HandleSendError":["Json.Encode.Value"],"ReceiveNodeLabels":["Json.Encode.Value"],"SetGraphState":["Result.Result String Types.GraphSnapshot"],"PhoenixMsg":["Phoenix.Socket.Msg Types.Msg"],"ApplyFiltersOnLocalGraph":["Types.ElementType"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"ToggleFilter":["Types.ElementType","Types.FilterName"],"SendGraph":[],"ControlPanelsMsg":["Bootstrap.Accordion.State"],"ReceiveEdgeTypes":["Json.Encode.Value"],"ResetFilters":["Types.ElementType"],"InitGraph":[],"SetBrowsedElement":["Result.Result String Types.BrowsedElement"]}},"Bootstrap.Accordion.Visibility":{"args":[],"tags":{"AnimatingDown":[],"StartDown":[],"StartUp":[],"AnimatingUp":[],"Hidden":[],"Shown":[]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Types.Element":{"args":[],"tags":{"Node":["Types.NodeType"],"Edge":["Types.EdgeType"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Types.GenericNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String }"},"Types.InfluencedEdgeData":{"args":[],"type":"{ id : String , source : String , target : String , edge_type : String , strength : Int }"},"Types.FilterName":{"args":[],"type":"String"},"Types.LocationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lat : Maybe.Maybe Float , long : Maybe.Maybe Float }"},"Types.PersonNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lastName : String , firstName : String , aka : String , internalLink : String , externalLink : String }"},"Types.ValueNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , value : Int }"},"Types.PublicationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , title : String , titleFr : String , internalLink : String , externalLink : String }"},"Types.BrowsedElement":{"args":[],"type":"{ id : String, elementType : Types.ElementType }"},"Bootstrap.Accordion.CardState":{"args":[],"type":"{ visibility : Bootstrap.Accordion.Visibility , height : Maybe.Maybe Float }"},"Types.Position":{"args":[],"type":"{ x : Float, y : Float }"},"Types.GenericEdgeData":{"args":[],"type":"{ id : String, source : String, target : String, edge_type : String }"},"Types.NodeType":{"args":[],"type":"{ group : String , data : Types.NodeData , classes : String , position : Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.GraphSnapshot":{"args":[],"type":"{ graph : Types.Graph, description : String }"},"Types.SearchNodeType":{"args":[],"type":"{ uuid : String, labels : List String }"},"Types.PinnedElement":{"args":[],"type":"{ elementType : Types.ElementType, pin : Bool }"},"Time.Time":{"args":[],"type":"Float"},"Types.EdgeType":{"args":[],"type":"{ group : String , data : Types.EdgeData , classes : String , position : Maybe.Maybe Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.InstitutionNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , institution_type : String }"},"Types.Graph":{"args":[],"type":"List Types.Element"}},"message":"Types.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])
