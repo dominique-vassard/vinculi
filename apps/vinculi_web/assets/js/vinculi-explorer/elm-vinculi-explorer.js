@@ -5837,6 +5837,29 @@ var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required = F3(
 			decoder);
 	});
 
+var _elm_lang$animation_frame$Native_AnimationFrame = function()
+{
+
+function create()
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		var id = requestAnimationFrame(function() {
+			callback(_elm_lang$core$Native_Scheduler.succeed(Date.now()));
+		});
+
+		return function() {
+			cancelAnimationFrame(id);
+		};
+	});
+}
+
+return {
+	create: create
+};
+
+}();
+
 var _elm_lang$core$Task$onError = _elm_lang$core$Native_Scheduler.onError;
 var _elm_lang$core$Task$andThen = _elm_lang$core$Native_Scheduler.andThen;
 var _elm_lang$core$Task$spawnCmd = F2(
@@ -6252,6 +6275,148 @@ _elm_lang$core$Native_Platform.effectManagers['Time'] = {pkg: 'elm-lang/core', i
 var _elm_lang$core$Process$kill = _elm_lang$core$Native_Scheduler.kill;
 var _elm_lang$core$Process$sleep = _elm_lang$core$Native_Scheduler.sleep;
 var _elm_lang$core$Process$spawn = _elm_lang$core$Native_Scheduler.spawn;
+
+var _elm_lang$animation_frame$AnimationFrame$rAF = _elm_lang$animation_frame$Native_AnimationFrame.create(
+	{ctor: '_Tuple0'});
+var _elm_lang$animation_frame$AnimationFrame$subscription = _elm_lang$core$Native_Platform.leaf('AnimationFrame');
+var _elm_lang$animation_frame$AnimationFrame$State = F3(
+	function (a, b, c) {
+		return {subs: a, request: b, oldTime: c};
+	});
+var _elm_lang$animation_frame$AnimationFrame$init = _elm_lang$core$Task$succeed(
+	A3(
+		_elm_lang$animation_frame$AnimationFrame$State,
+		{ctor: '[]'},
+		_elm_lang$core$Maybe$Nothing,
+		0));
+var _elm_lang$animation_frame$AnimationFrame$onEffects = F3(
+	function (router, subs, _p0) {
+		var _p1 = _p0;
+		var _p5 = _p1.request;
+		var _p4 = _p1.oldTime;
+		var _p2 = {ctor: '_Tuple2', _0: _p5, _1: subs};
+		if (_p2._0.ctor === 'Nothing') {
+			if (_p2._1.ctor === '[]') {
+				return _elm_lang$core$Task$succeed(
+					A3(
+						_elm_lang$animation_frame$AnimationFrame$State,
+						{ctor: '[]'},
+						_elm_lang$core$Maybe$Nothing,
+						_p4));
+			} else {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (pid) {
+						return A2(
+							_elm_lang$core$Task$andThen,
+							function (time) {
+								return _elm_lang$core$Task$succeed(
+									A3(
+										_elm_lang$animation_frame$AnimationFrame$State,
+										subs,
+										_elm_lang$core$Maybe$Just(pid),
+										time));
+							},
+							_elm_lang$core$Time$now);
+					},
+					_elm_lang$core$Process$spawn(
+						A2(
+							_elm_lang$core$Task$andThen,
+							_elm_lang$core$Platform$sendToSelf(router),
+							_elm_lang$animation_frame$AnimationFrame$rAF)));
+			}
+		} else {
+			if (_p2._1.ctor === '[]') {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (_p3) {
+						return _elm_lang$core$Task$succeed(
+							A3(
+								_elm_lang$animation_frame$AnimationFrame$State,
+								{ctor: '[]'},
+								_elm_lang$core$Maybe$Nothing,
+								_p4));
+					},
+					_elm_lang$core$Process$kill(_p2._0._0));
+			} else {
+				return _elm_lang$core$Task$succeed(
+					A3(_elm_lang$animation_frame$AnimationFrame$State, subs, _p5, _p4));
+			}
+		}
+	});
+var _elm_lang$animation_frame$AnimationFrame$onSelfMsg = F3(
+	function (router, newTime, _p6) {
+		var _p7 = _p6;
+		var _p10 = _p7.subs;
+		var diff = newTime - _p7.oldTime;
+		var send = function (sub) {
+			var _p8 = sub;
+			if (_p8.ctor === 'Time') {
+				return A2(
+					_elm_lang$core$Platform$sendToApp,
+					router,
+					_p8._0(newTime));
+			} else {
+				return A2(
+					_elm_lang$core$Platform$sendToApp,
+					router,
+					_p8._0(diff));
+			}
+		};
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (pid) {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (_p9) {
+						return _elm_lang$core$Task$succeed(
+							A3(
+								_elm_lang$animation_frame$AnimationFrame$State,
+								_p10,
+								_elm_lang$core$Maybe$Just(pid),
+								newTime));
+					},
+					_elm_lang$core$Task$sequence(
+						A2(_elm_lang$core$List$map, send, _p10)));
+			},
+			_elm_lang$core$Process$spawn(
+				A2(
+					_elm_lang$core$Task$andThen,
+					_elm_lang$core$Platform$sendToSelf(router),
+					_elm_lang$animation_frame$AnimationFrame$rAF)));
+	});
+var _elm_lang$animation_frame$AnimationFrame$Diff = function (a) {
+	return {ctor: 'Diff', _0: a};
+};
+var _elm_lang$animation_frame$AnimationFrame$diffs = function (tagger) {
+	return _elm_lang$animation_frame$AnimationFrame$subscription(
+		_elm_lang$animation_frame$AnimationFrame$Diff(tagger));
+};
+var _elm_lang$animation_frame$AnimationFrame$Time = function (a) {
+	return {ctor: 'Time', _0: a};
+};
+var _elm_lang$animation_frame$AnimationFrame$times = function (tagger) {
+	return _elm_lang$animation_frame$AnimationFrame$subscription(
+		_elm_lang$animation_frame$AnimationFrame$Time(tagger));
+};
+var _elm_lang$animation_frame$AnimationFrame$subMap = F2(
+	function (func, sub) {
+		var _p11 = sub;
+		if (_p11.ctor === 'Time') {
+			return _elm_lang$animation_frame$AnimationFrame$Time(
+				function (_p12) {
+					return func(
+						_p11._0(_p12));
+				});
+		} else {
+			return _elm_lang$animation_frame$AnimationFrame$Diff(
+				function (_p13) {
+					return func(
+						_p11._0(_p13));
+				});
+		}
+	});
+_elm_lang$core$Native_Platform.effectManagers['AnimationFrame'] = {pkg: 'elm-lang/animation-frame', init: _elm_lang$animation_frame$AnimationFrame$init, onEffects: _elm_lang$animation_frame$AnimationFrame$onEffects, onSelfMsg: _elm_lang$animation_frame$AnimationFrame$onSelfMsg, tag: 'sub', subMap: _elm_lang$animation_frame$AnimationFrame$subMap};
 
 var _elm_lang$core$Color$fmod = F2(
 	function (f, n) {
@@ -8806,6 +8971,121 @@ var _elm_lang$html$Html_Attributes$classList = function (list) {
 				A2(_elm_lang$core$List$filter, _elm_lang$core$Tuple$second, list))));
 };
 var _elm_lang$html$Html_Attributes$style = _elm_lang$virtual_dom$VirtualDom$style;
+
+var _elm_lang$html$Html_Events$keyCode = A2(_elm_lang$core$Json_Decode$field, 'keyCode', _elm_lang$core$Json_Decode$int);
+var _elm_lang$html$Html_Events$targetChecked = A2(
+	_elm_lang$core$Json_Decode$at,
+	{
+		ctor: '::',
+		_0: 'target',
+		_1: {
+			ctor: '::',
+			_0: 'checked',
+			_1: {ctor: '[]'}
+		}
+	},
+	_elm_lang$core$Json_Decode$bool);
+var _elm_lang$html$Html_Events$targetValue = A2(
+	_elm_lang$core$Json_Decode$at,
+	{
+		ctor: '::',
+		_0: 'target',
+		_1: {
+			ctor: '::',
+			_0: 'value',
+			_1: {ctor: '[]'}
+		}
+	},
+	_elm_lang$core$Json_Decode$string);
+var _elm_lang$html$Html_Events$defaultOptions = _elm_lang$virtual_dom$VirtualDom$defaultOptions;
+var _elm_lang$html$Html_Events$onWithOptions = _elm_lang$virtual_dom$VirtualDom$onWithOptions;
+var _elm_lang$html$Html_Events$on = _elm_lang$virtual_dom$VirtualDom$on;
+var _elm_lang$html$Html_Events$onFocus = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'focus',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onBlur = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'blur',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onSubmitOptions = _elm_lang$core$Native_Utils.update(
+	_elm_lang$html$Html_Events$defaultOptions,
+	{preventDefault: true});
+var _elm_lang$html$Html_Events$onSubmit = function (msg) {
+	return A3(
+		_elm_lang$html$Html_Events$onWithOptions,
+		'submit',
+		_elm_lang$html$Html_Events$onSubmitOptions,
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onCheck = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'change',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetChecked));
+};
+var _elm_lang$html$Html_Events$onInput = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'input',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetValue));
+};
+var _elm_lang$html$Html_Events$onMouseOut = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseout',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseOver = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseover',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseLeave = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseleave',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseEnter = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseenter',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseUp = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseup',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseDown = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mousedown',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onDoubleClick = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'dblclick',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onClick = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'click',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$Options = F2(
+	function (a, b) {
+		return {stopPropagation: a, preventDefault: b};
+	});
 
 var _elm_lang$html$Html_Keyed$node = _elm_lang$virtual_dom$VirtualDom$keyedNode;
 var _elm_lang$html$Html_Keyed$ol = _elm_lang$html$Html_Keyed$node('ol');
@@ -12645,25 +12925,650 @@ var _rundis$elm_bootstrap$Bootstrap_Grid$col = F2(
 			{options: options, children: children});
 	});
 
+var _rundis$elm_bootstrap$Bootstrap_Tab$applyModifier = F2(
+	function (option, options) {
+		var _p0 = option;
+		if (_p0.ctor === 'Attrs') {
+			return _elm_lang$core$Native_Utils.update(
+				options,
+				{
+					attributes: A2(_elm_lang$core$Basics_ops['++'], options.attributes, _p0._0)
+				});
+		} else {
+			return _elm_lang$core$Native_Utils.update(
+				options,
+				{
+					layout: _elm_lang$core$Maybe$Just(_p0._0)
+				});
+		}
+	});
+var _rundis$elm_bootstrap$Bootstrap_Tab$tabAttributes = function (_p1) {
+	var _p2 = _p1;
+	var _p4 = _p2._0;
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'nav', _1: true},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'nav-tabs', _1: !_p4.isPill},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'nav-pills', _1: _p4.isPill},
+							_1: {ctor: '[]'}
+						}
+					}
+				}),
+			_1: {ctor: '[]'}
+		},
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			function () {
+				var _p3 = _p4.layout;
+				if (_p3.ctor === 'Just') {
+					switch (_p3._0.ctor) {
+						case 'Justified':
+							return {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('nav-justified'),
+								_1: {ctor: '[]'}
+							};
+						case 'Fill':
+							return {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('nav-fill'),
+								_1: {ctor: '[]'}
+							};
+						case 'Center':
+							return {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('justify-content-center'),
+								_1: {ctor: '[]'}
+							};
+						default:
+							return {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('justify-content-end'),
+								_1: {ctor: '[]'}
+							};
+					}
+				} else {
+					return {ctor: '[]'};
+				}
+			}(),
+			_p4.attributes));
+};
+var _rundis$elm_bootstrap$Bootstrap_Tab$transitionStyle = function (opacity) {
+	return _elm_lang$html$Html_Attributes$style(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'opacity',
+				_1: _elm_lang$core$Basics$toString(opacity)
+			},
+			_1: {
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: '-webkit-transition', _1: 'opacity 0.15s linear'},
+				_1: {
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: '-o-transition', _1: 'opacity 0.15s linear'},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'transition', _1: 'opacity 0.15s linear'},
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _rundis$elm_bootstrap$Bootstrap_Tab$activeTabAttributes = F2(
+	function (_p6, _p5) {
+		var _p7 = _p6;
+		var _p8 = _p5;
+		var _p9 = _p7._0.visibility;
+		switch (_p9.ctor) {
+			case 'Hidden':
+				return {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$style(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'display', _1: 'none'},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				};
+			case 'Start':
+				return {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$style(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'display', _1: 'block'},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'opacity', _1: '0'},
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {ctor: '[]'}
+				};
+			default:
+				return {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$style(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'display', _1: 'block'},
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: _rundis$elm_bootstrap$Bootstrap_Tab$transitionStyle(1),
+						_1: {ctor: '[]'}
+					}
+				};
+		}
+	});
+var _rundis$elm_bootstrap$Bootstrap_Tab$renderTabPane = F5(
+	function (id, active, _p10, state, config) {
+		var _p11 = _p10;
+		var displayAttrs = active ? A2(_rundis$elm_bootstrap$Bootstrap_Tab$activeTabAttributes, state, config) : {
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$style(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'display', _1: 'none'},
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		};
+		return A2(
+			_elm_lang$html$Html$div,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id(id),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('tab-pane'),
+						_1: {ctor: '[]'}
+					}
+				},
+				A2(_elm_lang$core$Basics_ops['++'], displayAttrs, _p11._0.attributes)),
+			_p11._0.children);
+	});
+var _rundis$elm_bootstrap$Bootstrap_Tab$getActiveItem = F2(
+	function (_p13, _p12) {
+		var _p14 = _p13;
+		var _p15 = _p12;
+		var _p20 = _p15._0.items;
+		var _p16 = _p14._0.activeTab;
+		if (_p16.ctor === 'Nothing') {
+			return _elm_lang$core$List$head(_p20);
+		} else {
+			return function (found) {
+				var _p17 = found;
+				if (_p17.ctor === 'Just') {
+					return _elm_lang$core$Maybe$Just(_p17._0);
+				} else {
+					return _elm_lang$core$List$head(_p20);
+				}
+			}(
+				_elm_lang$core$List$head(
+					A2(
+						_elm_lang$core$List$filter,
+						function (_p18) {
+							var _p19 = _p18;
+							return _elm_lang$core$Native_Utils.eq(_p19._0.id, _p16._0);
+						},
+						_p20)));
+		}
+	});
+var _rundis$elm_bootstrap$Bootstrap_Tab$Options = F3(
+	function (a, b, c) {
+		return {layout: a, isPill: b, attributes: c};
+	});
+var _rundis$elm_bootstrap$Bootstrap_Tab$State = function (a) {
+	return {ctor: 'State', _0: a};
+};
+var _rundis$elm_bootstrap$Bootstrap_Tab$Attrs = function (a) {
+	return {ctor: 'Attrs', _0: a};
+};
+var _rundis$elm_bootstrap$Bootstrap_Tab$Layout = function (a) {
+	return {ctor: 'Layout', _0: a};
+};
+var _rundis$elm_bootstrap$Bootstrap_Tab$Justified = {ctor: 'Justified'};
+var _rundis$elm_bootstrap$Bootstrap_Tab$Fill = {ctor: 'Fill'};
+var _rundis$elm_bootstrap$Bootstrap_Tab$Right = {ctor: 'Right'};
+var _rundis$elm_bootstrap$Bootstrap_Tab$Center = {ctor: 'Center'};
+var _rundis$elm_bootstrap$Bootstrap_Tab$Showing = {ctor: 'Showing'};
+var _rundis$elm_bootstrap$Bootstrap_Tab$subscriptions = F2(
+	function (_p21, toMsg) {
+		var _p22 = _p21;
+		var _p25 = _p22._0;
+		var _p23 = _p25.visibility;
+		if (_p23.ctor === 'Start') {
+			return _elm_lang$animation_frame$AnimationFrame$times(
+				function (_p24) {
+					return toMsg(
+						_rundis$elm_bootstrap$Bootstrap_Tab$State(
+							_elm_lang$core$Native_Utils.update(
+								_p25,
+								{visibility: _rundis$elm_bootstrap$Bootstrap_Tab$Showing})));
+				});
+		} else {
+			return _elm_lang$core$Platform_Sub$none;
+		}
+	});
+var _rundis$elm_bootstrap$Bootstrap_Tab$initialState = _rundis$elm_bootstrap$Bootstrap_Tab$State(
+	{activeTab: _elm_lang$core$Maybe$Nothing, visibility: _rundis$elm_bootstrap$Bootstrap_Tab$Showing});
+var _rundis$elm_bootstrap$Bootstrap_Tab$customInitialState = function (id) {
+	return _rundis$elm_bootstrap$Bootstrap_Tab$State(
+		{
+			activeTab: _elm_lang$core$Maybe$Just(id),
+			visibility: _rundis$elm_bootstrap$Bootstrap_Tab$Showing
+		});
+};
+var _rundis$elm_bootstrap$Bootstrap_Tab$Start = {ctor: 'Start'};
+var _rundis$elm_bootstrap$Bootstrap_Tab$visibilityTransition = F2(
+	function (withAnimation, visibility) {
+		var _p26 = {ctor: '_Tuple2', _0: withAnimation, _1: visibility};
+		_v14_2:
+		do {
+			if ((_p26.ctor === '_Tuple2') && (_p26._0 === true)) {
+				switch (_p26._1.ctor) {
+					case 'Hidden':
+						return _rundis$elm_bootstrap$Bootstrap_Tab$Start;
+					case 'Start':
+						return _rundis$elm_bootstrap$Bootstrap_Tab$Showing;
+					default:
+						break _v14_2;
+				}
+			} else {
+				break _v14_2;
+			}
+		} while(false);
+		return _rundis$elm_bootstrap$Bootstrap_Tab$Showing;
+	});
+var _rundis$elm_bootstrap$Bootstrap_Tab$transitionHandler = F3(
+	function (toMsg, _p27, withAnimation) {
+		var _p28 = _p27;
+		var _p29 = _p28._0;
+		return _elm_lang$core$Json_Decode$succeed(
+			toMsg(
+				_rundis$elm_bootstrap$Bootstrap_Tab$State(
+					_elm_lang$core$Native_Utils.update(
+						_p29,
+						{
+							visibility: A2(_rundis$elm_bootstrap$Bootstrap_Tab$visibilityTransition, withAnimation, _p29.visibility)
+						}))));
+	});
+var _rundis$elm_bootstrap$Bootstrap_Tab$Hidden = {ctor: 'Hidden'};
+var _rundis$elm_bootstrap$Bootstrap_Tab$renderLink = F4(
+	function (id, active, _p31, _p30) {
+		var _p32 = _p31;
+		var _p33 = _p30;
+		return A2(
+			_elm_lang$html$Html$li,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('nav-item'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$a,
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'nav-link', _1: true},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'active', _1: active},
+										_1: {ctor: '[]'}
+									}
+								}),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$href(
+									A2(_elm_lang$core$Basics_ops['++'], '#', id)),
+								_1: {
+									ctor: '::',
+									_0: A3(
+										_elm_lang$html$Html_Events$onWithOptions,
+										'click',
+										{stopPropagation: false, preventDefault: active || (!_p33._0.useHash)},
+										_elm_lang$core$Json_Decode$succeed(
+											_p33._0.toMsg(
+												_rundis$elm_bootstrap$Bootstrap_Tab$State(
+													{
+														activeTab: _elm_lang$core$Maybe$Just(id),
+														visibility: A2(_rundis$elm_bootstrap$Bootstrap_Tab$visibilityTransition, _p33._0.withAnimation && (!active), _rundis$elm_bootstrap$Bootstrap_Tab$Hidden)
+													})))),
+									_1: {ctor: '[]'}
+								}
+							}
+						},
+						_p32._0.attributes),
+					_p32._0.children),
+				_1: {ctor: '[]'}
+			});
+	});
+var _rundis$elm_bootstrap$Bootstrap_Tab$view = F2(
+	function (state, _p34) {
+		var _p35 = _p34;
+		var _p45 = _p35._0.items;
+		var _p44 = _p35;
+		var _p36 = A2(_rundis$elm_bootstrap$Bootstrap_Tab$getActiveItem, state, _p44);
+		if (_p36.ctor === 'Nothing') {
+			return A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$ul,
+						_rundis$elm_bootstrap$Bootstrap_Tab$tabAttributes(_p44),
+						{ctor: '[]'}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('tab-content'),
+								_1: {ctor: '[]'}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}
+				});
+		} else {
+			var _p43 = _p36._0._0;
+			return A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$ul,
+						_rundis$elm_bootstrap$Bootstrap_Tab$tabAttributes(_p44),
+						A2(
+							_elm_lang$core$List$map,
+							function (_p37) {
+								var _p38 = _p37;
+								var _p39 = _p38._0.id;
+								return A4(
+									_rundis$elm_bootstrap$Bootstrap_Tab$renderLink,
+									_p39,
+									_elm_lang$core$Native_Utils.eq(_p39, _p43.id),
+									_p38._0.link,
+									_p44);
+							},
+							_p45)),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('tab-content'),
+								_1: {ctor: '[]'}
+							},
+							A2(
+								_elm_lang$core$List$map,
+								function (_p40) {
+									var _p41 = _p40;
+									var _p42 = _p41._0.id;
+									return A5(
+										_rundis$elm_bootstrap$Bootstrap_Tab$renderTabPane,
+										_p42,
+										_elm_lang$core$Native_Utils.eq(_p42, _p43.id),
+										_p41._0.pane,
+										state,
+										_p44);
+								},
+								_p45)),
+						_1: {ctor: '[]'}
+					}
+				});
+		}
+	});
+var _rundis$elm_bootstrap$Bootstrap_Tab$Config = function (a) {
+	return {ctor: 'Config', _0: a};
+};
+var _rundis$elm_bootstrap$Bootstrap_Tab$config = function (toMsg) {
+	return _rundis$elm_bootstrap$Bootstrap_Tab$Config(
+		{
+			toMsg: toMsg,
+			items: {ctor: '[]'},
+			isPill: false,
+			withAnimation: false,
+			layout: _elm_lang$core$Maybe$Nothing,
+			attributes: {ctor: '[]'},
+			useHash: false
+		});
+};
+var _rundis$elm_bootstrap$Bootstrap_Tab$items = F2(
+	function (items, _p46) {
+		var _p47 = _p46;
+		return _rundis$elm_bootstrap$Bootstrap_Tab$Config(
+			_elm_lang$core$Native_Utils.update(
+				_p47._0,
+				{items: items}));
+	});
+var _rundis$elm_bootstrap$Bootstrap_Tab$layout = F2(
+	function (layout, _p48) {
+		var _p49 = _p48;
+		return _rundis$elm_bootstrap$Bootstrap_Tab$Config(
+			_elm_lang$core$Native_Utils.update(
+				_p49._0,
+				{
+					layout: _elm_lang$core$Maybe$Just(layout)
+				}));
+	});
+var _rundis$elm_bootstrap$Bootstrap_Tab$justified = _rundis$elm_bootstrap$Bootstrap_Tab$layout(_rundis$elm_bootstrap$Bootstrap_Tab$Justified);
+var _rundis$elm_bootstrap$Bootstrap_Tab$fill = _rundis$elm_bootstrap$Bootstrap_Tab$layout(_rundis$elm_bootstrap$Bootstrap_Tab$Fill);
+var _rundis$elm_bootstrap$Bootstrap_Tab$center = _rundis$elm_bootstrap$Bootstrap_Tab$layout(_rundis$elm_bootstrap$Bootstrap_Tab$Center);
+var _rundis$elm_bootstrap$Bootstrap_Tab$right = _rundis$elm_bootstrap$Bootstrap_Tab$layout(_rundis$elm_bootstrap$Bootstrap_Tab$Right);
+var _rundis$elm_bootstrap$Bootstrap_Tab$pills = function (_p50) {
+	var _p51 = _p50;
+	return _rundis$elm_bootstrap$Bootstrap_Tab$Config(
+		_elm_lang$core$Native_Utils.update(
+			_p51._0,
+			{isPill: true}));
+};
+var _rundis$elm_bootstrap$Bootstrap_Tab$withAnimation = function (_p52) {
+	var _p53 = _p52;
+	return _rundis$elm_bootstrap$Bootstrap_Tab$Config(
+		_elm_lang$core$Native_Utils.update(
+			_p53._0,
+			{withAnimation: true}));
+};
+var _rundis$elm_bootstrap$Bootstrap_Tab$attrs = F2(
+	function (attrs, _p54) {
+		var _p55 = _p54;
+		var _p56 = _p55._0;
+		return _rundis$elm_bootstrap$Bootstrap_Tab$Config(
+			_elm_lang$core$Native_Utils.update(
+				_p56,
+				{
+					attributes: A2(_elm_lang$core$Basics_ops['++'], _p56.attributes, attrs)
+				}));
+	});
+var _rundis$elm_bootstrap$Bootstrap_Tab$useHash = F2(
+	function (use, _p57) {
+		var _p58 = _p57;
+		return _rundis$elm_bootstrap$Bootstrap_Tab$Config(
+			_elm_lang$core$Native_Utils.update(
+				_p58._0,
+				{useHash: use}));
+	});
+var _rundis$elm_bootstrap$Bootstrap_Tab$Item = function (a) {
+	return {ctor: 'Item', _0: a};
+};
+var _rundis$elm_bootstrap$Bootstrap_Tab$item = function (_p59) {
+	var _p60 = _p59;
+	return _rundis$elm_bootstrap$Bootstrap_Tab$Item(
+		{id: _p60.id, link: _p60.link, pane: _p60.pane});
+};
+var _rundis$elm_bootstrap$Bootstrap_Tab$Link = function (a) {
+	return {ctor: 'Link', _0: a};
+};
+var _rundis$elm_bootstrap$Bootstrap_Tab$link = F2(
+	function (attributes, children) {
+		return _rundis$elm_bootstrap$Bootstrap_Tab$Link(
+			{attributes: attributes, children: children});
+	});
+var _rundis$elm_bootstrap$Bootstrap_Tab$Pane = function (a) {
+	return {ctor: 'Pane', _0: a};
+};
+var _rundis$elm_bootstrap$Bootstrap_Tab$pane = F2(
+	function (attributes, children) {
+		return _rundis$elm_bootstrap$Bootstrap_Tab$Pane(
+			{attributes: attributes, children: children});
+	});
+
+var _user$project$Utils_ZipList$toList = function (items) {
+	var _p0 = items;
+	if (_p0.ctor === 'Just') {
+		return _p0._0;
+	} else {
+		return {ctor: '[]'};
+	}
+};
+var _user$project$Utils_ZipList$hasNext = function (items) {
+	return _elm_lang$core$Native_Utils.cmp(
+		_elm_lang$core$List$length(items.next),
+		0) > 0;
+};
+var _user$project$Utils_ZipList$hasPrevious = function (items) {
+	return _elm_lang$core$Native_Utils.cmp(
+		_elm_lang$core$List$length(items.previous),
+		0) > 0;
+};
+var _user$project$Utils_ZipList$update = F2(
+	function (item, items) {
+		return _elm_lang$core$Native_Utils.update(
+			items,
+			{current: item});
+	});
+var _user$project$Utils_ZipList$current = function (items) {
+	return items.current;
+};
+var _user$project$Utils_ZipList$forward = function (items) {
+	var checkCurrent = _elm_lang$core$List$head(items.next);
+	var newItems = function () {
+		var _p1 = checkCurrent;
+		if (_p1.ctor === 'Just') {
+			return _elm_lang$core$Native_Utils.update(
+				items,
+				{
+					previous: A2(
+						_elm_lang$core$Basics_ops['++'],
+						items.previous,
+						{
+							ctor: '::',
+							_0: items.current,
+							_1: {ctor: '[]'}
+						}),
+					current: _p1._0,
+					next: _user$project$Utils_ZipList$toList(
+						_elm_lang$core$List$tail(items.next))
+				});
+		} else {
+			return items;
+		}
+	}();
+	return newItems;
+};
+var _user$project$Utils_ZipList$add = F2(
+	function (item, items) {
+		var newItems = _elm_lang$core$Native_Utils.update(
+			items,
+			{
+				next: {
+					ctor: '::',
+					_0: item,
+					_1: {ctor: '[]'}
+				}
+			});
+		return _user$project$Utils_ZipList$forward(newItems);
+	});
+var _user$project$Utils_ZipList$back = function (items) {
+	var checkCurrent = _elm_lang$core$List$head(
+		_elm_lang$core$List$reverse(items.previous));
+	var newItems = function () {
+		var _p2 = checkCurrent;
+		if (_p2.ctor === 'Just') {
+			return _elm_lang$core$Native_Utils.update(
+				items,
+				{
+					previous: _elm_lang$core$List$reverse(
+						_user$project$Utils_ZipList$toList(
+							_elm_lang$core$List$tail(
+								_elm_lang$core$List$reverse(items.previous)))),
+					current: _p2._0,
+					next: {ctor: '::', _0: items.current, _1: items.next}
+				});
+		} else {
+			return items;
+		}
+	}();
+	return newItems;
+};
+var _user$project$Utils_ZipList$ZipList = F3(
+	function (a, b, c) {
+		return {previous: a, current: b, next: c};
+	});
+var _user$project$Utils_ZipList$init = F2(
+	function (item, items) {
+		return A3(
+			_user$project$Utils_ZipList$ZipList,
+			{ctor: '[]'},
+			item,
+			items);
+	});
+
 var _user$project$Types$Flags = F4(
 	function (a, b, c, d) {
 		return {socketUrl: a, originNodeUuid: b, originNodeLabels: c, userToken: d};
 	});
-var _user$project$Types$GenericNodeData = F3(
-	function (a, b, c) {
-		return {id: a, labels: b, name: c};
+var _user$project$Types$GenericNodeData = F4(
+	function (a, b, c, d) {
+		return {id: a, labels: b, name: c, parentNode: d};
 	});
-var _user$project$Types$PersonNodeData = F8(
+var _user$project$Types$InstitutionNodeData = F5(
+	function (a, b, c, d, e) {
+		return {id: a, labels: b, name: c, parentNode: d, institution_type: e};
+	});
+var _user$project$Types$LocationNodeData = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, labels: b, name: c, parentNode: d, lat: e, $long: f};
+	});
+var _user$project$Types$PersonNodeData = F9(
+	function (a, b, c, d, e, f, g, h, i) {
+		return {id: a, labels: b, name: c, parentNode: d, lastName: e, firstName: f, aka: g, internalLink: h, externalLink: i};
+	});
+var _user$project$Types$PublicationNodeData = F8(
 	function (a, b, c, d, e, f, g, h) {
-		return {id: a, labels: b, name: c, lastName: d, firstName: e, aka: f, internalLink: g, externalLink: h};
+		return {id: a, labels: b, name: c, parentNode: d, title: e, titleFr: f, internalLink: g, externalLink: h};
 	});
-var _user$project$Types$ValueNodeData = F4(
-	function (a, b, c, d) {
-		return {id: a, labels: b, name: c, value: d};
-	});
-var _user$project$Types$PublicationNodeData = F4(
-	function (a, b, c, d) {
-		return {id: a, labels: b, name: c, title: d};
+var _user$project$Types$ValueNodeData = F5(
+	function (a, b, c, d, e) {
+		return {id: a, labels: b, name: c, parentNode: d, value: e};
 	});
 var _user$project$Types$Position = F2(
 	function (a, b) {
@@ -12685,11 +13590,46 @@ var _user$project$Types$InfluencedEdgeData = F5(
 	function (a, b, c, d, e) {
 		return {id: a, source: b, target: c, edge_type: d, strength: e};
 	});
+var _user$project$Types$BrowsedElement = F2(
+	function (a, b) {
+		return {id: a, elementType: b};
+	});
+var _user$project$Types$PinnedElement = F2(
+	function (a, b) {
+		return {elementType: a, pin: b};
+	});
+var _user$project$Types$NodeOperations = F4(
+	function (a, b, c, d) {
+		return {searched: a, browsed: b, pinned: c, filtered: d};
+	});
+var _user$project$Types$EdgeOperations = F3(
+	function (a, b, c) {
+		return {browsed: a, pinned: b, filtered: c};
+	});
+var _user$project$Types$GraphOperations = F3(
+	function (a, b, c) {
+		return {data: a, current: b, snapshot: c};
+	});
+var _user$project$Types$Operations = F3(
+	function (a, b, c) {
+		return {node: a, graph: b, edge: c};
+	});
+var _user$project$Types$ElementState = function (a) {
+	return {filters: a};
+};
+var _user$project$Types$GraphSnapshot = F2(
+	function (a, b) {
+		return {graph: a, description: b};
+	});
+var _user$project$Types$Snapshot = F4(
+	function (a, b, c, d) {
+		return {graph: a, description: b, node: c, edge: d};
+	});
 var _user$project$Types$Model = F8(
 	function (a, b, c, d, e, f, g, h) {
-		return {phxSocket: a, graph: b, socketUrl: c, initGraph: d, searchNode: e, browsedNode: f, errorMessage: g, userToken: h};
+		return {phxSocket: a, socketUrl: b, userToken: c, errorMessage: d, operations: e, snapshots: f, filterTabState: g, controlPanelsState: h};
 	});
-var _user$project$Types$SearchNode = F2(
+var _user$project$Types$SearchNodeType = F2(
 	function (a, b) {
 		return {uuid: a, labels: b};
 	});
@@ -12701,6 +13641,12 @@ var _user$project$Types$PublicationNode = function (a) {
 };
 var _user$project$Types$PersonNode = function (a) {
 	return {ctor: 'PersonNode', _0: a};
+};
+var _user$project$Types$LocationNode = function (a) {
+	return {ctor: 'LocationNode', _0: a};
+};
+var _user$project$Types$InstitutionNode = function (a) {
+	return {ctor: 'InstitutionNode', _0: a};
 };
 var _user$project$Types$GenericNode = function (a) {
 	return {ctor: 'GenericNode', _0: a};
@@ -12717,11 +13663,44 @@ var _user$project$Types$Edge = function (a) {
 var _user$project$Types$Node = function (a) {
 	return {ctor: 'Node', _0: a};
 };
+var _user$project$Types$EdgeElt = {ctor: 'EdgeElt'};
+var _user$project$Types$NodeElt = {ctor: 'NodeElt'};
+var _user$project$Types$Filter = {ctor: 'Filter'};
+var _user$project$Types$FilterLocal = function (a) {
+	return {ctor: 'FilterLocal', _0: a};
+};
+var _user$project$Types$AddLocal = {ctor: 'AddLocal'};
+var _user$project$Types$Waiting = {ctor: 'Waiting'};
+var _user$project$Types$Init = {ctor: 'Init'};
+var _user$project$Types$Filters = {ctor: 'Filters'};
+var _user$project$Types$Navigator = {ctor: 'Navigator'};
+var _user$project$Types$ControlPanelState = function (a) {
+	return {ctor: 'ControlPanelState', _0: a};
+};
+var _user$project$Types$FilterTabMsg = function (a) {
+	return {ctor: 'FilterTabMsg', _0: a};
+};
+var _user$project$Types$ResetFilters = function (a) {
+	return {ctor: 'ResetFilters', _0: a};
+};
+var _user$project$Types$ApplyFiltersOnLocalGraph = function (a) {
+	return {ctor: 'ApplyFiltersOnLocalGraph', _0: a};
+};
+var _user$project$Types$ToggleFilter = F2(
+	function (a, b) {
+		return {ctor: 'ToggleFilter', _0: a, _1: b};
+	});
 var _user$project$Types$SetGraphState = function (a) {
 	return {ctor: 'SetGraphState', _0: a};
 };
-var _user$project$Types$SetBrowsedNode = function (a) {
-	return {ctor: 'SetBrowsedNode', _0: a};
+var _user$project$Types$SetPinnedElement = function (a) {
+	return {ctor: 'SetPinnedElement', _0: a};
+};
+var _user$project$Types$UnsetBrowsedElement = function (a) {
+	return {ctor: 'UnsetBrowsedElement', _0: a};
+};
+var _user$project$Types$SetBrowsedElement = function (a) {
+	return {ctor: 'SetBrowsedElement', _0: a};
 };
 var _user$project$Types$SetSearchNode = function (a) {
 	return {ctor: 'SetSearchNode', _0: a};
@@ -12730,9 +13709,17 @@ var _user$project$Types$JoinError = {ctor: 'JoinError'};
 var _user$project$Types$Join = {ctor: 'Join'};
 var _user$project$Types$SendGraph = {ctor: 'SendGraph'};
 var _user$project$Types$InitGraph = {ctor: 'InitGraph'};
+var _user$project$Types$ReceiveEdgeTypes = function (a) {
+	return {ctor: 'ReceiveEdgeTypes', _0: a};
+};
+var _user$project$Types$ReceiveNodeLabels = function (a) {
+	return {ctor: 'ReceiveNodeLabels', _0: a};
+};
 var _user$project$Types$ReceiveNodeLocalGraph = function (a) {
 	return {ctor: 'ReceiveNodeLocalGraph', _0: a};
 };
+var _user$project$Types$GetEdgeTypes = {ctor: 'GetEdgeTypes'};
+var _user$project$Types$GetNodeLabels = {ctor: 'GetNodeLabels'};
 var _user$project$Types$GetNodeLocalGraph = {ctor: 'GetNodeLocalGraph'};
 var _user$project$Types$HandleSendError = function (a) {
 	return {ctor: 'HandleSendError', _0: a};
@@ -12741,7 +13728,7 @@ var _user$project$Types$PhoenixMsg = function (a) {
 	return {ctor: 'PhoenixMsg', _0: a};
 };
 
-var _user$project$Accessors_Edge$getGenericEdgeData = function (edge) {
+var _user$project$Accessors_Edge$getGenericData = function (edge) {
 	var _p0 = edge.data;
 	if (_p0.ctor === 'InfluencedEdge') {
 		var _p1 = _p0._0;
@@ -12751,32 +13738,578 @@ var _user$project$Accessors_Edge$getGenericEdgeData = function (edge) {
 	}
 };
 var _user$project$Accessors_Edge$getType = function (edge) {
-	var _p2 = _user$project$Accessors_Edge$getGenericEdgeData(edge);
+	var _p2 = _user$project$Accessors_Edge$getGenericData(edge);
 	var edge_type = _p2.edge_type;
 	return edge_type;
 };
+var _user$project$Accessors_Edge$getId = function (edge) {
+	var _p3 = _user$project$Accessors_Edge$getGenericData(edge);
+	var id = _p3.id;
+	return id;
+};
+var _user$project$Accessors_Edge$setClasses = F2(
+	function (classes, edge) {
+		return _elm_lang$core$Native_Utils.update(
+			edge,
+			{
+				classes: _elm_lang$core$String$toLower(classes)
+			});
+	});
+var _user$project$Accessors_Edge$setClassesFromType = function (edge) {
+	return A2(
+		_user$project$Accessors_Edge$setClasses,
+		_user$project$Accessors_Edge$getType(edge),
+		edge);
+};
 
+var _user$project$Accessors_Node$extractGenericData = function (data) {
+	return A4(_user$project$Types$GenericNodeData, data.id, data.labels, data.name, data.parentNode);
+};
 var _user$project$Accessors_Node$getGenericData = function (node) {
 	var _p0 = node.data;
 	switch (_p0.ctor) {
-		case 'PersonNode':
-			var _p1 = _p0._0;
-			return A3(_user$project$Types$GenericNodeData, _p1.id, _p1.labels, _p1.name);
 		case 'GenericNode':
 			return _p0._0;
+		case 'InstitutionNode':
+			return _user$project$Accessors_Node$extractGenericData(_p0._0);
+		case 'LocationNode':
+			return _user$project$Accessors_Node$extractGenericData(_p0._0);
+		case 'PersonNode':
+			return _user$project$Accessors_Node$extractGenericData(_p0._0);
 		case 'PublicationNode':
-			var _p2 = _p0._0;
-			return A3(_user$project$Types$GenericNodeData, _p2.id, _p2.labels, _p2.name);
+			return _user$project$Accessors_Node$extractGenericData(_p0._0);
 		default:
-			var _p3 = _p0._0;
-			return A3(_user$project$Types$GenericNodeData, _p3.id, _p3.labels, _p3.name);
+			return _user$project$Accessors_Node$extractGenericData(_p0._0);
 	}
 };
+var _user$project$Accessors_Node$getId = function (node) {
+	var _p1 = _user$project$Accessors_Node$getGenericData(node);
+	var id = _p1.id;
+	return id;
+};
 var _user$project$Accessors_Node$getLabels = function (node) {
-	var _p4 = _user$project$Accessors_Node$getGenericData(node);
-	var labels = _p4.labels;
+	var _p2 = _user$project$Accessors_Node$getGenericData(node);
+	var labels = _p2.labels;
 	return labels;
 };
+var _user$project$Accessors_Node$setClasses = F2(
+	function ($class, node) {
+		return _elm_lang$core$Native_Utils.update(
+			node,
+			{
+				classes: _elm_lang$core$String$toLower($class)
+			});
+	});
+var _user$project$Accessors_Node$setClassesFromLabels = function (node) {
+	var classes = A2(
+		_elm_lang$core$String$join,
+		'',
+		_user$project$Accessors_Node$getLabels(node));
+	return A2(_user$project$Accessors_Node$setClasses, classes, node);
+};
+var _user$project$Accessors_Node$setParentNodeData = F2(
+	function (parentNode, nodeData) {
+		var _p3 = nodeData;
+		switch (_p3.ctor) {
+			case 'GenericNode':
+				return _user$project$Types$GenericNode(
+					_elm_lang$core$Native_Utils.update(
+						_p3._0,
+						{parentNode: parentNode}));
+			case 'InstitutionNode':
+				return _user$project$Types$InstitutionNode(
+					_elm_lang$core$Native_Utils.update(
+						_p3._0,
+						{parentNode: parentNode}));
+			case 'LocationNode':
+				return _user$project$Types$LocationNode(
+					_elm_lang$core$Native_Utils.update(
+						_p3._0,
+						{parentNode: parentNode}));
+			case 'PersonNode':
+				return _user$project$Types$PersonNode(
+					_elm_lang$core$Native_Utils.update(
+						_p3._0,
+						{parentNode: parentNode}));
+			case 'PublicationNode':
+				return _user$project$Types$PublicationNode(
+					_elm_lang$core$Native_Utils.update(
+						_p3._0,
+						{parentNode: parentNode}));
+			default:
+				return _user$project$Types$ValueNode(
+					_elm_lang$core$Native_Utils.update(
+						_p3._0,
+						{parentNode: parentNode}));
+		}
+	});
+var _user$project$Accessors_Node$setParentNode = F2(
+	function (parentNode, node) {
+		var _p4 = parentNode;
+		if (_p4.ctor === 'Just') {
+			var _p5 = _p4._0;
+			if (_elm_lang$core$Native_Utils.eq(
+				_p5.uuid,
+				_user$project$Accessors_Node$getGenericData(node).id)) {
+				return node;
+			} else {
+				var newNodeData = A2(
+					_user$project$Accessors_Node$setParentNodeData,
+					_elm_lang$core$Maybe$Just(_p5.uuid),
+					node.data);
+				var nodeData = node.data;
+				return _elm_lang$core$Native_Utils.update(
+					node,
+					{data: newNodeData});
+			}
+		} else {
+			return node;
+		}
+	});
+
+var _user$project$Accessors_Element$setParentNode = F2(
+	function (parentNode, element) {
+		var _p0 = element;
+		if (_p0.ctor === 'Node') {
+			return _user$project$Types$Node(
+				A2(_user$project$Accessors_Node$setParentNode, parentNode, _p0._0));
+		} else {
+			return _p0;
+		}
+	});
+var _user$project$Accessors_Element$setClasses = function (element) {
+	var _p1 = element;
+	if (_p1.ctor === 'Node') {
+		return _user$project$Types$Node(
+			_user$project$Accessors_Node$setClassesFromLabels(_p1._0));
+	} else {
+		return _user$project$Types$Edge(
+			_user$project$Accessors_Edge$setClassesFromType(_p1._0));
+	}
+};
+
+var _user$project$Accessors_Graph$isNode = function (element) {
+	var _p0 = element;
+	if (_p0.ctor === 'Node') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _user$project$Accessors_Graph$isEdge = function (element) {
+	return !_user$project$Accessors_Graph$isNode(element);
+};
+var _user$project$Accessors_Graph$edges = function (graph) {
+	var f = function (x) {
+		var _p1 = x;
+		if (_p1.ctor === 'Node') {
+			return _elm_lang$core$Maybe$Nothing;
+		} else {
+			return _elm_lang$core$Maybe$Just(_p1._0);
+		}
+	};
+	return A2(_elm_lang$core$List$filterMap, f, graph);
+};
+var _user$project$Accessors_Graph$getEdge = F2(
+	function (edgeId, graph) {
+		return _elm_lang$core$List$head(
+			A2(
+				_elm_lang$core$List$filter,
+				function (x) {
+					return _elm_lang$core$Native_Utils.eq(
+						_user$project$Accessors_Edge$getGenericData(x).id,
+						edgeId);
+				},
+				_user$project$Accessors_Graph$edges(graph)));
+	});
+var _user$project$Accessors_Graph$getFilteredEdges = F2(
+	function (filterNames, graph) {
+		return A2(
+			_elm_lang$core$List$map,
+			function (x) {
+				return _user$project$Accessors_Edge$getId(x);
+			},
+			A2(
+				_elm_lang$core$List$filter,
+				function (x) {
+					return A2(
+						_elm_lang$core$List$member,
+						_user$project$Accessors_Edge$getType(x),
+						filterNames);
+				},
+				_user$project$Accessors_Graph$edges(graph)));
+	});
+var _user$project$Accessors_Graph$nodes = function (graph) {
+	var f = function (x) {
+		var _p2 = x;
+		if (_p2.ctor === 'Node') {
+			return _elm_lang$core$Maybe$Just(_p2._0);
+		} else {
+			return _elm_lang$core$Maybe$Nothing;
+		}
+	};
+	return A2(_elm_lang$core$List$filterMap, f, graph);
+};
+var _user$project$Accessors_Graph$getNode = F2(
+	function (nodeId, graph) {
+		return _elm_lang$core$List$head(
+			A2(
+				_elm_lang$core$List$filter,
+				function (x) {
+					return _elm_lang$core$Native_Utils.eq(
+						_user$project$Accessors_Node$getGenericData(x).id,
+						nodeId);
+				},
+				_user$project$Accessors_Graph$nodes(graph)));
+	});
+var _user$project$Accessors_Graph$elementOf = F2(
+	function (element, graph) {
+		var _p3 = element;
+		if (_p3.ctor === 'Node') {
+			var nodeId = _user$project$Accessors_Node$getGenericData(_p3._0).id;
+			var filtered = A2(
+				_elm_lang$core$List$filter,
+				function (x) {
+					return _elm_lang$core$Native_Utils.eq(
+						_user$project$Accessors_Node$getGenericData(x).id,
+						nodeId);
+				},
+				_user$project$Accessors_Graph$nodes(graph));
+			return _elm_lang$core$Native_Utils.cmp(
+				_elm_lang$core$List$length(filtered),
+				0) > 0;
+		} else {
+			var edgeId = _user$project$Accessors_Edge$getGenericData(_p3._0).id;
+			var filtered = A2(
+				_elm_lang$core$List$filter,
+				function (x) {
+					return _elm_lang$core$Native_Utils.eq(
+						_user$project$Accessors_Edge$getGenericData(x).id,
+						edgeId);
+				},
+				_user$project$Accessors_Graph$edges(graph));
+			return _elm_lang$core$Native_Utils.cmp(
+				_elm_lang$core$List$length(filtered),
+				0) > 0;
+		}
+	});
+var _user$project$Accessors_Graph$substractGraph = F2(
+	function (receivedGraph, graph) {
+		return A2(
+			_elm_lang$core$List$filter,
+			function (x) {
+				return !A2(_user$project$Accessors_Graph$elementOf, x, graph);
+			},
+			receivedGraph);
+	});
+var _user$project$Accessors_Graph$getFilteredNodes = F2(
+	function (filterNames, graph) {
+		return A2(
+			_elm_lang$core$List$map,
+			function (x) {
+				return _user$project$Accessors_Node$getId(x);
+			},
+			A2(
+				_elm_lang$core$List$filter,
+				function (x) {
+					return A2(
+						_elm_lang$core$List$any,
+						function (x) {
+							return A2(_elm_lang$core$List$member, x, filterNames);
+						},
+						_user$project$Accessors_Node$getLabels(x));
+				},
+				_user$project$Accessors_Graph$nodes(graph)));
+	});
+var _user$project$Accessors_Graph$getFilteredElements = function (elementType) {
+	var _p4 = elementType;
+	if (_p4.ctor === 'NodeElt') {
+		return _user$project$Accessors_Graph$getFilteredNodes;
+	} else {
+		return _user$project$Accessors_Graph$getFilteredEdges;
+	}
+};
+var _user$project$Accessors_Graph$updateMetaData = F2(
+	function (parentNode, graph) {
+		return A2(
+			_elm_lang$core$List$map,
+			function (_p5) {
+				return A2(
+					_user$project$Accessors_Element$setParentNode,
+					parentNode,
+					_user$project$Accessors_Element$setClasses(_p5));
+			},
+			graph);
+	});
+
+var _user$project$Accessors_Operations$resetFilter = F2(
+	function (_p1, _p0) {
+		return true;
+	});
+var _user$project$Accessors_Operations$toggleFilter = function (visible) {
+	var _p2 = visible;
+	if (_p2.ctor === 'Just') {
+		return _elm_lang$core$Maybe$Just(!_p2._0);
+	} else {
+		return _elm_lang$core$Maybe$Just(false);
+	}
+};
+var _user$project$Accessors_Operations$setGraphSnapshot = F2(
+	function (snapshot, operations) {
+		var oldGraphOps = operations.graph;
+		var newGraphOps = _elm_lang$core$Native_Utils.update(
+			oldGraphOps,
+			{snapshot: snapshot});
+		return _elm_lang$core$Native_Utils.update(
+			operations,
+			{graph: newGraphOps});
+	});
+var _user$project$Accessors_Operations$setGraphData = F2(
+	function (graph, operations) {
+		var oldGraphOps = operations.graph;
+		var newGraphOps = _elm_lang$core$Native_Utils.update(
+			oldGraphOps,
+			{data: graph});
+		return _elm_lang$core$Native_Utils.update(
+			operations,
+			{graph: newGraphOps});
+	});
+var _user$project$Accessors_Operations$setGraphCurrentOperation = F2(
+	function (currentOpName, operations) {
+		var oldGraphOps = operations.graph;
+		var newGraphOps = _elm_lang$core$Native_Utils.update(
+			oldGraphOps,
+			{current: currentOpName});
+		return _elm_lang$core$Native_Utils.update(
+			operations,
+			{graph: newGraphOps});
+	});
+var _user$project$Accessors_Operations$getEdgeActiveFilters = function (operations) {
+	return _elm_lang$core$Dict$keys(
+		A2(
+			_elm_lang$core$Dict$filter,
+			F2(
+				function (_p3, visible) {
+					return !visible;
+				}),
+			operations.edge.filtered));
+};
+var _user$project$Accessors_Operations$getEdgeFilterState = F2(
+	function (filterName, operations) {
+		var _p4 = A2(_elm_lang$core$Dict$get, filterName, operations.edge.filtered);
+		if (_p4.ctor === 'Just') {
+			return _p4._0;
+		} else {
+			return true;
+		}
+	});
+var _user$project$Accessors_Operations$setEdgeFilters = F2(
+	function (newFilters, operations) {
+		var oldOps = operations.edge;
+		var newOps = _elm_lang$core$Native_Utils.update(
+			oldOps,
+			{filtered: newFilters});
+		return _elm_lang$core$Native_Utils.update(
+			operations,
+			{edge: newOps});
+	});
+var _user$project$Accessors_Operations$toggleEdgeFilterState = F2(
+	function (filterName, operations) {
+		var newFilters = A3(_elm_lang$core$Dict$update, filterName, _user$project$Accessors_Operations$toggleFilter, operations.edge.filtered);
+		return A2(_user$project$Accessors_Operations$setEdgeFilters, newFilters, operations);
+	});
+var _user$project$Accessors_Operations$resetEdgeFilters = function (operations) {
+	var newFilters = A2(_elm_lang$core$Dict$map, _user$project$Accessors_Operations$resetFilter, operations.edge.filtered);
+	return A2(_user$project$Accessors_Operations$setEdgeFilters, newFilters, operations);
+};
+var _user$project$Accessors_Operations$setPinnedEdge = F2(
+	function (newPinnedEdge, operations) {
+		var oldOps = operations.edge;
+		var newOps = _elm_lang$core$Native_Utils.update(
+			oldOps,
+			{pinned: newPinnedEdge});
+		return _elm_lang$core$Native_Utils.update(
+			operations,
+			{edge: newOps});
+	});
+var _user$project$Accessors_Operations$setBrowsedEdge = F2(
+	function (newBrowsedEdge, operations) {
+		var oldOps = operations.edge;
+		var newOps = _elm_lang$core$Native_Utils.update(
+			oldOps,
+			{browsed: newBrowsedEdge});
+		return _elm_lang$core$Native_Utils.update(
+			operations,
+			{edge: newOps});
+	});
+var _user$project$Accessors_Operations$getNodeActiveFilters = function (operations) {
+	return _elm_lang$core$Dict$keys(
+		A2(
+			_elm_lang$core$Dict$filter,
+			F2(
+				function (_p5, visible) {
+					return !visible;
+				}),
+			operations.node.filtered));
+};
+var _user$project$Accessors_Operations$getNodeFilterState = F2(
+	function (filterName, operations) {
+		var _p6 = A2(_elm_lang$core$Dict$get, filterName, operations.node.filtered);
+		if (_p6.ctor === 'Just') {
+			return _p6._0;
+		} else {
+			return true;
+		}
+	});
+var _user$project$Accessors_Operations$setNodeFilters = F2(
+	function (newNodeFilter, operations) {
+		var oldNodeOps = operations.node;
+		var newNodeOps = _elm_lang$core$Native_Utils.update(
+			oldNodeOps,
+			{filtered: newNodeFilter});
+		return _elm_lang$core$Native_Utils.update(
+			operations,
+			{node: newNodeOps});
+	});
+var _user$project$Accessors_Operations$toggleNodeFilterState = F2(
+	function (filterName, operations) {
+		var newFilters = A3(_elm_lang$core$Dict$update, filterName, _user$project$Accessors_Operations$toggleFilter, operations.node.filtered);
+		return A2(_user$project$Accessors_Operations$setNodeFilters, newFilters, operations);
+	});
+var _user$project$Accessors_Operations$resetNodeFilters = function (operations) {
+	var newFilters = A2(_elm_lang$core$Dict$map, _user$project$Accessors_Operations$resetFilter, operations.node.filtered);
+	return A2(_user$project$Accessors_Operations$setNodeFilters, newFilters, operations);
+};
+var _user$project$Accessors_Operations$resetElementFilters = function (operations) {
+	return function (_p7) {
+		return _user$project$Accessors_Operations$resetEdgeFilters(
+			_user$project$Accessors_Operations$resetNodeFilters(_p7));
+	}(operations);
+};
+var _user$project$Accessors_Operations$setSearchedNode = F2(
+	function (newSearchNode, operations) {
+		var oldNodeOps = operations.node;
+		var newNodeOps = _elm_lang$core$Native_Utils.update(
+			oldNodeOps,
+			{searched: newSearchNode});
+		return _elm_lang$core$Native_Utils.update(
+			operations,
+			{node: newNodeOps});
+	});
+var _user$project$Accessors_Operations$setPinnedNode = F2(
+	function (newPinnedNode, operations) {
+		var oldNodeOps = operations.node;
+		var newNodeOps = _elm_lang$core$Native_Utils.update(
+			oldNodeOps,
+			{pinned: newPinnedNode});
+		return _elm_lang$core$Native_Utils.update(
+			operations,
+			{node: newNodeOps});
+	});
+var _user$project$Accessors_Operations$setBrowsedNode = F2(
+	function (newBrowsedNode, operations) {
+		var oldNodeOps = operations.node;
+		var newNodeOps = _elm_lang$core$Native_Utils.update(
+			oldNodeOps,
+			{browsed: newBrowsedNode});
+		return _elm_lang$core$Native_Utils.update(
+			operations,
+			{node: newNodeOps});
+	});
+
+var _user$project$Accessors_Snapshot$elementState = F2(
+	function (elementType, snapshot) {
+		var _p0 = elementType;
+		if (_p0.ctor === 'NodeElt') {
+			return snapshot.node;
+		} else {
+			return snapshot.edge;
+		}
+	});
+var _user$project$Accessors_Snapshot$setElementState = F3(
+	function (elementType, state, snapshot) {
+		var _p1 = elementType;
+		if (_p1.ctor === 'NodeElt') {
+			return _elm_lang$core$Native_Utils.update(
+				snapshot,
+				{node: state});
+		} else {
+			return _elm_lang$core$Native_Utils.update(
+				snapshot,
+				{edge: state});
+		}
+	});
+var _user$project$Accessors_Snapshot$setElementFilters = F3(
+	function (elementType, elementFilters, snapshot) {
+		var oldEltState = A2(_user$project$Accessors_Snapshot$elementState, elementType, snapshot);
+		var newEltState = _elm_lang$core$Native_Utils.update(
+			oldEltState,
+			{filters: elementFilters});
+		return A3(_user$project$Accessors_Snapshot$setElementState, elementType, newEltState, snapshot);
+	});
+var _user$project$Accessors_Snapshot$setGraphSnapshot = F2(
+	function (graphSnapshot, snapshot) {
+		return _elm_lang$core$Native_Utils.update(
+			snapshot,
+			{graph: graphSnapshot.graph, description: graphSnapshot.description});
+	});
+var _user$project$Accessors_Snapshot$createEmpty = {
+	graph: {ctor: '[]'},
+	description: '',
+	node: {filters: _elm_lang$core$Dict$empty},
+	edge: {filters: _elm_lang$core$Dict$empty}
+};
+
+var _user$project$Accessors_Snapshots$getCurrent = _user$project$Utils_ZipList$current;
+var _user$project$Accessors_Snapshots$addNewSnapshot = F3(
+	function (graphSnapshot, operations, snapshots) {
+		var edgeFilters = operations.edge.filtered;
+		var nodeFilters = operations.node.filtered;
+		var newSnapshot = function (_p0) {
+			return A3(
+				_user$project$Accessors_Snapshot$setElementFilters,
+				_user$project$Types$NodeElt,
+				nodeFilters,
+				A3(
+					_user$project$Accessors_Snapshot$setElementFilters,
+					_user$project$Types$EdgeElt,
+					edgeFilters,
+					A2(_user$project$Accessors_Snapshot$setGraphSnapshot, graphSnapshot, _p0)));
+		}(_user$project$Accessors_Snapshot$createEmpty);
+		var _p1 = operations.graph.current;
+		switch (_p1.ctor) {
+			case 'Init':
+				return A2(_user$project$Utils_ZipList$update, newSnapshot, snapshots);
+			case 'FilterLocal':
+				return A2(_user$project$Utils_ZipList$update, newSnapshot, snapshots);
+			default:
+				return A2(_user$project$Utils_ZipList$add, newSnapshot, snapshots);
+		}
+	});
+var _user$project$Accessors_Snapshots$setElementFilters = F3(
+	function (elementType, elementFilters, snapshots) {
+		var newSnapshot = A3(
+			_user$project$Accessors_Snapshot$setElementFilters,
+			elementType,
+			elementFilters,
+			_user$project$Utils_ZipList$current(snapshots));
+		return A2(_user$project$Utils_ZipList$update, newSnapshot, snapshots);
+	});
+var _user$project$Accessors_Snapshots$setEdgeFilters = _user$project$Accessors_Snapshots$setElementFilters(_user$project$Types$EdgeElt);
+var _user$project$Accessors_Snapshots$setNodeFilters = _user$project$Accessors_Snapshots$setElementFilters(_user$project$Types$NodeElt);
+var _user$project$Accessors_Snapshots$init = function () {
+	var initial = A2(
+		_user$project$Accessors_Snapshot$setGraphSnapshot,
+		A2(
+			_user$project$Types$GraphSnapshot,
+			{ctor: '[]'},
+			'Init'),
+		_user$project$Accessors_Snapshot$createEmpty);
+	return A2(
+		_user$project$Utils_ZipList$init,
+		initial,
+		{ctor: '[]'});
+}();
 
 var _user$project$Decoders_Common$positionDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -12870,23 +14403,82 @@ var _user$project$Decoders_Edge$decoder = A4(
 									_elm_lang$core$Json_Decode$string,
 									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$EdgeType))))))))));
 
-var _user$project$Decoders_Node$commonDataDecoder = function (dataType) {
-	return A3(
+var _user$project$Decoders_Element$decodeElementType = function (elementType) {
+	var _p0 = elementType;
+	switch (_p0) {
+		case 'node':
+			return _elm_lang$core$Json_Decode$succeed(_user$project$Types$NodeElt);
+		case 'edge':
+			return _elm_lang$core$Json_Decode$succeed(_user$project$Types$EdgeElt);
+		default:
+			return _elm_lang$core$Json_Decode$fail(
+				A2(_elm_lang$core$Basics_ops['++'], 'Unknown type: ', _p0));
+	}
+};
+var _user$project$Decoders_Element$elementTypeDecoder = A2(_elm_lang$core$Json_Decode$andThen, _user$project$Decoders_Element$decodeElementType, _elm_lang$core$Json_Decode$string);
+var _user$project$Decoders_Element$filterDecoder = A2(
+	_elm_lang$core$Json_Decode$field,
+	'data',
+	_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string));
+var _user$project$Decoders_Element$pinnedDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'pin',
+	_elm_lang$core$Json_Decode$bool,
+	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'name',
+		'elementType',
+		_user$project$Decoders_Element$elementTypeDecoder,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$PinnedElement)));
+var _user$project$Decoders_Element$browsedDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'elementType',
+	_user$project$Decoders_Element$elementTypeDecoder,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'id',
 		_elm_lang$core$Json_Decode$string,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$BrowsedElement)));
+
+var _user$project$Decoders_Node$commonDataDecoder = function (dataType) {
+	return A4(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+		'parent-node',
+		_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+		_elm_lang$core$Maybe$Nothing,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'labels',
-			_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string),
+			'name',
+			_elm_lang$core$Json_Decode$string,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'id',
-				_elm_lang$core$Json_Decode$string,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(dataType))));
+				'labels',
+				_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string),
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'id',
+					_elm_lang$core$Json_Decode$string,
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(dataType)))));
 };
 var _user$project$Decoders_Node$genericDataDecoder = _user$project$Decoders_Node$commonDataDecoder(_user$project$Types$GenericNodeData);
 var _user$project$Decoders_Node$genericDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$GenericNode, _user$project$Decoders_Node$genericDataDecoder);
+var _user$project$Decoders_Node$institutionDataDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'type',
+	_elm_lang$core$Json_Decode$string,
+	_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$InstitutionNodeData));
+var _user$project$Decoders_Node$institutionDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$InstitutionNode, _user$project$Decoders_Node$institutionDataDecoder);
+var _user$project$Decoders_Node$locationDataDecoder = A4(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+	'long',
+	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$float),
+	_elm_lang$core$Maybe$Nothing,
+	A4(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+		'lat',
+		_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$float),
+		_elm_lang$core$Maybe$Nothing,
+		_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$LocationNodeData)));
+var _user$project$Decoders_Node$locationDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$LocationNode, _user$project$Decoders_Node$locationDataDecoder);
 var _user$project$Decoders_Node$personDataDecoder = A4(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
 	'externalLink',
@@ -12912,11 +14504,25 @@ var _user$project$Decoders_Node$personDataDecoder = A4(
 					_elm_lang$core$Json_Decode$string,
 					_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$PersonNodeData))))));
 var _user$project$Decoders_Node$personDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$PersonNode, _user$project$Decoders_Node$personDataDecoder);
-var _user$project$Decoders_Node$publicationDataDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'title',
+var _user$project$Decoders_Node$publicationDataDecoder = A4(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+	'externalLink',
 	_elm_lang$core$Json_Decode$string,
-	_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$PublicationNodeData));
+	'',
+	A4(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+		'internalLink',
+		_elm_lang$core$Json_Decode$string,
+		'',
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'titleFr',
+			_elm_lang$core$Json_Decode$string,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'title',
+				_elm_lang$core$Json_Decode$string,
+				_user$project$Decoders_Node$commonDataDecoder(_user$project$Types$PublicationNodeData)))));
 var _user$project$Decoders_Node$publicationDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$PublicationNode, _user$project$Decoders_Node$publicationDataDecoder);
 var _user$project$Decoders_Node$valueDataDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -12926,21 +14532,29 @@ var _user$project$Decoders_Node$valueDataDecoder = A3(
 var _user$project$Decoders_Node$valueDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Types$ValueNode, _user$project$Decoders_Node$valueDataDecoder);
 var _user$project$Decoders_Node$dataDecoderHelper = function (labels) {
 	var _p0 = labels;
-	_v0_3:
+	_v0_7:
 	do {
 		if ((_p0.ctor === '::') && (_p0._1.ctor === '[]')) {
 			switch (_p0._0) {
-				case 'Year':
-					return _user$project$Decoders_Node$valueDecoder;
+				case 'Continent':
+					return _user$project$Decoders_Node$locationDecoder;
+				case 'Country':
+					return _user$project$Decoders_Node$locationDecoder;
+				case 'Institution':
+					return _user$project$Decoders_Node$institutionDecoder;
 				case 'Person':
 					return _user$project$Decoders_Node$personDecoder;
 				case 'Publication':
 					return _user$project$Decoders_Node$publicationDecoder;
+				case 'Town':
+					return _user$project$Decoders_Node$locationDecoder;
+				case 'Year':
+					return _user$project$Decoders_Node$valueDecoder;
 				default:
-					break _v0_3;
+					break _v0_7;
 			}
 		} else {
-			break _v0_3;
+			break _v0_7;
 		}
 	} while(false);
 	return _user$project$Decoders_Node$genericDecoder;
@@ -13007,13 +14621,8 @@ var _user$project$Decoders_Graph$elementTypeDecoder = function (elementType) {
 		case 'edges':
 			return _user$project$Decoders_Graph$edgeDecoder;
 		default:
-			return _elm_lang$core$Native_Utils.crashCase(
-				'Decoders.Graph',
-				{
-					start: {line: 27, column: 5},
-					end: {line: 35, column: 32}
-				},
-				_p0)('BOOM!');
+			return _elm_lang$core$Json_Decode$fail(
+				A2(_elm_lang$core$Basics_ops['++'], 'Not a valid element type: ', _p0));
 	}
 };
 var _user$project$Decoders_Graph$elementDecoder = A2(
@@ -13021,6 +14630,15 @@ var _user$project$Decoders_Graph$elementDecoder = A2(
 	_user$project$Decoders_Graph$elementTypeDecoder,
 	A2(_elm_lang$core$Json_Decode$field, 'group', _elm_lang$core$Json_Decode$string));
 var _user$project$Decoders_Graph$decoder = _elm_lang$core$Json_Decode$list(_user$project$Decoders_Graph$elementDecoder);
+var _user$project$Decoders_Graph$snapshotDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'description',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'data',
+		_user$project$Decoders_Graph$decoder,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$GraphSnapshot)));
 var _user$project$Decoders_Graph$fromWsDecoder = A2(_elm_lang$core$Json_Decode$field, 'data', _user$project$Decoders_Graph$decoder);
 
 var _user$project$Decoders_Port$localGraphDecoder = A3(
@@ -13031,7 +14649,7 @@ var _user$project$Decoders_Port$localGraphDecoder = A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'uuid',
 		_elm_lang$core$Json_Decode$string,
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$SearchNode)));
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Types$SearchNodeType)));
 
 var _user$project$Encoders_Common$userEncoder = function (userToken) {
 	return _elm_lang$core$Json_Encode$object(
@@ -13203,6 +14821,14 @@ var _user$project$Encoders_Edge$encoder = function (edge) {
 		});
 };
 
+var _user$project$Encoders_Node$maybeStringEncoder = function (str) {
+	var _p0 = str;
+	if (_p0.ctor === 'Just') {
+		return _elm_lang$core$Json_Encode$string(_p0._0);
+	} else {
+		return _elm_lang$core$Json_Encode$null;
+	}
+};
 var _user$project$Encoders_Node$commonEncoder = function (data) {
 	return {
 		ctor: '::',
@@ -13226,7 +14852,15 @@ var _user$project$Encoders_Node$commonEncoder = function (data) {
 					_0: 'name',
 					_1: _elm_lang$core$Json_Encode$string(data.name)
 				},
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'parent-node',
+						_1: _user$project$Encoders_Node$maybeStringEncoder(data.parentNode)
+					},
+					_1: {ctor: '[]'}
+				}
 			}
 		}
 	};
@@ -13234,6 +14868,60 @@ var _user$project$Encoders_Node$commonEncoder = function (data) {
 var _user$project$Encoders_Node$genericEncoder = function (genericData) {
 	return _elm_lang$core$Json_Encode$object(
 		_user$project$Encoders_Node$commonEncoder(genericData));
+};
+var _user$project$Encoders_Node$institutionEncoder = function (institutionData) {
+	return _elm_lang$core$Json_Encode$object(
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_user$project$Encoders_Node$commonEncoder(institutionData),
+			{
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'type',
+					_1: _elm_lang$core$Json_Encode$string(institutionData.institution_type)
+				},
+				_1: {ctor: '[]'}
+			}));
+};
+var _user$project$Encoders_Node$locationEncoder = function (locationData) {
+	var longData = function () {
+		var _p1 = locationData.$long;
+		if (_p1.ctor === 'Just') {
+			return {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'long',
+					_1: _elm_lang$core$Json_Encode$float(_p1._0)
+				},
+				_1: {ctor: '[]'}
+			};
+		} else {
+			return {ctor: '[]'};
+		}
+	}();
+	var latData = function () {
+		var _p2 = locationData.lat;
+		if (_p2.ctor === 'Just') {
+			return {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'lat',
+					_1: _elm_lang$core$Json_Encode$float(_p2._0)
+				},
+				_1: {ctor: '[]'}
+			};
+		} else {
+			return {ctor: '[]'};
+		}
+	}();
+	return _elm_lang$core$Json_Encode$object(
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_user$project$Encoders_Node$commonEncoder(locationData),
+			A2(_elm_lang$core$Basics_ops['++'], latData, longData)));
 };
 var _user$project$Encoders_Node$personEncoder = function (personData) {
 	return _elm_lang$core$Json_Encode$object(
@@ -13254,7 +14942,31 @@ var _user$project$Encoders_Node$personEncoder = function (personData) {
 						_0: 'lastName',
 						_1: _elm_lang$core$Json_Encode$string(personData.lastName)
 					},
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'aka',
+							_1: _elm_lang$core$Json_Encode$string(personData.aka)
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'internalLink',
+								_1: _elm_lang$core$Json_Encode$string(personData.internalLink)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'externalLink',
+									_1: _elm_lang$core$Json_Encode$string(personData.externalLink)
+								},
+								_1: {ctor: '[]'}
+							}
+						}
+					}
 				}
 			}));
 };
@@ -13270,7 +14982,31 @@ var _user$project$Encoders_Node$publicationEncoder = function (publicationData) 
 					_0: 'title',
 					_1: _elm_lang$core$Json_Encode$string(publicationData.title)
 				},
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'titleFr',
+						_1: _elm_lang$core$Json_Encode$string(publicationData.titleFr)
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'internalLink',
+							_1: _elm_lang$core$Json_Encode$string(publicationData.internalLink)
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'externalLink',
+								_1: _elm_lang$core$Json_Encode$string(publicationData.externalLink)
+							},
+							_1: {ctor: '[]'}
+						}
+					}
+				}
 			}));
 };
 var _user$project$Encoders_Node$valueEncoder = function (valueData) {
@@ -13289,16 +15025,20 @@ var _user$project$Encoders_Node$valueEncoder = function (valueData) {
 			}));
 };
 var _user$project$Encoders_Node$dataEncoder = function (nodeData) {
-	var _p0 = nodeData;
-	switch (_p0.ctor) {
-		case 'PersonNode':
-			return _user$project$Encoders_Node$personEncoder(_p0._0);
+	var _p3 = nodeData;
+	switch (_p3.ctor) {
 		case 'GenericNode':
-			return _user$project$Encoders_Node$genericEncoder(_p0._0);
+			return _user$project$Encoders_Node$genericEncoder(_p3._0);
+		case 'InstitutionNode':
+			return _user$project$Encoders_Node$institutionEncoder(_p3._0);
+		case 'LocationNode':
+			return _user$project$Encoders_Node$locationEncoder(_p3._0);
+		case 'PersonNode':
+			return _user$project$Encoders_Node$personEncoder(_p3._0);
 		case 'PublicationNode':
-			return _user$project$Encoders_Node$publicationEncoder(_p0._0);
+			return _user$project$Encoders_Node$publicationEncoder(_p3._0);
 		default:
-			return _user$project$Encoders_Node$valueEncoder(_p0._0);
+			return _user$project$Encoders_Node$valueEncoder(_p3._0);
 	}
 };
 var _user$project$Encoders_Node$encoder = function (node) {
@@ -13391,6 +15131,45 @@ var _user$project$Encoders_Graph$encoder = function (graph) {
 		A2(_elm_lang$core$List$map, _user$project$Encoders_Graph$elementEncoder, graph));
 };
 
+var _user$project$Encoders_Operations$elementTypeEncoder = function (elementType) {
+	var _p0 = elementType;
+	if (_p0.ctor === 'NodeElt') {
+		return _elm_lang$core$Json_Encode$string('node');
+	} else {
+		return _elm_lang$core$Json_Encode$string('edge');
+	}
+};
+var _user$project$Encoders_Operations$visibleElementsEncoder = F3(
+	function (elementType, elementIds, visible) {
+		return _elm_lang$core$Json_Encode$object(
+			{
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'elementType',
+					_1: _user$project$Encoders_Operations$elementTypeEncoder(elementType)
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'elementIds',
+						_1: _elm_lang$core$Json_Encode$list(
+							A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, elementIds))
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'visible',
+							_1: _elm_lang$core$Json_Encode$bool(visible)
+						},
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+
 var _user$project$Ports$initGraph = _elm_lang$core$Native_Platform.outgoingPort(
 	'initGraph',
 	function (v) {
@@ -13401,198 +15180,398 @@ var _user$project$Ports$addToGraph = _elm_lang$core$Native_Platform.outgoingPort
 	function (v) {
 		return v;
 	});
+var _user$project$Ports$setVisibleElements = _elm_lang$core$Native_Platform.outgoingPort(
+	'setVisibleElements',
+	function (v) {
+		return v;
+	});
 var _user$project$Ports$getLocalGraph = _elm_lang$core$Native_Platform.incomingPort('getLocalGraph', _elm_lang$core$Json_Decode$value);
 var _user$project$Ports$newGraphState = _elm_lang$core$Native_Platform.incomingPort('newGraphState', _elm_lang$core$Json_Decode$value);
-var _user$project$Ports$displayNodeInfos = _elm_lang$core$Native_Platform.incomingPort('displayNodeInfos', _elm_lang$core$Json_Decode$value);
+var _user$project$Ports$hideElementInfos = _elm_lang$core$Native_Platform.incomingPort('hideElementInfos', _elm_lang$core$Json_Decode$value);
+var _user$project$Ports$pinNodeInfos = _elm_lang$core$Native_Platform.incomingPort('pinNodeInfos', _elm_lang$core$Json_Decode$bool);
+var _user$project$Ports$pinElementInfos = _elm_lang$core$Native_Platform.incomingPort('pinElementInfos', _elm_lang$core$Json_Decode$value);
+var _user$project$Ports$displayElementInfos = _elm_lang$core$Native_Platform.incomingPort('displayElementInfos', _elm_lang$core$Json_Decode$value);
 
-var _user$project$Main$viewInfoLine = F2(
-	function (label, value) {
+var _user$project$View$viewInfoLine = F3(
+	function (label, value, textType) {
+		var text_ = function () {
+			var _p0 = textType;
+			if (_p0.ctor === 'SimpleText') {
+				return _elm_lang$html$Html$text(value);
+			} else {
+				return A2(
+					_elm_lang$html$Html$a,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$href(value),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(value),
+						_1: {ctor: '[]'}
+					});
+			}
+		}();
 		return A2(
-			_rundis$elm_bootstrap$Bootstrap_Grid$row,
-			{ctor: '[]'},
+			_rundis$elm_bootstrap$Bootstrap_ListGroup$li,
+			{
+				ctor: '::',
+				_0: _rundis$elm_bootstrap$Bootstrap_ListGroup$attrs(
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('element-border-infos p-1 bg-white'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
 			{
 				ctor: '::',
 				_0: A2(
-					_rundis$elm_bootstrap$Bootstrap_Grid$col,
+					_rundis$elm_bootstrap$Bootstrap_Grid$row,
 					{
 						ctor: '::',
-						_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$lg,
+						_0: _rundis$elm_bootstrap$Bootstrap_Grid_Row$attrs(
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('border-bottom'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_rundis$elm_bootstrap$Bootstrap_Grid$col,
+							{
+								ctor: '::',
+								_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$lg,
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									A2(_elm_lang$core$Basics_ops['++'], label, ': ')),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_rundis$elm_bootstrap$Bootstrap_Grid$col,
+								{
+									ctor: '::',
+									_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$lg8,
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: text_,
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$View$viewNodeInfos = function (infoLines) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('p-1 m-0'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _rundis$elm_bootstrap$Bootstrap_ListGroup$ul(infoLines),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$View$edgeToDisplay = function (currentEdge) {
+	var _p1 = currentEdge.browsed;
+	if (_p1.ctor === 'Just') {
+		return _elm_lang$core$Maybe$Just(_p1._0);
+	} else {
+		return currentEdge.pinned;
+	}
+};
+var _user$project$View$nodeToDisplay = function (currentNode) {
+	var _p2 = currentNode.browsed;
+	if (_p2.ctor === 'Just') {
+		return _elm_lang$core$Maybe$Just(_p2._0);
+	} else {
+		return currentNode.pinned;
+	}
+};
+var _user$project$View$viewElementFilter = F2(
+	function (elementType, _p3) {
+		var _p4 = _p3;
+		var _p6 = _p4._1;
+		var _p5 = _p4._0;
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onClick(
+					A2(_user$project$Types$ToggleFilter, elementType, _p5)),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'text-disabled', _1: !_p6},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$i,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'link', _1: true},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'filter-list', _1: true},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'fa fa-eye', _1: _p6},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'fa fa-eye-slash', _1: !_p6},
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html$text(
-							A2(_elm_lang$core$Basics_ops['++'], label, ': ')),
+							A2(_elm_lang$core$Basics_ops['++'], ' ', _p5)),
 						_1: {ctor: '[]'}
 					}),
-				_1: {
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$View$viewElementFilters = F2(
+	function (elementType, elementFilters) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('p-1'),
+				_1: {ctor: '[]'}
+			},
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
 					ctor: '::',
 					_0: A2(
-						_rundis$elm_bootstrap$Bootstrap_Grid$col,
+						_elm_lang$html$Html$button,
 						{
 							ctor: '::',
-							_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$lg8,
-							_1: {ctor: '[]'}
+							_0: _elm_lang$html$Html_Attributes$class('btn btn-secondary'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(
+									_user$project$Types$ResetFilters(elementType)),
+								_1: {ctor: '[]'}
+							}
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(value),
+							_0: _elm_lang$html$Html$text('Tout voir'),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
-				}
+				},
+				A2(
+					_elm_lang$core$List$map,
+					_user$project$View$viewElementFilter(elementType),
+					_elm_lang$core$Dict$toList(elementFilters))));
+	});
+var _user$project$View$viewTabFilterItems = F2(
+	function (elementType, elementFilters) {
+		var data = function () {
+			var _p7 = elementType;
+			if (_p7.ctor === 'NodeElt') {
+				return {title: 'Noeuds', id: 'filter-node', linkClass: 'node', bgClass: 'bg-node'};
+			} else {
+				return {title: 'Relations', id: 'filter-edge', linkClass: 'edge', bgClass: 'bg-edge'};
+			}
+		}();
+		return _rundis$elm_bootstrap$Bootstrap_Tab$item(
+			{
+				id: data.id,
+				link: A2(
+					_rundis$elm_bootstrap$Bootstrap_Tab$link,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class(
+							A2(_elm_lang$core$Basics_ops['++'], 'ml-1 text-dark nav-filter-', data.linkClass)),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(data.title),
+						_1: {ctor: '[]'}
+					}),
+				pane: A2(
+					_rundis$elm_bootstrap$Bootstrap_Tab$pane,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class(
+							A2(_elm_lang$core$Basics_ops['++'], 'p1 rounded-bottom filter-pane ', data.bgClass)),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(_user$project$View$viewElementFilters, elementType, elementFilters),
+						_1: {ctor: '[]'}
+					})
 			});
 	});
-var _user$project$Main$viewNodeLabel = function (labels) {
+var _user$project$View$viewTabFilters = function (model) {
 	return A2(
-		_user$project$Main$viewInfoLine,
-		'Label',
-		A2(_elm_lang$core$String$join, ',', labels));
-};
-var _user$project$Main$viewValueNodeData = function (nodeData) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: _user$project$Main$viewNodeLabel(nodeData.labels),
-			_1: {
+		_rundis$elm_bootstrap$Bootstrap_Tab$view,
+		model.filterTabState,
+		A2(
+			_rundis$elm_bootstrap$Bootstrap_Tab$items,
+			{
 				ctor: '::',
-				_0: A2(
-					_user$project$Main$viewInfoLine,
-					'Valeur',
-					_elm_lang$core$Basics$toString(nodeData.value)),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Main$viewPublicationNodeData = function (nodeData) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: _user$project$Main$viewNodeLabel(nodeData.labels),
-			_1: {
-				ctor: '::',
-				_0: A2(_user$project$Main$viewInfoLine, 'Titre', nodeData.title),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Main$viewPersonNodeData = function (nodeData) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: _user$project$Main$viewNodeLabel(nodeData.labels),
-			_1: {
-				ctor: '::',
-				_0: A2(_user$project$Main$viewInfoLine, 'Prénom', nodeData.firstName),
+				_0: A2(_user$project$View$viewTabFilterItems, _user$project$Types$NodeElt, model.operations.node.filtered),
 				_1: {
 					ctor: '::',
-					_0: A2(_user$project$Main$viewInfoLine, 'Nom', nodeData.lastName),
-					_1: {
-						ctor: '::',
-						_0: A2(_user$project$Main$viewInfoLine, 'Pseudonymes', nodeData.aka),
-						_1: {
-							ctor: '::',
-							_0: A2(_user$project$Main$viewInfoLine, 'Lien Ars Margica', nodeData.internalLink),
-							_1: {
-								ctor: '::',
-								_0: A2(_user$project$Main$viewInfoLine, 'Lien externe', nodeData.externalLink),
-								_1: {ctor: '[]'}
-							}
-						}
-					}
+					_0: A2(_user$project$View$viewTabFilterItems, _user$project$Types$EdgeElt, model.operations.edge.filtered),
+					_1: {ctor: '[]'}
 				}
-			}
-		});
+			},
+			_rundis$elm_bootstrap$Bootstrap_Tab$config(_user$project$Types$FilterTabMsg)));
 };
-var _user$project$Main$viewGenericNodeData = function (nodeData) {
+var _user$project$View$viewPanelFilters = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
-		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _user$project$Main$viewNodeLabel(nodeData.labels),
+			_0: _elm_lang$html$Html_Attributes$id('panel-filters'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('p-1 collapse'),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'role', 'tabpanel'),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _user$project$View$viewTabFilters(model),
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Main$viewNodeData = function (nodetoDisplay) {
-	var dataToDisplay = function () {
-		var _p0 = nodetoDisplay;
-		if (_p0.ctor === 'Nothing') {
-			return A2(
-				_elm_lang$html$Html$div,
-				{ctor: '[]'},
-				{ctor: '[]'});
-		} else {
-			var _p1 = _p0._0.data;
-			switch (_p1.ctor) {
-				case 'GenericNode':
-					return _user$project$Main$viewGenericNodeData(_p1._0);
-				case 'PersonNode':
-					return _user$project$Main$viewPersonNodeData(_p1._0);
-				case 'PublicationNode':
-					return _user$project$Main$viewPublicationNodeData(_p1._0);
-				default:
-					return _user$project$Main$viewValueNodeData(_p1._0);
-			}
-		}
-	}();
-	return _rundis$elm_bootstrap$Bootstrap_Card$view(
-		A3(
-			_rundis$elm_bootstrap$Bootstrap_Card$block,
+var _user$project$View$viewPanelTitle = F5(
+	function (model, panel, title, panelId, isExpanded) {
+		return A2(
+			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _rundis$elm_bootstrap$Bootstrap_Card$blockAttrs(
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('node-infos'),
-						_1: {ctor: '[]'}
-					}),
+				_0: _elm_lang$html$Html_Attributes$class('rounded-top control-panel-title p-1'),
 				_1: {ctor: '[]'}
 			},
 			{
 				ctor: '::',
 				_0: A2(
-					_rundis$elm_bootstrap$Bootstrap_Card$text,
-					{ctor: '[]'},
+					_elm_lang$html$Html$a,
 					{
 						ctor: '::',
-						_0: dataToDisplay,
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-toggle', 'collapse'),
+						_1: {
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-parent', 'control-panels'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$href(
+									A2(_elm_lang$core$Basics_ops['++'], '#', panelId)),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html_Attributes$attribute,
+										'aria-expanded',
+										_elm_lang$core$Basics$toString(isExpanded)),
+									_1: {
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-controls', panelId),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onClick(
+												_user$project$Types$ControlPanelState(panel)),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$i,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$classList(
+									{
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'fa fa-angle-down link',
+											_1: _elm_lang$core$Native_Utils.eq(
+												A2(
+													_elm_lang$core$Dict$get,
+													_elm_lang$core$Basics$toString(panel),
+													model.controlPanelsState),
+												_elm_lang$core$Maybe$Just(true))
+										},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'fa fa-angle-right link',
+												_1: _elm_lang$core$Native_Utils.eq(
+													A2(
+														_elm_lang$core$Dict$get,
+														_elm_lang$core$Basics$toString(panel),
+														model.controlPanelsState),
+													_elm_lang$core$Maybe$Just(false))
+											},
+											_1: {ctor: '[]'}
+										}
+									}),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									A2(_elm_lang$core$Basics_ops['++'], ' ', title)),
+								_1: {ctor: '[]'}
+							}),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
-			},
-			A3(
-				_rundis$elm_bootstrap$Bootstrap_Card$header,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('text-center'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$h5,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Node infos'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				},
-				_rundis$elm_bootstrap$Bootstrap_Card$config(
-					{ctor: '[]'}))));
-};
-var _user$project$Main$viewError = function (errorMessage) {
+			});
+	});
+var _user$project$View$viewError = function (errorMessage) {
 	var div_ = function () {
-		var _p2 = errorMessage;
-		if (_p2.ctor === 'Nothing') {
+		var _p8 = errorMessage;
+		if (_p8.ctor === 'Nothing') {
 			return A2(
 				_elm_lang$html$Html$div,
 				{ctor: '[]'},
@@ -13615,7 +15594,7 @@ var _user$project$Main$viewError = function (errorMessage) {
 							_0: _rundis$elm_bootstrap$Bootstrap_Alert$danger(
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(_p2._0),
+									_0: _elm_lang$html$Html$text(_p8._0),
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
@@ -13626,43 +15605,419 @@ var _user$project$Main$viewError = function (errorMessage) {
 	}();
 	return div_;
 };
-var _user$project$Main$view = function (model) {
+var _user$project$View$Url = {ctor: 'Url'};
+var _user$project$View$viewInfoLineUrl = F2(
+	function (label, value) {
+		return A3(_user$project$View$viewInfoLine, label, value, _user$project$View$Url);
+	});
+var _user$project$View$SimpleText = {ctor: 'SimpleText'};
+var _user$project$View$viewInfoLineText = F2(
+	function (label, value) {
+		return A3(_user$project$View$viewInfoLine, label, value, _user$project$View$SimpleText);
+	});
+var _user$project$View$viewEdgeType = function (edge_type) {
+	return A2(_user$project$View$viewInfoLineText, 'Type', edge_type);
+};
+var _user$project$View$viewGenericEdgeData = function (edgeData) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('p-1 m-0'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _rundis$elm_bootstrap$Bootstrap_ListGroup$ul(
+				{
+					ctor: '::',
+					_0: _user$project$View$viewEdgeType(edgeData.edge_type),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$View$viewInfluencedEdgeData = function (edgeData) {
+	return _user$project$View$viewNodeInfos(
+		{
+			ctor: '::',
+			_0: _user$project$View$viewEdgeType(edgeData.edge_type),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_user$project$View$viewInfoLineText,
+					'Force',
+					_elm_lang$core$Basics$toString(edgeData.strength)),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$View$viewEdgeData = function (edgeToDisplay) {
+	var dataToDisplay = function () {
+		var _p9 = edgeToDisplay;
+		if (_p9.ctor === 'Nothing') {
+			return A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{ctor: '[]'});
+		} else {
+			var _p10 = _p9._0.data;
+			if (_p10.ctor === 'GenericEdge') {
+				return _user$project$View$viewGenericEdgeData(_p10._0);
+			} else {
+				return _user$project$View$viewInfluencedEdgeData(_p10._0);
+			}
+		}
+	}();
+	return _rundis$elm_bootstrap$Bootstrap_Card$view(
+		A3(
+			_rundis$elm_bootstrap$Bootstrap_Card$block,
+			{
+				ctor: '::',
+				_0: _rundis$elm_bootstrap$Bootstrap_Card$blockAttrs(
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('element-infos'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_rundis$elm_bootstrap$Bootstrap_Card$text,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: dataToDisplay,
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			A3(
+				_rundis$elm_bootstrap$Bootstrap_Card$header,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('text-center bg-edge p-0'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$h5,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Relation'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				},
+				_rundis$elm_bootstrap$Bootstrap_Card$config(
+					{
+						ctor: '::',
+						_0: _rundis$elm_bootstrap$Bootstrap_Card$attrs(
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('border-edge m-1 bg-edge'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}))));
+};
+var _user$project$View$viewNodeLabel = function (labels) {
+	return A2(
+		_user$project$View$viewInfoLineText,
+		'Label',
+		A2(_elm_lang$core$String$join, ',', labels));
+};
+var _user$project$View$viewGenericNodeData = function (nodeData) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('p-1 m-0'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _rundis$elm_bootstrap$Bootstrap_ListGroup$ul(
+				{
+					ctor: '::',
+					_0: _user$project$View$viewNodeLabel(nodeData.labels),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$View$viewInstitutionNodeData = function (nodeData) {
+	return _user$project$View$viewNodeInfos(
+		{
+			ctor: '::',
+			_0: _user$project$View$viewNodeLabel(nodeData.labels),
+			_1: {
+				ctor: '::',
+				_0: A2(_user$project$View$viewInfoLineText, 'Type', nodeData.institution_type),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$View$viewLocationNodeData = function (nodeData) {
+	var $long = function () {
+		var _p11 = nodeData.$long;
+		if (_p11.ctor === 'Just') {
+			return _elm_lang$core$Basics$toString(_p11._0);
+		} else {
+			return '';
+		}
+	}();
+	var lat = function () {
+		var _p12 = nodeData.lat;
+		if (_p12.ctor === 'Just') {
+			return _elm_lang$core$Basics$toString(_p12._0);
+		} else {
+			return '';
+		}
+	}();
+	return _user$project$View$viewNodeInfos(
+		{
+			ctor: '::',
+			_0: _user$project$View$viewNodeLabel(nodeData.labels),
+			_1: {
+				ctor: '::',
+				_0: A2(_user$project$View$viewInfoLineText, 'Latitude', lat),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$View$viewInfoLineText, 'Longitude', $long),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$View$viewPersonNodeData = function (nodeData) {
+	return _user$project$View$viewNodeInfos(
+		{
+			ctor: '::',
+			_0: _user$project$View$viewNodeLabel(nodeData.labels),
+			_1: {
+				ctor: '::',
+				_0: A2(_user$project$View$viewInfoLineText, 'Prénom', nodeData.firstName),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$View$viewInfoLineText, 'Nom', nodeData.lastName),
+					_1: {
+						ctor: '::',
+						_0: A2(_user$project$View$viewInfoLineText, 'Pseudonymes', nodeData.aka),
+						_1: {
+							ctor: '::',
+							_0: A2(_user$project$View$viewInfoLineUrl, 'Lien Ars Margica', nodeData.internalLink),
+							_1: {
+								ctor: '::',
+								_0: A2(_user$project$View$viewInfoLineUrl, 'Lien externe', nodeData.externalLink),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			}
+		});
+};
+var _user$project$View$viewPublicationNodeData = function (nodeData) {
+	return _user$project$View$viewNodeInfos(
+		{
+			ctor: '::',
+			_0: _user$project$View$viewNodeLabel(nodeData.labels),
+			_1: {
+				ctor: '::',
+				_0: A2(_user$project$View$viewInfoLineText, 'Titre', nodeData.title),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$View$viewInfoLineText, 'TitreFr', nodeData.titleFr),
+					_1: {
+						ctor: '::',
+						_0: A2(_user$project$View$viewInfoLineUrl, 'Lien Ars Margica', nodeData.internalLink),
+						_1: {
+							ctor: '::',
+							_0: A2(_user$project$View$viewInfoLineUrl, 'Lien externe', nodeData.externalLink),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			}
+		});
+};
+var _user$project$View$viewValueNodeData = function (nodeData) {
+	return _user$project$View$viewNodeInfos(
+		{
+			ctor: '::',
+			_0: _user$project$View$viewNodeLabel(nodeData.labels),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_user$project$View$viewInfoLineText,
+					'Valeur',
+					_elm_lang$core$Basics$toString(nodeData.value)),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$View$viewNodeData = function (nodetoDisplay) {
+	var dataToDisplay = function () {
+		var _p13 = nodetoDisplay;
+		if (_p13.ctor === 'Nothing') {
+			return A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{ctor: '[]'});
+		} else {
+			var _p14 = _p13._0.data;
+			switch (_p14.ctor) {
+				case 'GenericNode':
+					return _user$project$View$viewGenericNodeData(_p14._0);
+				case 'InstitutionNode':
+					return _user$project$View$viewInstitutionNodeData(_p14._0);
+				case 'LocationNode':
+					return _user$project$View$viewLocationNodeData(_p14._0);
+				case 'PersonNode':
+					return _user$project$View$viewPersonNodeData(_p14._0);
+				case 'PublicationNode':
+					return _user$project$View$viewPublicationNodeData(_p14._0);
+				default:
+					return _user$project$View$viewValueNodeData(_p14._0);
+			}
+		}
+	}();
+	return _rundis$elm_bootstrap$Bootstrap_Card$view(
+		A3(
+			_rundis$elm_bootstrap$Bootstrap_Card$block,
+			{
+				ctor: '::',
+				_0: _rundis$elm_bootstrap$Bootstrap_Card$blockAttrs(
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('element-infos'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_rundis$elm_bootstrap$Bootstrap_Card$text,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: dataToDisplay,
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			A3(
+				_rundis$elm_bootstrap$Bootstrap_Card$header,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('text-center bg-node p-0'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$h5,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Noeud'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				},
+				_rundis$elm_bootstrap$Bootstrap_Card$config(
+					{
+						ctor: '::',
+						_0: _rundis$elm_bootstrap$Bootstrap_Card$attrs(
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('border-node m-1 bg-node'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}))));
+};
+var _user$project$View$viewPanelNavigator = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('panel-navigator'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('control-panel-navigator collapse show'),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'role', 'tabpanel'),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _user$project$View$viewNodeData(
+				_user$project$View$nodeToDisplay(model.operations.node)),
+			_1: {
+				ctor: '::',
+				_0: _user$project$View$viewEdgeData(
+					_user$project$View$edgeToDisplay(model.operations.edge)),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$View$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _user$project$Main$viewError(model.errorMessage),
+			_0: _user$project$View$viewError(model.errorMessage),
 			_1: {
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$div,
+					_rundis$elm_bootstrap$Bootstrap_Grid$row,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('row bg-silver rounded fill'),
+						_0: _rundis$elm_bootstrap$Bootstrap_Grid_Row$attrs(
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('bg-silver rounded fill'),
+								_1: {ctor: '[]'}
+							}),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$div,
+							_rundis$elm_bootstrap$Bootstrap_Grid$col,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('col-lg-9'),
+								_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$lg9,
 								_1: {ctor: '[]'}
 							},
 							{
 								ctor: '::',
 								_0: A2(
-									_elm_lang$html$Html$div,
+									_rundis$elm_bootstrap$Bootstrap_Grid$row,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('row border border-primary cy-graph'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$id('cy'),
-											_1: {ctor: '[]'}
-										}
+										_0: _rundis$elm_bootstrap$Bootstrap_Grid_Row$attrs(
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('cy-graph'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$id('cy'),
+													_1: {ctor: '[]'}
+												}
+											}),
+										_1: {ctor: '[]'}
 									},
 									{ctor: '[]'}),
 								_1: {ctor: '[]'}
@@ -13670,26 +16025,26 @@ var _user$project$Main$view = function (model) {
 						_1: {
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$div,
+								_rundis$elm_bootstrap$Bootstrap_Grid$col,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('col-lg-3 bg-gray rounded-right'),
-									_1: {ctor: '[]'}
+									_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$lg3,
+									_1: {
+										ctor: '::',
+										_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$attrs(
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('bg-gray rounded-right'),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}
 								},
 								{
 									ctor: '::',
 									_0: A2(
 										_rundis$elm_bootstrap$Bootstrap_Grid$row,
-										{
-											ctor: '::',
-											_0: _rundis$elm_bootstrap$Bootstrap_Grid_Row$attrs(
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('rounded bg-secondary'),
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										},
+										{ctor: '[]'},
 										{
 											ctor: '::',
 											_0: A2(
@@ -13697,38 +16052,56 @@ var _user$project$Main$view = function (model) {
 												{
 													ctor: '::',
 													_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$lg12,
-													_1: {ctor: '[]'}
+													_1: {
+														ctor: '::',
+														_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$attrs(
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$class('p-0'),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$id('control-panels'),
+																	_1: {
+																		ctor: '::',
+																		_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-children', 'cpanel'),
+																		_1: {ctor: '[]'}
+																	}
+																}
+															}),
+														_1: {ctor: '[]'}
+													}
 												},
 												{
 													ctor: '::',
-													_0: _elm_lang$html$Html$text('Browse'),
+													_0: A2(
+														_elm_lang$html$Html$div,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('cpanels'),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: A5(_user$project$View$viewPanelTitle, model, _user$project$Types$Navigator, 'Navigateur', 'panel-navigator', true),
+															_1: {
+																ctor: '::',
+																_0: _user$project$View$viewPanelNavigator(model),
+																_1: {
+																	ctor: '::',
+																	_0: A5(_user$project$View$viewPanelTitle, model, _user$project$Types$Filters, 'Filtres', 'panel-filters', false),
+																	_1: {
+																		ctor: '::',
+																		_0: _user$project$View$viewPanelFilters(model),
+																		_1: {ctor: '[]'}
+																	}
+																}
+															}
+														}),
 													_1: {ctor: '[]'}
 												}),
 											_1: {ctor: '[]'}
 										}),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_rundis$elm_bootstrap$Bootstrap_Grid$row,
-											{ctor: '[]'},
-											{
-												ctor: '::',
-												_0: A2(
-													_rundis$elm_bootstrap$Bootstrap_Grid$col,
-													{
-														ctor: '::',
-														_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$lg12,
-														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: _user$project$Main$viewNodeData(model.browsedNode),
-														_1: {ctor: '[]'}
-													}),
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
-									}
+									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
 						}
@@ -13737,86 +16110,176 @@ var _user$project$Main$view = function (model) {
 			}
 		});
 };
-var _user$project$Main$subscriptions = function (model) {
+
+var _user$project$Subscriptions$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$batch(
 		{
 			ctor: '::',
 			_0: _user$project$Ports$getLocalGraph(
-				function (_p3) {
+				function (_p0) {
 					return _user$project$Types$SetSearchNode(
-						A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Port$localGraphDecoder, _p3));
+						A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Port$localGraphDecoder, _p0));
 				}),
 			_1: {
 				ctor: '::',
 				_0: _user$project$Ports$newGraphState(
-					function (_p4) {
+					function (_p1) {
 						return _user$project$Types$SetGraphState(
-							A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Graph$decoder, _p4));
+							A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Graph$snapshotDecoder, _p1));
 					}),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Ports$displayNodeInfos(
-						function (_p5) {
-							return _user$project$Types$SetBrowsedNode(
-								A2(_elm_lang$core$Json_Decode$decodeValue, _elm_lang$core$Json_Decode$string, _p5));
+					_0: _user$project$Ports$displayElementInfos(
+						function (_p2) {
+							return _user$project$Types$SetBrowsedElement(
+								A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Element$browsedDecoder, _p2));
 						}),
 					_1: {
 						ctor: '::',
-						_0: A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$listen, model.phxSocket, _user$project$Types$PhoenixMsg),
-						_1: {ctor: '[]'}
+						_0: _user$project$Ports$hideElementInfos(
+							function (_p3) {
+								return _user$project$Types$UnsetBrowsedElement(
+									A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Element$elementTypeDecoder, _p3));
+							}),
+						_1: {
+							ctor: '::',
+							_0: _user$project$Ports$pinElementInfos(
+								function (_p4) {
+									return _user$project$Types$SetPinnedElement(
+										A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Element$pinnedDecoder, _p4));
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$listen, model.phxSocket, _user$project$Types$PhoenixMsg),
+								_1: {ctor: '[]'}
+							}
+						}
 					}
 				}
 			}
 		});
 };
-var _user$project$Main$addEdgeClasses = function (edge) {
-	var classes = _elm_lang$core$String$toLower(
-		_user$project$Accessors_Edge$getType(edge));
-	return _user$project$Types$Edge(
-		_elm_lang$core$Native_Utils.update(
-			edge,
-			{classes: classes}));
-};
-var _user$project$Main$addNodeClasses = function (node) {
-	var classes = _elm_lang$core$String$toLower(
-		A2(
-			_elm_lang$core$String$join,
-			'',
-			_user$project$Accessors_Node$getLabels(node)));
-	return _user$project$Types$Node(
-		_elm_lang$core$Native_Utils.update(
-			node,
-			{classes: classes}));
-};
-var _user$project$Main$addClass = function (element) {
-	var _p6 = element;
-	if (_p6.ctor === 'Node') {
-		return _user$project$Main$addNodeClasses(_p6._0);
+
+var _user$project$Main$updatePinnedNode = F2(
+	function (element, model) {
+		var pinnedNode = function () {
+			var _p0 = element.pin;
+			if (_p0 === true) {
+				return model.operations.node.browsed;
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
+		}();
+		var newOps = A2(_user$project$Accessors_Operations$setPinnedNode, pinnedNode, model.operations);
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{operations: newOps});
+	});
+var _user$project$Main$updatePinnedEdge = F2(
+	function (element, model) {
+		var pinnedEdge = function () {
+			var _p1 = element.pin;
+			if (_p1 === true) {
+				return model.operations.edge.browsed;
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
+		}();
+		var newOps = A2(_user$project$Accessors_Operations$setPinnedEdge, pinnedEdge, model.operations);
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{operations: newOps});
+	});
+var _user$project$Main$updateBrowsedNode = F2(
+	function (element, model) {
+		var browsedNode = A2(
+			_user$project$Accessors_Graph$getNode,
+			element.id,
+			_user$project$Accessors_Snapshots$getCurrent(model.snapshots).graph);
+		var newOps = A2(_user$project$Accessors_Operations$setBrowsedNode, browsedNode, model.operations);
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{operations: newOps});
+	});
+var _user$project$Main$updateBrowsedEdge = F2(
+	function (element, model) {
+		var browsedEdge = A2(
+			_user$project$Accessors_Graph$getEdge,
+			element.id,
+			_user$project$Accessors_Snapshots$getCurrent(model.snapshots).graph);
+		var newOps = A2(_user$project$Accessors_Operations$setBrowsedEdge, browsedEdge, model.operations);
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{operations: newOps});
+	});
+var _user$project$Main$errorMessage = F2(
+	function (message, model) {
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					errorMessage: _elm_lang$core$Maybe$Just(message)
+				}),
+			_1: _elm_lang$core$Platform_Cmd$none
+		};
+	});
+var _user$project$Main$toggleVisible = function (visible) {
+	var _p2 = visible;
+	if (_p2.ctor === 'Just') {
+		return _elm_lang$core$Maybe$Just(!_p2._0);
 	} else {
-		return _user$project$Main$addEdgeClasses(_p6._0);
+		return _elm_lang$core$Maybe$Just(false);
 	}
-};
-var _user$project$Main$manageMetaData = function (graph) {
-	return A2(_elm_lang$core$List$map, _user$project$Main$addClass, graph);
 };
 var _user$project$Main$joinChannel = A2(
 	_elm_lang$core$Task$perform,
 	_elm_lang$core$Basics$always(_user$project$Types$Join),
 	_elm_lang$core$Task$succeed(
 		{ctor: '_Tuple0'}));
+var _user$project$Main$initControlPanelsState = _elm_lang$core$Dict$fromList(
+	{
+		ctor: '::',
+		_0: {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Basics$toString(_user$project$Types$Navigator),
+			_1: true
+		},
+		_1: {
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Basics$toString(_user$project$Types$Filters),
+				_1: false
+			},
+			_1: {ctor: '[]'}
+		}
+	});
+var _user$project$Main$initOperations = function (flags) {
+	return {
+		node: {
+			searched: _elm_lang$core$Maybe$Just(
+				{uuid: flags.originNodeUuid, labels: flags.originNodeLabels}),
+			browsed: _elm_lang$core$Maybe$Nothing,
+			pinned: _elm_lang$core$Maybe$Nothing,
+			filtered: _elm_lang$core$Dict$empty
+		},
+		graph: {data: _elm_lang$core$Maybe$Nothing, current: _user$project$Types$Init, snapshot: _elm_lang$core$Maybe$Nothing},
+		edge: {browsed: _elm_lang$core$Maybe$Nothing, pinned: _elm_lang$core$Maybe$Nothing, filtered: _elm_lang$core$Dict$empty}
+	};
+};
 var _user$project$Main$init = function (flags) {
 	return {
 		ctor: '_Tuple2',
 		_0: {
 			phxSocket: _fbonetti$elm_phoenix_socket$Phoenix_Socket$init(flags.socketUrl),
-			graph: {ctor: '[]'},
 			socketUrl: flags.socketUrl,
-			initGraph: true,
-			searchNode: _elm_lang$core$Maybe$Just(
-				{uuid: flags.originNodeUuid, labels: flags.originNodeLabels}),
-			browsedNode: _elm_lang$core$Maybe$Nothing,
 			errorMessage: _elm_lang$core$Maybe$Nothing,
-			userToken: flags.userToken
+			userToken: flags.userToken,
+			operations: _user$project$Main$initOperations(flags),
+			snapshots: _user$project$Accessors_Snapshots$init,
+			filterTabState: _rundis$elm_bootstrap$Bootstrap_Tab$initialState,
+			controlPanelsState: _user$project$Main$initControlPanelsState
 		},
 		_1: _user$project$Main$joinChannel
 	};
@@ -13824,12 +16287,12 @@ var _user$project$Main$init = function (flags) {
 var _user$project$Main$channelName = 'constellation:explore';
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p7 = msg;
-		switch (_p7.ctor) {
+		var _p3 = msg;
+		switch (_p3.ctor) {
 			case 'PhoenixMsg':
-				var _p8 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$update, _p7._0, model.phxSocket);
-				var phxSocket = _p8._0;
-				var phxCmd = _p8._1;
+				var _p4 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$update, _p3._0, model.phxSocket);
+				var phxSocket = _p4._0;
+				var phxCmd = _p4._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -13848,28 +16311,64 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SendGraph':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Ports$addToGraph(
-						_user$project$Encoders_Graph$encoder(model.graph))
-				};
+				var _p5 = model.operations.graph.data;
+				if (_p5.ctor === 'Just') {
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: _user$project$Ports$addToGraph(
+							_user$project$Encoders_Graph$encoder(_p5._0))
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 			case 'InitGraph':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Ports$initGraph(
-						_user$project$Encoders_Graph$encoder(model.graph))
-				};
+				var _p6 = model.operations.graph.data;
+				if (_p6.ctor === 'Just') {
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$core$Task$perform,
+								_elm_lang$core$Basics$always(_user$project$Types$GetNodeLabels),
+								_elm_lang$core$Task$succeed(
+									{ctor: '_Tuple0'})),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$core$Task$perform,
+									_elm_lang$core$Basics$always(_user$project$Types$GetEdgeTypes),
+									_elm_lang$core$Task$succeed(
+										{ctor: '_Tuple0'})),
+								_1: {
+									ctor: '::',
+									_0: _user$project$Ports$initGraph(
+										_user$project$Encoders_Graph$encoder(_p6._0)),
+									_1: {ctor: '[]'}
+								}
+							}
+						});
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 			case 'SetSearchNode':
-				if (_p7._0.ctor === 'Ok') {
+				if (_p3._0.ctor === 'Ok') {
+					var newOps = function (_p7) {
+						return A2(
+							_user$project$Accessors_Operations$setGraphCurrentOperation,
+							_user$project$Types$AddLocal,
+							A2(
+								_user$project$Accessors_Operations$setSearchedNode,
+								_elm_lang$core$Maybe$Just(_p3._0._0),
+								_p7));
+					}(model.operations);
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{
-								searchNode: _elm_lang$core$Maybe$Just(_p7._0._0)
-							}),
+							{operations: newOps}),
 						_1: A2(
 							_elm_lang$core$Task$perform,
 							_elm_lang$core$Basics$always(_user$project$Types$GetNodeLocalGraph),
@@ -13879,35 +16378,45 @@ var _user$project$Main$update = F2(
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
-			case 'SetBrowsedNode':
-				if (_p7._0.ctor === 'Ok') {
-					var filtered_node = _elm_lang$core$List$head(
-						A2(
-							_elm_lang$core$List$filter,
-							function (x) {
-								var _p9 = x;
-								if (_p9.ctor === 'Node') {
-									return _elm_lang$core$Native_Utils.eq(
-										_user$project$Accessors_Node$getGenericData(_p9._0).id,
-										_p7._0._0);
-								} else {
-									return false;
-								}
-							},
-							model.graph));
-					var node = function () {
-						var _p10 = filtered_node;
-						if ((_p10.ctor === 'Just') && (_p10._0.ctor === 'Node')) {
-							return _elm_lang$core$Maybe$Just(_p10._0._0);
+			case 'SetBrowsedElement':
+				if (_p3._0.ctor === 'Ok') {
+					var _p9 = _p3._0._0;
+					var newModel = function () {
+						var _p8 = _p9.elementType;
+						if (_p8.ctor === 'EdgeElt') {
+							return A2(_user$project$Main$updateBrowsedEdge, _p9, model);
 						} else {
-							return _elm_lang$core$Maybe$Nothing;
+							return A2(_user$project$Main$updateBrowsedNode, _p9, model);
+						}
+					}();
+					return {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								errorMessage: _elm_lang$core$Maybe$Just(
+									A2(_elm_lang$core$Basics_ops['++'], 'Failed to set browsedElement: ', _p3._0._0))
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
+			case 'UnsetBrowsedElement':
+				if (_p3._0.ctor === 'Ok') {
+					var newOps = function () {
+						var _p10 = _p3._0._0;
+						if (_p10.ctor === 'NodeElt') {
+							return A2(_user$project$Accessors_Operations$setBrowsedNode, _elm_lang$core$Maybe$Nothing, model.operations);
+						} else {
+							return A2(_user$project$Accessors_Operations$setBrowsedEdge, _elm_lang$core$Maybe$Nothing, model.operations);
 						}
 					}();
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{browsedNode: node}),
+							{operations: newOps}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -13917,19 +16426,87 @@ var _user$project$Main$update = F2(
 							model,
 							{
 								errorMessage: _elm_lang$core$Maybe$Just(
-									A2(_elm_lang$core$Basics_ops['++'], 'Failed to set browsedNode: ', _p7._0._0))
+									A2(_elm_lang$core$Basics_ops['++'], 'Failed to unset browsedElement: ', _p3._0._0))
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
+			case 'SetPinnedElement':
+				if (_p3._0.ctor === 'Ok') {
+					var _p12 = _p3._0._0;
+					var newModel = function () {
+						var _p11 = _p12.elementType;
+						if (_p11.ctor === 'EdgeElt') {
+							return A2(_user$project$Main$updatePinnedEdge, _p12, model);
+						} else {
+							return A2(_user$project$Main$updatePinnedNode, _p12, model);
+						}
+					}();
+					return {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								errorMessage: _elm_lang$core$Maybe$Just(
+									A2(_elm_lang$core$Basics_ops['++'], 'Failed to unset pinnedElement: ', _p3._0._0))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
 			case 'SetGraphState':
-				if (_p7._0.ctor === 'Ok') {
+				if (_p3._0.ctor === 'Ok') {
+					var newOps = function () {
+						var _p13 = model.operations.graph.current;
+						if (_p13.ctor === 'AddLocal') {
+							return A2(
+								_user$project$Accessors_Operations$setGraphCurrentOperation,
+								_user$project$Types$FilterLocal(1),
+								model.operations);
+						} else {
+							return function (_p14) {
+								return A2(
+									_user$project$Accessors_Operations$setGraphData,
+									_elm_lang$core$Maybe$Nothing,
+									A2(_user$project$Accessors_Operations$setGraphCurrentOperation, _user$project$Types$Waiting, _p14));
+							}(model.operations);
+						}
+					}();
+					var cmds = function () {
+						var _p15 = model.operations.graph.current;
+						if (_p15.ctor === 'AddLocal') {
+							return _elm_lang$core$Platform_Cmd$batch(
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$core$Task$perform,
+										_elm_lang$core$Basics$always(
+											_user$project$Types$ApplyFiltersOnLocalGraph(_user$project$Types$NodeElt)),
+										_elm_lang$core$Task$succeed(
+											{ctor: '_Tuple0'})),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$core$Task$perform,
+											_elm_lang$core$Basics$always(
+												_user$project$Types$ApplyFiltersOnLocalGraph(_user$project$Types$EdgeElt)),
+											_elm_lang$core$Task$succeed(
+												{ctor: '_Tuple0'})),
+										_1: {ctor: '[]'}
+									}
+								});
+						} else {
+							return _elm_lang$core$Platform_Cmd$none;
+						}
+					}();
+					var newSnapshots = A3(_user$project$Accessors_Snapshots$addNewSnapshot, _p3._0._0, model.operations, model.snapshots);
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{graph: _p7._0._0}),
-						_1: _elm_lang$core$Platform_Cmd$none
+							{snapshots: newSnapshots, operations: newOps}),
+						_1: cmds
 					};
 				} else {
 					return {
@@ -13938,7 +16515,7 @@ var _user$project$Main$update = F2(
 							model,
 							{
 								errorMessage: _elm_lang$core$Maybe$Just(
-									A2(_elm_lang$core$Basics_ops['++'], 'Failed to set new graph state: ', _p7._0._0))
+									A2(_elm_lang$core$Basics_ops['++'], 'Failed to set new graph state: ', _p3._0._0))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -13954,17 +16531,27 @@ var _user$project$Main$update = F2(
 							_fbonetti$elm_phoenix_socket$Phoenix_Channel$withPayload,
 							_user$project$Encoders_Common$userEncoder(model.userToken),
 							_fbonetti$elm_phoenix_socket$Phoenix_Channel$init(_user$project$Main$channelName))));
-				var _p11 = A2(
+				var _p16 = A2(
 					_fbonetti$elm_phoenix_socket$Phoenix_Socket$join,
 					channel,
 					A4(
 						_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
-						'node_local_graph',
+						'edge:types',
 						_user$project$Main$channelName,
-						_user$project$Types$ReceiveNodeLocalGraph,
-						_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(model.socketUrl)));
-				var phxSocket = _p11._0;
-				var phxCmd = _p11._1;
+						_user$project$Types$ReceiveEdgeTypes,
+						A4(
+							_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
+							'node:labels',
+							_user$project$Main$channelName,
+							_user$project$Types$ReceiveNodeLabels,
+							A4(
+								_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
+								'node:local_graph',
+								_user$project$Main$channelName,
+								_user$project$Types$ReceiveNodeLocalGraph,
+								_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(model.socketUrl)))));
+				var phxSocket = _p16._0;
+				var phxCmd = _p16._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -13983,18 +16570,18 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'GetNodeLocalGraph':
-				var _p12 = model.searchNode;
-				if (_p12.ctor === 'Nothing') {
+				var _p17 = model.operations.node.searched;
+				if (_p17.ctor === 'Nothing') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
-					var _p14 = _p12._0;
+					var _p19 = _p17._0;
 					var payload = _elm_lang$core$Json_Encode$object(
 						{
 							ctor: '::',
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'uuid',
-								_1: _elm_lang$core$Json_Encode$string(_p14.uuid)
+								_1: _elm_lang$core$Json_Encode$string(_p19.uuid)
 							},
 							_1: {
 								ctor: '::',
@@ -14002,7 +16589,7 @@ var _user$project$Main$update = F2(
 									ctor: '_Tuple2',
 									_0: 'labels',
 									_1: _elm_lang$core$Json_Encode$list(
-										A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, _p14.labels))
+										A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, _p19.labels))
 								},
 								_1: {ctor: '[]'}
 							}
@@ -14016,10 +16603,10 @@ var _user$project$Main$update = F2(
 							A2(
 								_fbonetti$elm_phoenix_socket$Phoenix_Push$withPayload,
 								payload,
-								A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'node_local_graph', _user$project$Main$channelName))));
-					var _p13 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
-					var phxSocket = _p13._0;
-					var phxCmd = _p13._1;
+								A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'node:local_graph', _user$project$Main$channelName))));
+					var _p18 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
+					var phxSocket = _p18._0;
+					var phxCmd = _p18._1;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -14028,10 +16615,11 @@ var _user$project$Main$update = F2(
 						_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Types$PhoenixMsg, phxCmd)
 					};
 				}
-			default:
+			case 'ReceiveNodeLocalGraph':
+				var newOps = A2(_user$project$Accessors_Operations$setSearchedNode, _elm_lang$core$Maybe$Nothing, model.operations);
 				var localGraphCmd = function () {
-					var _p15 = model.initGraph;
-					if (_p15 === true) {
+					var _p20 = model.operations.graph.current;
+					if (_p20.ctor === 'Init') {
 						return A2(
 							_elm_lang$core$Task$perform,
 							_elm_lang$core$Basics$always(_user$project$Types$InitGraph),
@@ -14045,18 +16633,28 @@ var _user$project$Main$update = F2(
 								{ctor: '_Tuple0'}));
 					}
 				}();
-				var decodedGraph = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Graph$fromWsDecoder, _p7._0);
-				var _p16 = decodedGraph;
-				if (_p16.ctor === 'Ok') {
+				var decodedGraph = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Graph$fromWsDecoder, _p3._0);
+				var _p21 = decodedGraph;
+				if (_p21.ctor === 'Ok') {
+					var _p22 = _p21._0;
+					var finalOps = A2(
+						_user$project$Accessors_Operations$setGraphData,
+						_elm_lang$core$Maybe$Just(
+							A2(_user$project$Accessors_Graph$updateMetaData, model.operations.node.searched, _p22)),
+						newOps);
+					var deDupedGraph = A2(
+						_user$project$Accessors_Graph$substractGraph,
+						_p22,
+						_user$project$Accessors_Snapshots$getCurrent(model.snapshots).graph);
+					var graphCmd = (_elm_lang$core$Native_Utils.cmp(
+						_elm_lang$core$List$length(deDupedGraph),
+						0) > 0) ? localGraphCmd : _elm_lang$core$Platform_Cmd$none;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{
-								graph: _user$project$Main$manageMetaData(_p16._0),
-								initGraph: false
-							}),
-						_1: localGraphCmd
+							{operations: finalOps}),
+						_1: graphCmd
 					};
 				} else {
 					return {
@@ -14068,15 +16666,250 @@ var _user$project$Main$update = F2(
 									A2(
 										_elm_lang$core$Basics_ops['++'],
 										'Cannot decode received graph. -[',
-										A2(_elm_lang$core$Basics_ops['++'], _p16._0, ']')))
+										A2(_elm_lang$core$Basics_ops['++'], _p21._0, ']')))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
+			case 'GetNodeLabels':
+				var phxPush = A2(
+					_fbonetti$elm_phoenix_socket$Phoenix_Push$onError,
+					_user$project$Types$HandleSendError,
+					A2(
+						_fbonetti$elm_phoenix_socket$Phoenix_Push$onOk,
+						_user$project$Types$ReceiveNodeLabels,
+						A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'node:labels', _user$project$Main$channelName)));
+				var _p23 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
+				var phxSocket = _p23._0;
+				var phxCmd = _p23._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{phxSocket: phxSocket, errorMessage: _elm_lang$core$Maybe$Nothing}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Types$PhoenixMsg, phxCmd)
+				};
+			case 'ReceiveNodeLabels':
+				var decodedLabels = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Element$filterDecoder, _p3._0);
+				var _p24 = decodedLabels;
+				if (_p24.ctor === 'Ok') {
+					var elementFilters = _elm_lang$core$Dict$fromList(
+						A2(
+							_elm_lang$core$List$map,
+							function (x) {
+								return {ctor: '_Tuple2', _0: x, _1: true};
+							},
+							_p24._0));
+					var newOps = A2(_user$project$Accessors_Operations$setNodeFilters, elementFilters, model.operations);
+					var newSnapshots = A2(_user$project$Accessors_Snapshots$setNodeFilters, elementFilters, model.snapshots);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{operations: newOps, snapshots: newSnapshots}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								errorMessage: _elm_lang$core$Maybe$Just(
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										'Cannot decode received node labels. -[',
+										A2(_elm_lang$core$Basics_ops['++'], _p24._0, ']')))
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
+			case 'GetEdgeTypes':
+				var phxPush = A2(
+					_fbonetti$elm_phoenix_socket$Phoenix_Push$onError,
+					_user$project$Types$HandleSendError,
+					A2(
+						_fbonetti$elm_phoenix_socket$Phoenix_Push$onOk,
+						_user$project$Types$ReceiveEdgeTypes,
+						A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'edge:types', _user$project$Main$channelName)));
+				var _p25 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
+				var phxSocket = _p25._0;
+				var phxCmd = _p25._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{phxSocket: phxSocket, errorMessage: _elm_lang$core$Maybe$Nothing}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Types$PhoenixMsg, phxCmd)
+				};
+			case 'ReceiveEdgeTypes':
+				var decodedTypes = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Element$filterDecoder, _p3._0);
+				var _p26 = decodedTypes;
+				if (_p26.ctor === 'Ok') {
+					var elementFilters = _elm_lang$core$Dict$fromList(
+						A2(
+							_elm_lang$core$List$map,
+							function (x) {
+								return {ctor: '_Tuple2', _0: x, _1: true};
+							},
+							_p26._0));
+					var newOps = A2(_user$project$Accessors_Operations$setEdgeFilters, elementFilters, model.operations);
+					var newSnapshots = A2(_user$project$Accessors_Snapshots$setEdgeFilters, elementFilters, model.snapshots);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{operations: newOps, snapshots: newSnapshots}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return A2(
+						_user$project$Main$errorMessage,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Cannot decode received edge types. -[',
+							A2(_elm_lang$core$Basics_ops['++'], _p26._0, ']')),
+						model);
+				}
+			case 'ToggleFilter':
+				if (_p3._0.ctor === 'NodeElt') {
+					var _p27 = _p3._1;
+					var filteredElements = A2(
+						_user$project$Accessors_Graph$getFilteredNodes,
+						{
+							ctor: '::',
+							_0: _p27,
+							_1: {ctor: '[]'}
+						},
+						_user$project$Accessors_Snapshots$getCurrent(model.snapshots).graph);
+					var newOps = A2(_user$project$Accessors_Operations$toggleNodeFilterState, _p27, model.operations);
+					var visible = A2(_user$project$Accessors_Operations$getNodeFilterState, _p27, newOps);
+					var cmd = _user$project$Ports$setVisibleElements(
+						A3(_user$project$Encoders_Operations$visibleElementsEncoder, _user$project$Types$NodeElt, filteredElements, visible));
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{operations: newOps}),
+						_1: cmd
+					};
+				} else {
+					var _p28 = _p3._1;
+					var filteredElements = A2(
+						_user$project$Accessors_Graph$getFilteredEdges,
+						{
+							ctor: '::',
+							_0: _p28,
+							_1: {ctor: '[]'}
+						},
+						_user$project$Accessors_Snapshots$getCurrent(model.snapshots).graph);
+					var newOps = A2(_user$project$Accessors_Operations$toggleEdgeFilterState, _p28, model.operations);
+					var visible = A2(_user$project$Accessors_Operations$getEdgeFilterState, _p28, newOps);
+					var cmd = _user$project$Ports$setVisibleElements(
+						A3(_user$project$Encoders_Operations$visibleElementsEncoder, _user$project$Types$EdgeElt, filteredElements, visible));
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{operations: newOps}),
+						_1: cmd
+					};
+				}
+			case 'ApplyFiltersOnLocalGraph':
+				if (_p3._0.ctor === 'NodeElt') {
+					var filteredElements = function () {
+						var _p29 = model.operations.graph.data;
+						if (_p29.ctor === 'Just') {
+							return A2(
+								_user$project$Accessors_Graph$getFilteredNodes,
+								_user$project$Accessors_Operations$getNodeActiveFilters(model.operations),
+								_p29._0);
+						} else {
+							return {ctor: '[]'};
+						}
+					}();
+					var cmd = _user$project$Ports$setVisibleElements(
+						A3(_user$project$Encoders_Operations$visibleElementsEncoder, _user$project$Types$NodeElt, filteredElements, false));
+					return {ctor: '_Tuple2', _0: model, _1: cmd};
+				} else {
+					var filteredElements = function () {
+						var _p30 = model.operations.graph.data;
+						if (_p30.ctor === 'Just') {
+							return A2(
+								_user$project$Accessors_Graph$getFilteredEdges,
+								_user$project$Accessors_Operations$getEdgeActiveFilters(model.operations),
+								_p30._0);
+						} else {
+							return {ctor: '[]'};
+						}
+					}();
+					var cmd = _user$project$Ports$setVisibleElements(
+						A3(_user$project$Encoders_Operations$visibleElementsEncoder, _user$project$Types$EdgeElt, filteredElements, false));
+					return {ctor: '_Tuple2', _0: model, _1: cmd};
+				}
+			case 'ResetFilters':
+				if (_p3._0.ctor === 'NodeElt') {
+					var newOps = _user$project$Accessors_Operations$resetNodeFilters(model.operations);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{operations: newOps}),
+						_1: _user$project$Ports$setVisibleElements(
+							A3(
+								_user$project$Encoders_Operations$visibleElementsEncoder,
+								_user$project$Types$NodeElt,
+								{
+									ctor: '::',
+									_0: 'all',
+									_1: {ctor: '[]'}
+								},
+								true))
+					};
+				} else {
+					var newOps = _user$project$Accessors_Operations$resetEdgeFilters(model.operations);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{operations: newOps}),
+						_1: _user$project$Ports$setVisibleElements(
+							A3(
+								_user$project$Encoders_Operations$visibleElementsEncoder,
+								_user$project$Types$EdgeElt,
+								{
+									ctor: '::',
+									_0: 'all',
+									_1: {ctor: '[]'}
+								},
+								true))
+					};
+				}
+			case 'FilterTabMsg':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{filterTabState: _p3._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				var newPanelsState = A3(
+					_elm_lang$core$Dict$update,
+					_elm_lang$core$Basics$toString(_p3._0),
+					_user$project$Main$toggleVisible,
+					model.controlPanelsState);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{controlPanelsState: newPanelsState}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 		}
 	});
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
-	{init: _user$project$Main$init, view: _user$project$Main$view, update: _user$project$Main$update, subscriptions: _user$project$Main$subscriptions})(
+	{init: _user$project$Main$init, view: _user$project$View$view, update: _user$project$Main$update, subscriptions: _user$project$Subscriptions$subscriptions})(
 	A2(
 		_elm_lang$core$Json_Decode$andThen,
 		function (originNodeLabels) {

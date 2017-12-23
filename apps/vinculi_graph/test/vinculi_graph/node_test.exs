@@ -25,6 +25,14 @@ defmodule VinculiGraph.TestNode do
     assert Enum.count(filtered) == Enum.count(expected)
   end
 
+  test "Test get_labels/0" do
+    expected = [
+      "Town", "Country", "Continent", "Language", "Degree", "Year",
+      "Institution", "Profession", "Domain", "School", "Person", "Publication",
+      "Translation"]
+    assert Node.get_labels() == expected
+  end
+
   describe "Test get_fuzzy_by/1:" do
     test "Return valid result with valid params" do
       search = %{label: "Person", properties: %{firstName: "da"}}
@@ -86,23 +94,26 @@ defmodule VinculiGraph.TestNode do
     test "Return cytoscape-formated result when asked to" do
       res = Node.get_local_graph("Publication", "publication-22", :cytoscape)
       expected = [%{data: %{id: "domain-2", labels: ["Domain"], name: "Anthropology"},
-             group: "nodes"},
-           %{data: %{id: "publication-22", labels: ["Publication"], name: "",
-               title: "Esquisse d'une théorie générale de la magie"}, group: "nodes"},
-           %{data: %{firstName: "Marcel", id: "person-9", labels: ["Person"],
-               lastName: "MAUSS", name: "Marcel MAUSS"}, group: "nodes"},
-           %{data: %{id: "language-3", labels: ["Language"], name: "French"},
-             group: "nodes"},
-           %{data: %{id: "year-29", labels: ["Year"], name: "1902", value: 1902},
-             group: "nodes"},
-           %{data: %{id: "publication-22+domain-2", source: "publication-22",
-               target: "domain-2", type: "IS_OF_DOMAIN"}, group: "edges"},
-           %{data: %{id: "person-9+publication-22", source: "person-9",
-               target: "publication-22", type: "WROTE"}, group: "edges"},
-           %{data: %{id: "publication-22+language-3", source: "publication-22",
-               target: "language-3", type: "HAS_ORIGINAL_LANGUAGE"}, group: "edges"},
-           %{data: %{id: "publication-22+year-29", source: "publication-22",
-               target: "year-29", type: "WHEN_WRITTEN"}, group: "edges"}]
+           group: "nodes"},
+         %{data: %{id: "publication-22", labels: ["Publication"],
+             name: "Esquisse d'une théorie générale de la magie",
+             title: "Esquisse d'une théorie générale de la magie",
+             titleFr: "Esquisse d'une théorie générale de la magie"},
+           group: "nodes"},
+         %{data: %{id: "year-29", labels: ["Year"], name: "1902", value: 1902},
+           group: "nodes"},
+         %{data: %{id: "language-3", labels: ["Language"], name: "French"},
+           group: "nodes"},
+         %{data: %{firstName: "Marcel", id: "person-9", labels: ["Person"],
+             lastName: "MAUSS", name: "Marcel MAUSS"}, group: "nodes"},
+         %{data: %{id: "publication-22+domain-2", source: "publication-22",
+             target: "domain-2", type: "IS_OF_DOMAIN"}, group: "edges"},
+         %{data: %{id: "publication-22+year-29", source: "publication-22",
+             target: "year-29", type: "WHEN_WRITTEN"}, group: "edges"},
+         %{data: %{id: "publication-22+language-3", source: "publication-22",
+             target: "language-3", type: "HAS_ORIGINAL_LANGUAGE"}, group: "edges"},
+         %{data: %{id: "person-9+publication-22", source: "person-9",
+             target: "publication-22", type: "WROTE"}, group: "edges"}]
 
       assert Enum.sort(expected) == Enum.sort(res)
     end

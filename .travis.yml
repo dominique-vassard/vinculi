@@ -7,8 +7,8 @@ otp_release: 19.3
 
 env:
   global:
-    - NEO4J_PATH=/usr/local/neo4j-3.2.1
-    - NEO4J_CONF_PATH=/usr/local/neo4j-3.2.1/conf
+    - NEO4J_PATH=/usr/local/neo4j-3.2.7
+    - NEO4J_CONF_PATH=/usr/local/neo4j-3.2.7/conf
 
 services:
   - mysql

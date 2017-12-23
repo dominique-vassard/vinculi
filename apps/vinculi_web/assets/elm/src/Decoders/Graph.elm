@@ -1,25 +1,26 @@
-module Decoders.Graph exposing (decoder, fromWsDecoder)
+module Decoders.Graph exposing (decoder, fromWsDecoder, snapshotDecoder)
 
-import Json.Decode exposing (Decoder, andThen, field, list, string)
-import Types exposing (Graph, Element(Node, Edge))
+import Json.Decode as Decode exposing (Decoder, andThen, fail, field, list, string)
+import Json.Decode.Pipeline exposing (decode, required)
+import Types exposing (Graph, GraphSnapshot, Element(Node, Edge))
 import Decoders.Node as Node exposing (decoder)
 import Decoders.Edge as Edge exposing (decoder)
 
 
 fromWsDecoder : Decoder Graph
 fromWsDecoder =
-    Json.Decode.field "data" decoder
+    Decode.field "data" decoder
 
 
 decoder : Decoder Graph
 decoder =
-    Json.Decode.list elementDecoder
+    Decode.list elementDecoder
 
 
 elementDecoder : Decoder Element
 elementDecoder =
-    Json.Decode.field "group" Json.Decode.string
-        |> Json.Decode.andThen elementTypeDecoder
+    Decode.field "group" Decode.string
+        |> Decode.andThen elementTypeDecoder
 
 
 elementTypeDecoder : String -> Decoder Element
@@ -31,17 +32,24 @@ elementTypeDecoder elementType =
         "edges" ->
             edgeDecoder
 
-        _ ->
-            Debug.crash "BOOM!"
+        something ->
+            Decode.fail <| "Not a valid element type: " ++ something
 
 
 nodeDecoder : Decoder Element
 nodeDecoder =
     Node.decoder
-        |> Json.Decode.map Node
+        |> Decode.map Node
 
 
 edgeDecoder : Decoder Element
 edgeDecoder =
     Edge.decoder
-        |> Json.Decode.map Edge
+        |> Decode.map Edge
+
+
+snapshotDecoder : Decoder GraphSnapshot
+snapshotDecoder =
+    Json.Decode.Pipeline.decode GraphSnapshot
+        |> required "data" decoder
+        |> required "description" Decode.string

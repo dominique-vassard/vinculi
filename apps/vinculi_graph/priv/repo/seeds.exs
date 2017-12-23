@@ -12,7 +12,7 @@
 
 cql_insert = """
 //Towns
-CREATE (edinburgh:Town      {uuid: 'town-1', name:'Edinburgh'}) //Add geoloc
+CREATE (edinburgh:Town      {uuid: 'town-1', name:'Edinburgh', lat:toFloat(55.953251), long:toFloat(-3.188267)}) //Add geoloc
 CREATE (kirkcaldy:Town      {uuid: 'town-2', name:'Kirkcaldy'}) //Add geoloc
 CREATE (konigsberg:Town     {uuid: 'town-3', name:'Königsberg'}) //Add geoloc
 CREATE (wien:Town           {uuid: 'town-4', name:'Wien'}) //Add geoloc
@@ -27,7 +27,7 @@ CREATE (epinal:Town         {uuid: 'town-12', name:'Épinal'})
 CREATE (paris:Town          {uuid: 'town-13', name:'Paris'})
 
 //Countries
-CREATE (scotland:Country        {uuid: 'country-1', name:'Scotland'}) //Add geoloc
+CREATE (scotland:Country        {uuid: 'country-1', name:'Scotland', lat:tofloat(56.4907), long:toFloat(-4.2026)}) //Add geoloc
 CREATE (prussia:Country         {uuid: 'country-2', name:'Prussia'}) //Add geoloc
 CREATE (germany:Country         {uuid: 'country-3', name:'Germany'}) //Add geoloc
 CREATE (austrian_emp:Country    {uuid: 'country-4', name:'Austrian Empire'}) //Add geoloc
@@ -37,7 +37,7 @@ CREATE (poland:Country          {uuid: 'country-7', name:'Poland'})
 CREATE (france:Country          {uuid: 'country-8', name:'France'})
 
 //Continent
-CREATE (europe:Continent {uuid: 'continent-1', name:'Europe'}) //Add geoloc
+CREATE (europe:Continent {uuid: 'continent-1', name:'Europe', lat: toFloat(53.0000), long: toFloat(9.0000)}) //Add geoloc
 
 //Definition of location
 CREATE (edinburgh)-[:IS_IN_COUNTRY]->(scotland)
@@ -82,6 +82,7 @@ CREATE (y1755:Year {uuid:'year-7', value:1755})
 CREATE (y1757:Year {uuid:'year-8', value:1757})
 CREATE (y1759:Year {uuid:'year-9', value:1759})
 CREATE (y1776:Year {uuid:'year-10', value:1776})
+CREATE (y1779:Year {uuid:'year-43', value:1779})
 CREATE (y1781:Year {uuid:'year-11', value:1781})
 CREATE (y1786:Year {uuid:'year-12', value:1786})
 CREATE (y1788:Year {uuid:'year-13', value:1788})
@@ -143,68 +144,69 @@ CREATE (pheno:School                {uuid:'school-10', name:'Phenomenology'})
 
 //David Hume
 CREATE (david_hume:Person   {uuid:'person-1', lastName:'HUME', firstName:'David', internalLink:'http://arsmagica.fr/polyphonies/hume-david-1711-1776', externalLink:'https://en.wikipedia.org/wiki/David_Hume'})
-CREATE (thn:Publication     {uuid:'publication-1', type:'book', title:'A Treatise of Human Nature'})
-CREATE (echu:Publication    {uuid:'publication-2', type:'book', title:'An Enquiry Concerning Human Understanding'})
-CREATE (ecpm:Publication    {uuid:'publication-3', type:'book', title:'An Enquiry Concerning the Principles of Morals'})
-CREATE (nhr:Publication     {uuid:'publication-4', type:'book', title:'The Natural History of Religion'})
+CREATE (thn:Publication     {uuid:'publication-1', type:'book', title:'A Treatise of Human Nature', titleFr:'Traité de la nature humaine'})
+CREATE (echu:Publication    {uuid:'publication-2', type:'book', title:'An Enquiry Concerning Human Understanding', titleFr:'Enquête sur l\\'entendement humain'})
+CREATE (ecpm:Publication    {uuid:'publication-3', type:'book', title:'An Enquiry Concerning the Principles of Morals', titleFr:'Enquête sur les principes de la morale'})
+CREATE (nhr:Publication     {uuid:'publication-4', type:'book', title:'The Natural History of Religion', titleFr:'Histoire de la religion naturelle'})
+CREATE (drn:Publication     {uuid:'publication-h5', type:'book', title:'  Dialogues Concerning Natural Religion', titleFr:'Dialogues sur la religion naturelle', internalLink:'http://arsmagica.fr/sites/default/files/Textes/dialogues_religion_naturelle_hume_1779.pdf', externalLink:'https://fr.wikipedia.org/wiki/Dialogues_sur_la_religion_naturelle'})
 
 //Adam Smith
 CREATE (adam_smith:Person   {uuid:'person-2', lastName:'SMITH', firstName:'Adam'})
-CREATE (tms:Publication     {uuid: 'publication-5', type:'book', title:'The Theory of Moral Sentiments'})
-CREATE (won:Publication     {uuid: 'publication-6', type:'book', title:'An Inquiry into the Nature and Causes of the Wealth of Nations'})
+CREATE (tms:Publication     {uuid: 'publication-5', type:'book', title:'The Theory of Moral Sentiments', titleFr:'Théorie des entiments moraux'})
+CREATE (won:Publication     {uuid: 'publication-6', type:'book', title:'An Inquiry into the Nature and Causes of the Wealth of Nations', titleFr:'Recherches sur la nature et les causes de la richesse des nations'})
 
 //Kant
 CREATE (kant:Person         {uuid:'person-3', lastName:'KANT', firstName:'Immanuel'})
-CREATE (krv:Publication     {uuid:'publication-7', title:'Kritik der Reinen Vernunft'})
+CREATE (krv:Publication     {uuid:'publication-7', title:'Kritik der Reinen Vernunft', titleFr:'Critique de la raison pure'})
 CREATE (cpr:Translation     {uuid:'translation-1', title:'Critique of Pure Reason'})
-CREATE (kpv:Publication     {uuid:'publication-8', title:'Kritik der Praktischen Vernunft'})
+CREATE (kpv:Publication     {uuid:'publication-8', title:'Kritik der Praktischen Vernunft', titleFr:'Critique de la raison pratique'})
 CREATE (crpr:Translation    {uuid:'translation-2', title:'Critique of Practical Reason'})
-CREATE (ku:Publication      {uuid:'publication-9', title:'Kritik der Urteilskraft'})
+CREATE (ku:Publication      {uuid:'publication-9', title:'Kritik der Urteilskraft', titleFr:'Critique du jugement'})
 CREATE (cj:Translation      {uuid:'translation-3', title:'Critique Of Judgment'})
 
 //Schopenhauer
 CREATE (schopenhauer:Person         {uuid:'person-4', lastName:'SCHOPENHAUER', firstName:'Arthur'})
-CREATE (zur_grunden:Publication     {uuid:'publication-10', title:'Über die vierfache Wurzel des Satzes vom zureichenden Grunde'})
+CREATE (zur_grunden:Publication     {uuid:'publication-10', title:'Über die vierfache Wurzel des Satzes vom zureichenden Grunde', titleFr:'De la quadruple racine du principe de raison suffisante'})
 CREATE (fourfold_root:Translation   {uuid:'translation-4', title:'On the Fourfold Root of the Principle of Sufficient Reason'})
-CREATE (welt_wille:Publication      {uuid:'publication-11', title:'Die Welt als Wille und Vorstellung'})
+CREATE (welt_wille:Publication      {uuid:'publication-11', title:'Die Welt als Wille und Vorstellung', titleFr:'Le Monde comme volonté et comme représentation'})
 CREATE (worl_will:Translation       {uuid:'translation-5', title:'The World as Will and Representation'})
 
 //Wittgenstein
 CREATE (wittgenstein:Person         {uuid:'person-5', lastName:'WITTGENSTEIN', firstName:'Ludwig'})
-CREATE (abhandlung:Publication      {uuid:'publication-12', title:'Logisch-Philosophische Abhandlung'})
+CREATE (abhandlung:Publication      {uuid:'publication-12', title:'Logisch-Philosophische Abhandlung', titleFr:'Tractatus logico-philosophicus'})
 CREATE (tractatus:Translation       {uuid:'translation-6', title:'Tractatus logico-philosophicus'})
-CREATE (untersuchungen:Publication  {uuid:'publication-13', title:'Philosophische Untersuchungen'})
+CREATE (untersuchungen:Publication  {uuid:'publication-13', title:'Philosophische Untersuchungen', titleFr:'Remarques philosophiques'})
 CREATE (investigations:Translation  {uuid:'translation-7', title:'Philosophical Investigations'})
 
 //Husserl
 CREATE (husserl:Person                  {uuid:'person-6', lastName:'HUSSERL', firstName:'Edmund'})
-CREATE (log_untersuch_1:Publication     {uuid:'publication-14', title:'Logische Untersuchungen: Erster Teil'})
+CREATE (log_untersuch_1:Publication     {uuid:'publication-14', title:'Logische Untersuchungen: Erster Teil', titleFr:'Recherches logiques Vol 1'})
 CREATE (logical_invest_1:Translation    {uuid:'translation-8', title:'Logical Investigations, Vol 1'})
-CREATE (log_untersuch_2:Publication     {uuid:'publication-15', title:'Logische Untersuchungen: Zweiter Teil'})
+CREATE (log_untersuch_2:Publication     {uuid:'publication-15', title:'Logische Untersuchungen: Zweiter Teil', titleFr:'Recherches logiques Vol 2'})
 CREATE (logical_invest_2:Translation    {uuid:'translation-9', title:'Logical Investigations, Vol 2'})
-CREATE (pheno_philo:Publication         {uuid:'publication-16', title:'Ideen zu einer reinen Phänomenologie und phänomenologischen Philosophie'})
+CREATE (pheno_philo:Publication         {uuid:'publication-16', title:'Ideen zu einer reinen Phänomenologie und phänomenologischen Philosophie', titleFr:'Idées directrices pour une phénoménologie et une philosophie phénoménologique pures'})
 CREATE (intro_pheno:Translation         {uuid:'translation-10', title:'Ideas: General Introduction to Pure Phenomenology'})
 
 //Stein
-CREATE (stein:Person                {uuid:'person-7', lastName:'STEIN', firstName:'Edith', aka:'St. Teresa Benedicta of the Cross'})
-CREATE (prob_einfuhl:Publication    {uuid:'publication-17', title:'Zum Problem der Einfühlung'})
+CREATE (stein:Person                {uuid:'person-7', lastName:'STEIN', firstName:'Edith', aka:'Ste Thérèse de la Croix'})
+CREATE (prob_einfuhl:Publication    {uuid:'publication-17', title:'Zum Problem der Einfühlung', titleFr:'Le problème de l\\'empathie'})
 CREATE (empathy_prob:Translation    {uuid:'translation-11', title:'On the Problem of Empathy'})
 
 //Durkheim
 CREATE (durkheim:Person                 {uuid:'person-8', lastName:'DURKHEIM', firstName:'Emile'})
-CREATE (division_travail:Publication    {uuid:'publication-18', title:'De la division du travail social'})
+CREATE (division_travail:Publication    {uuid:'publication-18', title:'De la division du travail social', titleFr:'De la division du travail social'})
 CREATE (division_labour:Translation     {uuid:'translation-12', title:'The Division of Labour in Society'})
-CREATE (formes_vie_relig:Publication    {uuid:'publication-19', title:'Les formes élémentaires de la vie religieuse'})
+CREATE (formes_vie_relig:Publication    {uuid:'publication-19', title:'Les formes élémentaires de la vie religieuse', titleFr:'Les formes élémentaires de la vie religieuse'})
 CREATE (forms_relig_life:Translation    {uuid:'translation-13', title:'The Elementary Forms of Religious Life'})
 CREATE (methode_socio:Publication       {uuid:'publication-20', title:'Les Règles de la Méthode Sociologique'})
 CREATE (rules_socio:Translation         {uuid:'translation-14', title:'The Rules of Sociological Method'})
 
 //Mauss
 CREATE (mauss:Person                {uuid:'person-9', lastName:'MAUSS', firstName:'Marcel'})
-CREATE (formes_classif:Publication  {uuid:'publication-21', title:'De quelques formes primitives de classification'})
-CREATE (theorie_magie:Publication   {uuid:'publication-22', title:'Esquisse d\\'une théorie générale de la magie'})
-CREATE (essai_don:Publication       {uuid:'publication-23', title:'Essai sur le don,'})
-CREATE (the_gift:Translation        {uuid:'translation-15', title:'The Gift'})
+CREATE (formes_classif:Publication  {uuid:'publication-21', title:'De quelques formes primitives de classification', titleFr:'De quelques formes primitives de classification'})
+CREATE (theorie_magie:Publication   {uuid:'publication-22', title:'Esquisse d\\'une théorie générale de la magie', titleFr:'Esquisse d\\'une théorie générale de la magie'})
+CREATE (essai_don:Publication       {uuid:'publication-23', title:'Essai sur le don', titleFr:'Essai sur le don'})
+CREATE (the_gift:Translation        {uuid:'translation-15', title:'The Gift', titleFr:'The Gift'})
 
 //Dates of birth/death
 CREATE (david_hume)-[:WHERE_BORN]->(edinburgh),
@@ -264,7 +266,12 @@ CREATE (david_hume)-[:WROTE]->(thn),
        (nhr)-[:WHEN_WRITTEN]->(y1757),
        (nhr)-[:IS_OF_DOMAIN]->(philo),
        (nhr)-[:IS_OF_SCHOOL]->(empiricism),
-       (nhr)-[:HAS_ORIGINAL_LANGUAGE]->(english)
+       (nhr)-[:HAS_ORIGINAL_LANGUAGE]->(english),
+       (david_hume)-[:WROTE]->(drn),
+       (drn)-[:WHEN_WRITTEN]->(y1779),
+       (drn)-[:IS_OF_DOMAIN]->(philo),
+       (drn)-[:IS_OF_SCHOOL]->(empiricism),
+       (drn)-[:HAS_ORIGINAL_LANGUAGE]->(english)
 
 //Adam Smith writings
 CREATE (adam_smith)-[:WROTE]->(tms),

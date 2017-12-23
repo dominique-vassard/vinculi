@@ -1,14 +1,12 @@
 module Main exposing (..)
 
-import Html exposing (Html, button, div, h5, span, text)
-import Html.Attributes exposing (class, id)
+import Html exposing (Html)
 import Json.Encode exposing (Value, object, string)
 import Json.Decode exposing (field, decodeString, decodeValue, string, Decoder)
 import Phoenix.Socket as PhxSocket
     exposing
         ( init
         , join
-        , listen
         , on
         , push
         , update
@@ -16,29 +14,35 @@ import Phoenix.Socket as PhxSocket
         )
 import Phoenix.Channel as PhxChannel exposing (init, onJoin)
 import Phoenix.Push as PhxPush exposing (init, onError, onOk, withPayload)
-import Bootstrap.Alert as Alert
-import Bootstrap.Card as Card
-import Bootstrap.Grid as Grid
-import Bootstrap.Grid.Row as Row
-import Bootstrap.Grid.Col as Col
+import Bootstrap.Tab as Tab
+import Task
+import Dict exposing (..)
 import Types exposing (..)
-import Ports exposing (..)
-import Decoders.Graph as GraphDecode exposing (decoder, fromWsDecoder)
-import Decoders.Port as PortDecoder exposing (localGraphDecoder)
+import Ports
+    exposing
+        ( addToGraph
+        , initGraph
+        , setVisibleElements
+        )
+import View exposing (view)
+import Subscriptions exposing (subscriptions)
+import Decoders.Graph as GraphDecode exposing (fromWsDecoder)
+import Decoders.Element as ElementDecode exposing (filterDecoder)
 import Encoders.Common as GraphEncode exposing (userEncoder)
 import Encoders.Graph as GraphEncode exposing (encoder)
-import Accessors.Node as Node exposing (..)
-import Accessors.Edge as Edge exposing (..)
-import Task
+import Encoders.Operations as OperationsEncode exposing (visibleElementsEncoder)
+import Accessors.Graph as Graph exposing (..)
+import Accessors.Operations as Operations exposing (..)
+import Accessors.Snapshots as Snapshots exposing (..)
 
 
 main : Program Flags Model Msg
 main =
     Html.programWithFlags
         { init = init
-        , view = view
+        , view = View.view
         , update = update
-        , subscriptions = subscriptions
+        , subscriptions = Subscriptions.subscriptions
         }
 
 
@@ -55,20 +59,46 @@ channelName =
 -- MODEL
 
 
-init : Flags -> ( Model, Cmd Msg )
-init flags =
-    ( { phxSocket = PhxSocket.init flags.socketUrl
-      , graph = []
-      , socketUrl = flags.socketUrl
-      , initGraph = True
-      , searchNode =
+initOperations : Flags -> Operations
+initOperations flags =
+    { node =
+        { searched =
             Just
                 { uuid = flags.originNodeUuid
                 , labels = flags.originNodeLabels
                 }
-      , browsedNode = Nothing
+        , browsed = Nothing
+        , pinned = Nothing
+        , filtered = Dict.empty
+        }
+    , graph =
+        { data = Nothing
+        , current = Init
+        , snapshot = Nothing
+        }
+    , edge =
+        { browsed = Nothing
+        , pinned = Nothing
+        , filtered = Dict.empty
+        }
+    }
+
+
+initControlPanelsState : Dict String Visible
+initControlPanelsState =
+    Dict.fromList [ ( toString Navigator, True ), ( toString Filters, False ) ]
+
+
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    ( { phxSocket = PhxSocket.init flags.socketUrl
+      , socketUrl = flags.socketUrl
       , errorMessage = Nothing
       , userToken = flags.userToken
+      , operations = initOperations flags
+      , snapshots = Snapshots.init
+      , filterTabState = Tab.initialState
+      , controlPanelsState = initControlPanelsState
       }
     , joinChannel
     )
@@ -106,55 +136,137 @@ update msg model =
 
         --Ports OUT
         SendGraph ->
-            ( model, Ports.addToGraph (GraphEncode.encoder model.graph) )
+            case model.operations.graph.data of
+                Just graph ->
+                    ( model, Ports.addToGraph (GraphEncode.encoder graph) )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         InitGraph ->
-            ( model, Ports.initGraph (GraphEncode.encoder model.graph) )
+            case model.operations.graph.data of
+                Just graph ->
+                    (model)
+                        ! [ Task.perform (always GetNodeLabels) (Task.succeed ())
+                          , Task.perform (always GetEdgeTypes) (Task.succeed ())
+                          , Ports.initGraph (GraphEncode.encoder graph)
+                          ]
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         --Ports IN
         SetSearchNode (Ok searchNode) ->
-            ( { model | searchNode = Just searchNode }
-            , Task.perform (always GetNodeLocalGraph) (Task.succeed ())
-            )
+            let
+                newOps =
+                    ((Operations.setSearchedNode (Just searchNode)
+                        >> Operations.setGraphCurrentOperation AddLocal
+                     )
+                        model.operations
+                    )
+            in
+                ( { model | operations = newOps }
+                , Task.perform (always GetNodeLocalGraph) (Task.succeed ())
+                )
 
         SetSearchNode (Err searchNode) ->
             ( model, Cmd.none )
 
-        SetBrowsedNode (Ok nodeUuid) ->
+        SetBrowsedElement (Ok browsedElement) ->
             let
-                filtered_node =
-                    List.head <|
-                        List.filter
-                            (\x ->
-                                case x of
-                                    Node node ->
-                                        (Node.getGenericData node).id == nodeUuid
+                newModel =
+                    case browsedElement.elementType of
+                        EdgeElt ->
+                            updateBrowsedEdge browsedElement model
 
-                                    Edge _ ->
-                                        False
-                            )
-                            model.graph
-
-                node =
-                    case filtered_node of
-                        Just (Node node) ->
-                            Just node
-
-                        _ ->
-                            Nothing
+                        NodeElt ->
+                            updateBrowsedNode browsedElement model
             in
-                ( { model | browsedNode = node }, Cmd.none )
+                ( newModel, Cmd.none )
 
-        SetBrowsedNode (Err error) ->
+        SetBrowsedElement (Err error) ->
             ( { model
                 | errorMessage =
-                    Just ("Failed to set browsedNode: " ++ error)
+                    Just ("Failed to set browsedElement: " ++ error)
               }
             , Cmd.none
             )
 
-        SetGraphState (Ok graph) ->
-            ( { model | graph = graph }, Cmd.none )
+        UnsetBrowsedElement (Ok elementType) ->
+            let
+                newOps =
+                    case elementType of
+                        NodeElt ->
+                            Operations.setBrowsedNode Nothing model.operations
+
+                        EdgeElt ->
+                            Operations.setBrowsedEdge Nothing model.operations
+            in
+                ( { model | operations = newOps }, Cmd.none )
+
+        UnsetBrowsedElement (Err error) ->
+            ( { model
+                | errorMessage =
+                    Just ("Failed to unset browsedElement: " ++ error)
+              }
+            , Cmd.none
+            )
+
+        SetPinnedElement (Ok pinnedElement) ->
+            let
+                newModel =
+                    case pinnedElement.elementType of
+                        EdgeElt ->
+                            updatePinnedEdge pinnedElement model
+
+                        NodeElt ->
+                            updatePinnedNode pinnedElement model
+            in
+                ( newModel, Cmd.none )
+
+        SetPinnedElement (Err error) ->
+            ( { model
+                | errorMessage =
+                    Just ("Failed to unset pinnedElement: " ++ error)
+              }
+            , Cmd.none
+            )
+
+        SetGraphState (Ok snapshot) ->
+            let
+                newSnapshots =
+                    Snapshots.addNewSnapshot snapshot model.operations model.snapshots
+
+                cmds =
+                    case model.operations.graph.current of
+                        AddLocal ->
+                            Cmd.batch
+                                [ Task.perform (always <| ApplyFiltersOnLocalGraph NodeElt) (Task.succeed ())
+                                , Task.perform (always <| ApplyFiltersOnLocalGraph EdgeElt) (Task.succeed ())
+                                ]
+
+                        _ ->
+                            Cmd.none
+
+                newOps =
+                    case model.operations.graph.current of
+                        AddLocal ->
+                            Operations.setGraphCurrentOperation
+                                (FilterLocal 1)
+                                model.operations
+
+                        _ ->
+                            (Operations.setGraphCurrentOperation Waiting
+                                >> Operations.setGraphData Nothing
+                            )
+                                model.operations
+            in
+                ( { model
+                    | snapshots = newSnapshots
+                    , operations = newOps
+                  }
+                , cmds
+                )
 
         SetGraphState (Err error) ->
             ( { model
@@ -176,9 +288,15 @@ update msg model =
                 ( phxSocket, phxCmd ) =
                     PhxSocket.init model.socketUrl
                         --|> PhxSocket.withDebug
-                        |> PhxSocket.on "node_local_graph"
+                        |> PhxSocket.on "node:local_graph"
                             channelName
                             ReceiveNodeLocalGraph
+                        |> PhxSocket.on "node:labels"
+                            channelName
+                            ReceiveNodeLabels
+                        |> PhxSocket.on "edge:types"
+                            channelName
+                            ReceiveEdgeTypes
                         |> PhxSocket.join channel
             in
                 ( { model | phxSocket = phxSocket }
@@ -191,7 +309,7 @@ update msg model =
             )
 
         GetNodeLocalGraph ->
-            case model.searchNode of
+            case model.operations.node.searched of
                 Nothing ->
                     ( model, Cmd.none )
 
@@ -210,7 +328,7 @@ update msg model =
                                 ]
 
                         phxPush =
-                            PhxPush.init "node_local_graph" channelName
+                            PhxPush.init "node:local_graph" channelName
                                 |> PhxPush.withPayload payload
                                 |> PhxPush.onOk ReceiveNodeLocalGraph
                                 |> PhxPush.onError HandleSendError
@@ -231,207 +349,353 @@ update msg model =
                     Json.Decode.decodeValue GraphDecode.fromWsDecoder raw
 
                 localGraphCmd =
-                    case model.initGraph of
-                        True ->
+                    case model.operations.graph.current of
+                        Init ->
                             Task.perform (always InitGraph) (Task.succeed ())
 
-                        False ->
+                        _ ->
                             Task.perform (always SendGraph) (Task.succeed ())
+
+                newOps =
+                    Operations.setSearchedNode Nothing model.operations
             in
                 case decodedGraph of
                     Ok graph ->
-                        ( { model
-                            | graph = manageMetaData graph
-                            , initGraph = False
-                          }
-                        , localGraphCmd
-                        )
+                        let
+                            deDupedGraph =
+                                Graph.substractGraph graph
+                                    (Snapshots.getCurrent
+                                        model.snapshots
+                                    ).graph
+
+                            graphCmd =
+                                if List.length deDupedGraph > 0 then
+                                    localGraphCmd
+                                else
+                                    Cmd.none
+
+                            finalOps =
+                                Operations.setGraphData
+                                    (Just
+                                        (Graph.updateMetaData
+                                            model.operations.node.searched
+                                            graph
+                                        )
+                                    )
+                                    newOps
+                        in
+                            ( { model | operations = finalOps }, graphCmd )
 
                     Err error ->
                         ( { model
                             | errorMessage =
-                                Just ("Cannot decode received graph. -[" ++ error ++ "]")
+                                Just
+                                    ("Cannot decode received graph. -["
+                                        ++ error
+                                        ++ "]"
+                                    )
                           }
                         , Cmd.none
                         )
 
+        GetNodeLabels ->
+            let
+                phxPush =
+                    PhxPush.init "node:labels" channelName
+                        |> PhxPush.onOk ReceiveNodeLabels
+                        |> PhxPush.onError HandleSendError
 
-manageMetaData : Graph -> Graph
-manageMetaData graph =
-    List.map addClass graph
+                ( phxSocket, phxCmd ) =
+                    PhxSocket.push phxPush model.phxSocket
+            in
+                ( { model
+                    | phxSocket = phxSocket
+                    , errorMessage = Nothing
+                  }
+                , Cmd.map PhoenixMsg phxCmd
+                )
+
+        ReceiveNodeLabels raw ->
+            let
+                decodedLabels =
+                    Json.Decode.decodeValue ElementDecode.filterDecoder raw
+            in
+                case decodedLabels of
+                    Ok labelsList ->
+                        let
+                            elementFilters =
+                                Dict.fromList <|
+                                    List.map (\x -> ( x, True )) labelsList
+
+                            newOps =
+                                Operations.setNodeFilters
+                                    elementFilters
+                                    model.operations
+
+                            newSnapshots =
+                                Snapshots.setNodeFilters elementFilters
+                                    model.snapshots
+                        in
+                            ( { model
+                                | operations = newOps
+                                , snapshots = newSnapshots
+                              }
+                            , Cmd.none
+                            )
+
+                    Err error ->
+                        ( { model
+                            | errorMessage =
+                                Just
+                                    ("Cannot decode received node labels. -["
+                                        ++ error
+                                        ++ "]"
+                                    )
+                          }
+                        , Cmd.none
+                        )
+
+        GetEdgeTypes ->
+            let
+                phxPush =
+                    PhxPush.init "edge:types" channelName
+                        |> PhxPush.onOk ReceiveEdgeTypes
+                        |> PhxPush.onError HandleSendError
+
+                ( phxSocket, phxCmd ) =
+                    PhxSocket.push phxPush model.phxSocket
+            in
+                ( { model
+                    | phxSocket = phxSocket
+                    , errorMessage = Nothing
+                  }
+                , Cmd.map PhoenixMsg phxCmd
+                )
+
+        ReceiveEdgeTypes raw ->
+            let
+                decodedTypes =
+                    Json.Decode.decodeValue ElementDecode.filterDecoder raw
+            in
+                case decodedTypes of
+                    Ok typesList ->
+                        let
+                            elementFilters =
+                                Dict.fromList <|
+                                    List.map (\x -> ( x, True )) typesList
+
+                            newOps =
+                                Operations.setEdgeFilters
+                                    elementFilters
+                                    model.operations
+
+                            newSnapshots =
+                                Snapshots.setEdgeFilters
+                                    elementFilters
+                                    model.snapshots
+                        in
+                            ( { model
+                                | operations = newOps
+                                , snapshots = newSnapshots
+                              }
+                            , Cmd.none
+                            )
+
+                    Err error ->
+                        errorMessage
+                            ("Cannot decode received edge types. -["
+                                ++ error
+                                ++ "]"
+                            )
+                            model
+
+        ToggleFilter NodeElt filterName ->
+            let
+                newOps =
+                    Operations.toggleNodeFilterState filterName model.operations
+
+                filteredElements =
+                    Graph.getFilteredNodes [ filterName ] (Snapshots.getCurrent model.snapshots).graph
+
+                visible =
+                    Operations.getNodeFilterState filterName newOps
+
+                cmd =
+                    Ports.setVisibleElements <|
+                        OperationsEncode.visibleElementsEncoder
+                            NodeElt
+                            filteredElements
+                            visible
+            in
+                ( { model | operations = newOps }, cmd )
+
+        ToggleFilter EdgeElt filterName ->
+            let
+                newOps =
+                    Operations.toggleEdgeFilterState filterName model.operations
+
+                filteredElements =
+                    Graph.getFilteredEdges [ filterName ] (Snapshots.getCurrent model.snapshots).graph
+
+                visible =
+                    Operations.getEdgeFilterState filterName newOps
+
+                cmd =
+                    Ports.setVisibleElements <|
+                        OperationsEncode.visibleElementsEncoder
+                            EdgeElt
+                            filteredElements
+                            visible
+            in
+                ( { model | operations = newOps }, cmd )
+
+        ApplyFiltersOnLocalGraph NodeElt ->
+            let
+                filteredElements =
+                    case model.operations.graph.data of
+                        Just graph ->
+                            Graph.getFilteredNodes
+                                (Operations.getNodeActiveFilters model.operations)
+                                graph
+
+                        Nothing ->
+                            []
+
+                cmd =
+                    Ports.setVisibleElements <|
+                        OperationsEncode.visibleElementsEncoder
+                            NodeElt
+                            filteredElements
+                            False
+            in
+                ( model, cmd )
+
+        ApplyFiltersOnLocalGraph EdgeElt ->
+            let
+                filteredElements =
+                    case model.operations.graph.data of
+                        Just graph ->
+                            Graph.getFilteredEdges
+                                (Operations.getEdgeActiveFilters model.operations)
+                                graph
+
+                        Nothing ->
+                            []
+
+                cmd =
+                    Ports.setVisibleElements <|
+                        OperationsEncode.visibleElementsEncoder
+                            EdgeElt
+                            filteredElements
+                            False
+            in
+                ( model, cmd )
+
+        ResetFilters NodeElt ->
+            let
+                newOps =
+                    Operations.resetNodeFilters model.operations
+            in
+                ( { model | operations = newOps }
+                , Ports.setVisibleElements <|
+                    OperationsEncode.visibleElementsEncoder
+                        NodeElt
+                        [ "all" ]
+                        True
+                )
+
+        ResetFilters EdgeElt ->
+            let
+                newOps =
+                    Operations.resetEdgeFilters model.operations
+            in
+                ( { model | operations = newOps }
+                , Ports.setVisibleElements <|
+                    OperationsEncode.visibleElementsEncoder
+                        EdgeElt
+                        [ "all" ]
+                        True
+                )
+
+        FilterTabMsg state ->
+            ( { model | filterTabState = state }, Cmd.none )
+
+        ControlPanelState panel ->
+            let
+                newPanelsState =
+                    Dict.update (toString panel) toggleVisible model.controlPanelsState
+            in
+                ( { model | controlPanelsState = newPanelsState }, Cmd.none )
 
 
-addClass : Element -> Element
-addClass element =
-    case element of
-        Node node ->
-            addNodeClasses node
+toggleVisible : Maybe Visible -> Maybe Visible
+toggleVisible visible =
+    case visible of
+        Just v ->
+            Just (not v)
 
-        Edge edge ->
-            addEdgeClasses edge
+        Nothing ->
+            Just False
 
 
-addNodeClasses : NodeType -> Element
-addNodeClasses node =
+errorMessage : String -> Model -> ( Model, Cmd Msg )
+errorMessage message model =
+    ( { model | errorMessage = Just message }, Cmd.none )
+
+
+updateBrowsedEdge : BrowsedElement -> Model -> Model
+updateBrowsedEdge element model =
     let
-        classes =
-            Node.getLabels node
-                |> String.join ""
-                |> String.toLower
+        browsedEdge =
+            Graph.getEdge element.id (Snapshots.getCurrent model.snapshots).graph
+
+        newOps =
+            Operations.setBrowsedEdge browsedEdge model.operations
     in
-        Node { node | classes = classes }
+        { model | operations = newOps }
 
 
-addEdgeClasses : EdgeType -> Element
-addEdgeClasses edge =
+updateBrowsedNode : BrowsedElement -> Model -> Model
+updateBrowsedNode element model =
     let
-        classes =
-            edge
-                |> Edge.getType
-                |> String.toLower
+        browsedNode =
+            Graph.getNode element.id (Snapshots.getCurrent model.snapshots).graph
+
+        newOps =
+            Operations.setBrowsedNode browsedNode model.operations
     in
-        Edge { edge | classes = classes }
+        { model | operations = newOps }
 
 
-
---- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.batch
-        [ Ports.getLocalGraph
-            (Json.Decode.decodeValue
-                PortDecoder.localGraphDecoder
-                >> SetSearchNode
-            )
-        , Ports.newGraphState
-            (Json.Decode.decodeValue GraphDecode.decoder
-                >> SetGraphState
-            )
-        , Ports.displayNodeInfos ((Json.Decode.decodeValue Json.Decode.string) >> SetBrowsedNode)
-        , PhxSocket.listen model.phxSocket PhoenixMsg
-        ]
-
-
-
--- VIEW
-
-
-view : Model -> Html Msg
-view model =
-    div []
-        [ viewError model.errorMessage
-        , div [ class "row bg-silver rounded fill" ]
-            [ div
-                [ class "col-lg-9" ]
-                [ div [ class "row border border-primary cy-graph", id "cy" ]
-                    []
-                ]
-            , div [ class "col-lg-3 bg-gray rounded-right" ]
-                [ Grid.row [ Row.attrs [ class "rounded bg-secondary" ] ]
-                    [ Grid.col [ Col.lg12 ] [ text "Browse" ] ]
-                , Grid.row []
-                    [ Grid.col [ Col.lg12 ] [ viewNodeData model.browsedNode ]
-                    ]
-                ]
-            ]
-        ]
-
-
-viewError : Maybe String -> Html Msg
-viewError errorMessage =
+updatePinnedEdge : PinnedElement -> Model -> Model
+updatePinnedEdge element model =
     let
-        div_ =
-            case errorMessage of
-                Nothing ->
-                    div [] []
+        pinnedEdge =
+            case element.pin of
+                True ->
+                    model.operations.edge.browsed
 
-                Just errorMsg ->
-                    Grid.row []
-                        [ Grid.col [ Col.lg12 ]
-                            [ Alert.danger [ text errorMsg ] ]
-                        ]
+                False ->
+                    Nothing
+
+        newOps =
+            Operations.setPinnedEdge pinnedEdge model.operations
     in
-        div_
+        { model | operations = newOps }
 
 
-viewNodeData : Maybe NodeType -> Html Msg
-viewNodeData nodetoDisplay =
+updatePinnedNode : PinnedElement -> Model -> Model
+updatePinnedNode element model =
     let
-        dataToDisplay =
-            case nodetoDisplay of
-                Nothing ->
-                    div [] []
+        pinnedNode =
+            case element.pin of
+                True ->
+                    model.operations.node.browsed
 
-                Just node ->
-                    case node.data of
-                        GenericNode nodeData ->
-                            viewGenericNodeData nodeData
+                False ->
+                    Nothing
 
-                        PersonNode nodeData ->
-                            viewPersonNodeData nodeData
-
-                        PublicationNode nodeData ->
-                            viewPublicationNodeData nodeData
-
-                        ValueNode nodeData ->
-                            viewValueNodeData nodeData
+        newOps =
+            Operations.setPinnedNode pinnedNode model.operations
     in
-        Card.config []
-            |> Card.header [ class "text-center" ]
-                [ h5 [] [ text "Node infos" ] ]
-            |> Card.block [ Card.blockAttrs [ class "node-infos" ] ]
-                [ Card.text [] [ dataToDisplay ] ]
-            |> Card.view
-
-
-viewGenericNodeData : GenericNodeData -> Html Msg
-viewGenericNodeData nodeData =
-    div []
-        [ viewNodeLabel nodeData.labels ]
-
-
-viewPersonNodeData : PersonNodeData -> Html Msg
-viewPersonNodeData nodeData =
-    div []
-        [ viewNodeLabel nodeData.labels
-        , viewInfoLine "Prénom" nodeData.firstName
-        , viewInfoLine "Nom" nodeData.lastName
-        , viewInfoLine "Pseudonymes" nodeData.aka
-        , viewInfoLine "Lien Ars Margica" nodeData.internalLink
-        , viewInfoLine "Lien externe" nodeData.externalLink
-        ]
-
-
-viewPublicationNodeData : PublicationNodeData -> Html Msg
-viewPublicationNodeData nodeData =
-    div []
-        [ viewNodeLabel nodeData.labels
-        , viewInfoLine "Titre" nodeData.title
-
-        --, viewInfoLine "Lien Ars Margica" nodeData.titleFr
-        --, viewInfoLine "Lien Ars Margica" nodeData.internalLink
-        --, viewInfoLine "Lien externe" nodeData.externalLink
-        ]
-
-
-viewValueNodeData : ValueNodeData -> Html Msg
-viewValueNodeData nodeData =
-    div []
-        [ viewNodeLabel nodeData.labels
-        , viewInfoLine "Valeur" <| toString nodeData.value
-        ]
-
-
-viewNodeLabel : List String -> Html Msg
-viewNodeLabel labels =
-    viewInfoLine "Label" (String.join "," labels)
-
-
-viewInfoLine : String -> String -> Html Msg
-viewInfoLine label value =
-    Grid.row []
-        [ Grid.col [ Col.lg ] [ text <| label ++ ": " ]
-        , Grid.col [ Col.lg8 ] [ text <| value ]
-        ]
+        { model | operations = newOps }

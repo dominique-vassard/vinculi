@@ -86,6 +86,8 @@ node.degree {
 
 /* Publication */
 node.publication {
+    text-wrap: ellipsis;
+    text-max-width: 250;
     background-color : #20A84F;
     background-image : ../../../graph_style/images/node_icons/publication.png;
 }

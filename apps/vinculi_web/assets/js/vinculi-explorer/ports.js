@@ -98,7 +98,7 @@ var Ports = /** @class */ (function () {
             var _b = _a[_i], callbackName = _b[0], callbackFunc = _b[1];
             this._elmApp.ports[callbackName].unsubscribe(callbackFunc);
         }
-        // Activate all ports required at runtile
+        // Activate all ports required at runtime
         for (var _c = 0, _d = Object.entries(this._callbacks["runtime"]); _c < _d.length; _c++) {
             var _e = _d[_c], callbackName = _e[0], callbackFunc = _e[1];
             this._elmApp.ports[callbackName].subscribe(callbackFunc);
@@ -118,7 +118,7 @@ var Ports = /** @class */ (function () {
     /**
      * Send new graph state to Elm for further computations / displays / etc.
      *
-     * @param {string[]}   data     The actiulaized graph
+     * @param {GraphState}   data     The actualized graph state and a description
      *
      * @returns void
      */
@@ -126,14 +126,52 @@ var Ports = /** @class */ (function () {
         this._elmApp.ports.newGraphState.send(data);
     };
     /**
-     * Send Elm a node uuid in order to display its infos
+     * Send Elm a command in order to pin its infos
      *
-     * @param {string}   nodeUuid     The uuid of the node to display infos for
+     * @param {boolean}   pin         True to tpin, False to unpin
      *
      * @returns void
      */
-    Ports.prototype.sendNodeIdToDisplay = function (nodeUuid) {
-        this._elmApp.ports.displayNodeInfos.send(nodeUuid);
+    Ports.prototype.sendPinNodeCommand = function (pin) {
+        this._elmApp.ports.pinNodeInfos.send(pin);
+    };
+    /**
+     * Send Elm a element uuid in order to display its infos
+     *
+     * @param {string} elementId       The id of the element to display
+     * @param {string} elementType     The type of the element to display
+     */
+    Ports.prototype.sendElementIdToDisplay = function (elementId, elementType) {
+        var params = {
+            "id": elementId,
+            "elementType": elementType
+        };
+        this._elmApp.ports.displayElementInfos.send(params);
+    };
+    /**
+     * Send Elm a command in order to hide an elment's infos
+     *
+     * @param {string} elementType     The type of the element to display
+     *
+     * @returns void
+     */
+    Ports.prototype.hideElementInfos = function (elementType) {
+        this._elmApp.ports.hideElementInfos.send(elementType);
+    };
+    /**
+     * Send Elm a command in order to pin an elment's infos
+     *
+     * @param {string} elementType     The type of the element to display
+     * @param {boolean}   pin         True to tpin, False to unpin
+     *
+     * @returns void
+     */
+    Ports.prototype.sendElementIdToPin = function (elementType, pin) {
+        var params = {
+            "elementType": elementType,
+            "pin": pin
+        };
+        this._elmApp.ports.pinElementInfos.send(params);
     };
     return Ports;
 }());

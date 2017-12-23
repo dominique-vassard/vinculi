@@ -27,7 +27,7 @@
       <%= account_menu(@conn) %>
       <ul class="navbar-nav">
         <li class="nav-item active">
-          <a class="nav-link" href="http://arsmargica.fr" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i> Ars Magica</a>
+          <a class="nav-link" href="http://arsmagica.fr" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i> Ars Magica</a>
         </li>
       </ul>
 

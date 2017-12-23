@@ -7,6 +7,20 @@ defmodule VinculiGraph.Node do
   alias VinculiGraph.Format.Cytoscape
 
   @doc """
+  Return all labels used in database.
+
+  ### Example
+
+      iex> VinculiGraph.Node.get_labels()
+      ["Town", "Country", "Continent", "Language", "Degree", "Year", "Institution",
+       "Profession", "Domain", "School", "Person", "Publication", "Translation"]
+  """
+  def get_labels() do
+    Repo.all(Node.get_labels_cql())
+    |> Enum.map(fn %{"label" => label} -> label end)
+  end
+
+  @doc """
   Performs a fuzzy search on the given parameters.
   Given label must exists in VinculiGraph.Schema.
 

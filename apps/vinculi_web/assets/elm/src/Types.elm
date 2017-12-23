@@ -2,6 +2,9 @@ module Types exposing (..)
 
 import Phoenix.Socket as PhxSocket exposing (Socket)
 import Json.Encode exposing (Value)
+import Dict exposing (Dict)
+import Utils.ZipList as ZipList exposing (ZipList)
+import Bootstrap.Tab as Tab
 
 
 --- FLAGS
@@ -19,18 +22,12 @@ type alias Flags =
 --- NODES
 
 
-type alias GenericNodeData =
-    { id : String
-    , labels : List String
-    , name : String
-    }
-
-
 type alias CommonNodeData a =
     { a
         | id : String
         , labels : List String
         , name : String
+        , parentNode : Maybe String
     }
 
 
@@ -38,13 +35,53 @@ type alias CommonElementData a =
     { a | classes : String }
 
 
+type alias GenericNodeData =
+    { id : String
+    , labels : List String
+    , name : String
+    , parentNode : Maybe String
+    }
+
+
+type alias InstitutionNodeData =
+    { id : String
+    , labels : List String
+    , name : String
+    , parentNode : Maybe String
+    , institution_type : String
+    }
+
+
+type alias LocationNodeData =
+    { id : String
+    , labels : List String
+    , name : String
+    , parentNode : Maybe String
+    , lat : Maybe Float
+    , long : Maybe Float
+    }
+
+
 type alias PersonNodeData =
     { id : String
     , labels : List String
     , name : String
+    , parentNode : Maybe String
     , lastName : String
     , firstName : String
     , aka : String
+    , internalLink : String
+    , externalLink : String
+    }
+
+
+type alias PublicationNodeData =
+    { id : String
+    , labels : List String
+    , name : String
+    , parentNode : Maybe String
+    , title : String
+    , titleFr : String
     , internalLink : String
     , externalLink : String
     }
@@ -54,20 +91,15 @@ type alias ValueNodeData =
     { id : String
     , labels : List String
     , name : String
+    , parentNode : Maybe String
     , value : Int
-    }
-
-
-type alias PublicationNodeData =
-    { id : String
-    , labels : List String
-    , name : String
-    , title : String
     }
 
 
 type NodeData
     = GenericNode GenericNodeData
+    | InstitutionNode InstitutionNodeData
+    | LocationNode LocationNodeData
     | PersonNode PersonNodeData
     | PublicationNode PublicationNodeData
     | ValueNode ValueNodeData
@@ -149,37 +181,146 @@ type Element
     | Edge EdgeType
 
 
+type alias ElementId =
+    String
+
+
 type alias Graph =
     List Element
 
 
-type alias Model =
-    { phxSocket : PhxSocket.Socket Msg
-    , graph : Graph
-    , socketUrl : String
-    , initGraph : Bool
-    , searchNode : Maybe SearchNode
-    , browsedNode : Maybe NodeType
-    , errorMessage : Maybe String
-    , userToken : String
+
+--- MODEL
+
+
+type ElementType
+    = NodeElt
+    | EdgeElt
+
+
+type alias Visible =
+    Bool
+
+
+type alias FilterName =
+    String
+
+
+type alias ElementFilters =
+    Dict FilterName Visible
+
+
+type alias BrowsedElement =
+    { id : String
+    , elementType : ElementType
     }
 
 
-type alias SearchNode =
+type alias PinnedElement =
+    { elementType : ElementType
+    , pin : Bool
+    }
+
+
+type alias NodeOperations =
+    { searched : Maybe SearchNodeType
+    , browsed : Maybe NodeType
+    , pinned : Maybe NodeType
+    , filtered : ElementFilters
+    }
+
+
+type alias EdgeOperations =
+    { browsed : Maybe EdgeType
+    , pinned : Maybe EdgeType
+    , filtered : ElementFilters
+    }
+
+
+type GraphOperationName
+    = Init
+    | Waiting
+    | AddLocal
+    | FilterLocal Int
+    | Filter
+
+
+type alias GraphOperations =
+    { data : Maybe Graph
+    , current : GraphOperationName
+    , snapshot : Maybe GraphSnapshot
+    }
+
+
+type alias Operations =
+    { node : NodeOperations
+    , graph : GraphOperations
+    , edge : EdgeOperations
+    }
+
+
+type alias ElementState =
+    { filters : ElementFilters
+    }
+
+
+type alias GraphSnapshot =
+    { graph : Graph
+    , description : String
+    }
+
+
+type alias Snapshot =
+    { graph : Graph
+    , description : String
+    , node : ElementState
+    , edge : ElementState
+    }
+
+
+type alias Model =
+    { phxSocket : PhxSocket.Socket Msg
+    , socketUrl : String
+    , userToken : String
+    , errorMessage : Maybe String
+    , operations : Operations
+    , snapshots : ZipList Snapshot
+    , filterTabState : Tab.State
+    , controlPanelsState : Dict String Visible
+    }
+
+
+type alias SearchNodeType =
     { uuid : String
     , labels : List String
     }
+
+
+type Panel
+    = Navigator
+    | Filters
 
 
 type Msg
     = PhoenixMsg (PhxSocket.Msg Msg)
     | HandleSendError Json.Encode.Value
     | GetNodeLocalGraph
+    | GetNodeLabels
+    | GetEdgeTypes
     | ReceiveNodeLocalGraph Json.Encode.Value
+    | ReceiveNodeLabels Json.Encode.Value
+    | ReceiveEdgeTypes Json.Encode.Value
     | InitGraph
     | SendGraph
     | Join
     | JoinError
-    | SetSearchNode (Result String SearchNode)
-    | SetBrowsedNode (Result String String)
-    | SetGraphState (Result String Graph)
+    | SetSearchNode (Result String SearchNodeType)
+    | SetBrowsedElement (Result String BrowsedElement)
+    | UnsetBrowsedElement (Result String ElementType)
+    | SetPinnedElement (Result String PinnedElement)
+    | SetGraphState (Result String GraphSnapshot)
+    | ToggleFilter ElementType FilterName
+    | ApplyFiltersOnLocalGraph ElementType
+    | ResetFilters ElementType
+    | FilterTabMsg Tab.State
+    | ControlPanelState Panel

@@ -62,6 +62,9 @@ export class GraphManager {
         "runtime": {
             "addToGraph": (localGraph: cytoscape.ElementDefinition[]) => {
                 this.addData(localGraph)
+            },
+            "setVisibleElements": (visibleElements: Ports.VisibleElements) => {
+                this.setVisibleElements(visibleElements)
             }
         }
     }
@@ -97,11 +100,56 @@ export class GraphManager {
      *
      */
     initHandlers(): GraphManager {
-        this._cy.on('click', 'node',
+        // Double tap: deploy node
+        this._cy.on('doubleTap', 'node',
             (event) => { this.nodeDeploymentHandler(event) }
         )
+
+        // Tap on canvas: unpin node infos
+        this._cy.on('tap',
+            (event) => { this.unpinNodeInfosHandler(event) }
+        )
+
+        // Tap on node: pin node infos
+        this._cy.on('tap', 'node',
+            (event) => { this.pinNodeInfosHandler(event) }
+        )
+
+        // Mouseover node: display node infos
         this._cy.on('mouseover', 'node',
-            (event) => { this.showNodeInfosHandler(event) }
+            (event) => {
+                this.showNodeInfosHandler(event)
+                this.highlightNodeNeighboursOnHandler(event)
+            }
+        )
+
+        // Mouseout node :hide node infos
+        this._cy.on('mouseout', 'node',
+            (event) => {
+                this.hideNodeInfosHandler(event)
+                this.deActivateHighlight(event)
+            }
+        )
+
+        // Tap on node: pin node infos
+        this._cy.on('tap', 'edge',
+            (event) => { this.pinEdgeInfosHandler(event) }
+        )
+
+        // Mouseover edge: display edge infos
+        this._cy.on('mouseover', 'edge',
+            (event) => {
+                this.showEdgeInfosHandler(event)
+                this.highlightEdgeNeighboursOnHandler(event)
+            }
+        )
+
+        // Mouseout edge :hide edge infos
+        this._cy.on('mouseout', 'edge',
+            (event) => {
+                this.hideEdgeInfosHandler(event)
+                this.deActivateHighlight(event)
+            }
         )
         return this
     }
@@ -159,12 +207,12 @@ export class GraphManager {
     /////////////////////////////////////////////////////////////////
     /**
      * Manage node deployment
-     * TODO: Hide/show children if node data has yet been retrieved
-     *       Else call the deploy method
+     * Hide/show children if node data has yet been retrieved
+     * Else call the deploy method
      *
      * TODO: Update filters when done
      *
-     * @param  cytoscape.EventObject   event    Event attached to this method (click/tap on node)
+     * @param  cytoscape.EventObject   event    Event attached to this method (double on node)
      * @return void
      */
     nodeDeploymentHandler(event: cytoscape.EventObject): void {
@@ -174,21 +222,142 @@ export class GraphManager {
             "labels": node.data()["labels"]
         }
         this._currentNode = node
-        this._ports.getLocalGraph(data)
+
+        const children = this._cy.elements("node[parent-node = '" + node.id() + "']")
+        if (children.length > 0) {
+            const visible = children.some((node, _) => node.visible() == true)
+            if (visible) {
+                children.hide()
+            } else {
+                children.show()
+            }
+        } else {
+            this._ports.getLocalGraph(data)
+
+        }
+
     }
 
     /**
      * Manage node infos displaying
-     * Send node uuid to Elm for dsiplaying
+     * Send node uuid to Elm for displaying
      *
-     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover on node)
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover node)
      * @return void
      */
     showNodeInfosHandler(event: cytoscape.EventObject): void {
         const node = event.target
-        this._ports.sendNodeIdToDisplay(node.id())
+        this._ports.sendElementIdToDisplay(node.id(), "node")
     }
 
+    /**
+     * Manage node infos hiding
+     * Send command to Elm for hiding node infos
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseout node)
+     * @return void
+     */
+    hideNodeInfosHandler(event: cytoscape.EventObject): void {
+        this._ports.hideElementInfos("node")
+    }
+
+    /**
+     * Manage node infos pinning
+     * Send command to Elm for pinning
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (click/tap on node)
+     * @return void
+     */
+    pinNodeInfosHandler(event: cytoscape.EventObject): void {
+        const node = event.target
+        this._ports.sendElementIdToPin("node", true)
+    }
+
+    /**
+     * Manage edge infos pinning
+     * Send command to Elm for pinning
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (click/tap on node)
+     * @return void
+     */
+    pinEdgeInfosHandler(event: cytoscape.EventObject): void {
+        const edge = event.target
+        this._ports.sendElementIdToPin("edge", true)
+    }
+
+    /**
+     * Manage node infos unpinning
+     * Send command to Elm for unpinning
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (click/tap on canvas)
+     * @return void
+     */
+    unpinNodeInfosHandler(event: cytoscape.EventObject): void {
+        const target = event.target
+        if (target === this._cy) {
+            this._ports.sendElementIdToPin("node", false)
+            this._ports.sendElementIdToPin("edge", false)
+        }
+    }
+
+    /**
+     * Manage edge infos displaying
+     * Send edge uuid to Elm for displaying
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover node)
+     * @return void
+     */
+    showEdgeInfosHandler(event: cytoscape.EventObject): void {
+        const edge = event.target
+        this._ports.sendElementIdToDisplay(edge.id(), "edge")
+    }
+
+    /**
+     * Manage edge infos displaying
+     * Send edge uuid for Elm to hide its infos
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover node)
+     * @return void
+     */
+    hideEdgeInfosHandler(event: cytoscape.EventObject): void {
+        this._ports.hideElementInfos("edge")
+    }
+
+    /**
+     * Highlight overed node for better visualisation
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover node)
+     * @return void
+     */
+    highlightNodeNeighboursOnHandler(event: cytoscape.EventObject): void {
+        const node = event.target
+        const neighborhood = node.closedNeighborhood()
+        this._cy.elements().addClass('faded')
+        neighborhood.removeClass('faded')
+    }
+
+    /**
+     * Highlight overed edge for better visualisation
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseover edge)
+     * @return void
+     */
+    highlightEdgeNeighboursOnHandler(event: cytoscape.EventObject): void {
+        const edge = event.target
+        const neighborhood = edge.closedNeighborhood().add(edge.source()).add(edge.target())
+        this._cy.elements().addClass('faded')
+        neighborhood.removeClass('faded')
+    }
+
+    /**
+     * De-activate highlighting
+     *
+     * @param  cytoscape.EventObject   event    Event attached to this method (mouseout node / edge)
+     * @return void
+     */
+    deActivateHighlight(event: cytoscape.EventObject): void {
+        this._cy.elements().removeClass('faded');
+    }
     /////////////////////////////////////////////////////////////////
     //                       PORTS CALLBACKS                       //
     /////////////////////////////////////////////////////////////////
@@ -213,18 +382,22 @@ export class GraphManager {
                 name: 'concentric',
                 // fit: false,
                 animate: true,
-                avoidOverlap: true
+                avoidOverlap: true,
+                spacingFactor: 4,
+                animationDuration: 300
             }
         })
         this._currentNode = undefined
 
+        // Hack to allow this._cy.elements to rellay hold elements data
+        this._cy.add(initialGraph)
+
         // InitGraphPort is not useful anymore
         // Then unsuscribe
         this._ports.postInit()
+        this._registerDoubleTapEvent()
         this.initHandlers()
-        // for some reason, this._cy.elements is not yey accessbile
-        // Then we don't send graph state, it will be with the first action on graph
-        // this.sendNewGraphState()
+        this.sendNewGraphState("Init")
     }
 
     /**
@@ -255,7 +428,7 @@ export class GraphManager {
 
     /**
      * Add new local graph to current graph
-     * If ther is some:
+     * If there is some:
      *     - display lcoal graph nodes and edges
      *     - focus on them
      *
@@ -266,18 +439,85 @@ export class GraphManager {
             {
                 name: 'concentric',
                 boundingBox: this.getBoundingBox(),
-                animate: true
+                animate: true,
+                spacingFactor: 3,
+                animationDuration: 300,
             }
         this._cy.add(localGraph).layout(layout_config).run()
-        this.sendNewGraphState()
+        this.sendNewGraphState("Expand node")
     }
 
     /**
      * Send new graph state to Elm
      *
+     * WARNING: Data must be send AFTER the animation has finished
+     * otherwise elements postion won't be the right ones!
+     *
+     * @param  {string}       The action related to the new graph state
+     *
      * @returns void
      */
-    sendNewGraphState(): void {
-        this._ports.sendNewGraphState(this._cy.elements().jsons())
+    sendNewGraphState(description: string): void {
+        setTimeout(()=>{
+            const data = {
+                data: this._cy.elements().jsons(),
+                description: description
+            }
+            this._ports.sendNewGraphState(data)
+        }, 300)
+    }
+
+    /**
+     * Hide / show elements
+     * if send elementIds is ["all"], all elements of the given type should be hidden / shown.
+     *
+     * @param {Ports.VisibleElements} elements    Data about elements to show/hide
+     */
+    setVisibleElements(elements:Ports.VisibleElements): void {
+        if (elements.elementIds.length == 0) {
+            return
+        }
+
+        // Manage collections
+        let selectors
+        // Get all element of a type
+        if (elements.elementIds.toString() == "all") {
+            selectors = elements.elementType
+        }
+        // Get only those with the given ids
+        else {
+            selectors = elements.elementIds.map(x => elements.elementType + '[id="' + x + '"]').join(", ")
+        }
+        let elts = this._cy.elements(selectors)
+        if (elements.visible) {
+            elts.style('display', 'element')
+        } else {
+            elts.style('display', 'none')
+        }
+
+        this.sendNewGraphState("Filter")
+    }
+
+    /**
+     * Add event "doubleTap" to cy
+     *
+     */
+    _registerDoubleTapEvent() {
+        let tappedBefore
+        let tappedTimeout
+        this._cy.on('tap', (event) => {
+            let tappedNow = event.target
+            if (tappedTimeout && tappedBefore) {
+                clearTimeout(tappedTimeout)
+            }
+
+            if (tappedBefore == tappedNow) {
+                tappedNow.emit('doubleTap')
+                tappedBefore = null
+            } else {
+                tappedTimeout = setTimeout( () => tappedBefore = null, 300)
+                tappedBefore = tappedNow
+            }
+        })
     }
 }

@@ -2,11 +2,10 @@ defmodule VinculiWeb.ConstellationController do
   use VinculiWeb, :controller
   use Drab.Controller
 
-  alias VinculiGraph.Meta
-  # alias VinculiGraph.Node
+  alias VinculiGraph.Node
 
   def index(conn, _params) do
-    labels = Meta.list_labels()
+    labels = Node.get_labels()
 
     render conn, "index.html", labels: labels, fields: [], results: []
   end

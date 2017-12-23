@@ -2,9 +2,23 @@
  * Callbacks interface definition
  */
 export interface Callbacks {
-    [category:string]: {
+    [category: string]: {
         [callbackName: string]: Function
     }
+}
+
+export interface GraphState {
+    data: string[],
+    description: string
+}
+
+export interface VisibleElements {
+    // The type of elements to show/hide: 'node' or 'edge'
+    elementType: string,
+    // List of elements ids to show/hide
+    elementIds: string[],
+    // Wether elements have to be shown (true) or hide (false)
+    visible: boolean
 }
 
 /**
@@ -57,7 +71,7 @@ export class Ports {
      * @param {any}         ElmApp       The elm application to use (for ports init)
      * @param {Callbacks}   callbacks    The callbacks to use for each ports
      */
-    constructor(elmApp: any, callbacks:Callbacks) {
+    constructor(elmApp: any, callbacks: Callbacks) {
         this._callbacks = callbacks
         this._elmApp = elmApp
     }
@@ -104,7 +118,7 @@ export class Ports {
             this._elmApp.ports[callbackName].unsubscribe(callbackFunc)
         }
 
-        // Activate all ports required at runtile
+        // Activate all ports required at runtime
         for (let [callbackName, callbackFunc] of Object.entries(this._callbacks["runtime"])) {
             this._elmApp.ports[callbackName].subscribe(callbackFunc)
         }
@@ -118,29 +132,74 @@ export class Ports {
      *
      * @returns void
      */
-    getLocalGraph(data: NodeSearchData):void {
+    getLocalGraph(data: NodeSearchData): void {
         this._elmApp.ports.getLocalGraph.send(data)
     }
 
     /**
      * Send new graph state to Elm for further computations / displays / etc.
      *
-     * @param {string[]}   data     The actiulaized graph
+     * @param {GraphState}   data     The actualized graph state and a description
      *
      * @returns void
      */
-    sendNewGraphState(data: string[]): void {
+    sendNewGraphState(data: GraphState): void {
         this._elmApp.ports.newGraphState.send(data)
     }
 
     /**
-     * Send Elm a node uuid in order to display its infos
+     * Send Elm a command in order to pin its infos
      *
-     * @param {string}   nodeUuid     The uuid of the node to display infos for
+     * @param {boolean}   pin         True to tpin, False to unpin
      *
      * @returns void
      */
-    sendNodeIdToDisplay(nodeUuid: string):void {
-        this._elmApp.ports.displayNodeInfos.send(nodeUuid)
+    sendPinNodeCommand(pin: boolean):void {
+        this._elmApp.ports.pinNodeInfos.send(pin)
+    }
+
+
+
+    /**
+     * Send Elm a element uuid in order to display its infos
+     *
+     * @param {string} elementId       The id of the element to display
+     * @param {string} elementType     The type of the element to display
+     */
+    sendElementIdToDisplay(elementId:string, elementType:string) : void {
+        const params = {
+            "id": elementId,
+            "elementType": elementType
+        }
+
+        this._elmApp.ports.displayElementInfos.send(params)
+    }
+
+    /**
+     * Send Elm a command in order to hide an elment's infos
+     *
+     * @param {string} elementType     The type of the element to display
+     *
+     * @returns void
+     */
+    hideElementInfos(elementType:string):void {
+        this._elmApp.ports.hideElementInfos.send(elementType)
+    }
+
+    /**
+     * Send Elm a command in order to pin an elment's infos
+     *
+     * @param {string} elementType     The type of the element to display
+     * @param {boolean}   pin         True to tpin, False to unpin
+     *
+     * @returns void
+     */
+    sendElementIdToPin(elementType:string, pin: boolean): void {
+        const params = {
+            "elementType": elementType,
+            "pin": pin
+        }
+
+        this._elmApp.ports.pinElementInfos.send(params)
     }
 }

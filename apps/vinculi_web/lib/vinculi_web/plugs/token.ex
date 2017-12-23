@@ -9,7 +9,7 @@ defmodule VinculiWeb.TokenPlug do
         user = Coherence.current_user(conn)
         if user do
             salt = VinculiWeb.Endpoint.config(:secret_key_base)
-            token = Phoenix.Token.sign(conn, salt, user.id)
+            token = Phoenix.Token.sign(VinculiWeb.Endpoint, salt, user.id)
             assign(conn, :user_token, token)
         else
             conn
