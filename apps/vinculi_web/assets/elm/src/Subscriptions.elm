@@ -2,7 +2,6 @@ module Subscriptions exposing (subscriptions)
 
 import Json.Decode exposing (decodeValue)
 import Phoenix.Socket as PhxSocket exposing (listen)
-import Bootstrap.Accordion as Accordion exposing (subscriptions)
 import Types
     exposing
         ( Model
@@ -13,7 +12,6 @@ import Types
             , SetBrowsedElement
             , UnsetBrowsedElement
             , SetPinnedElement
-            , ControlPanelsMsg
             )
         )
 import Ports exposing (..)
@@ -52,5 +50,4 @@ subscriptions model =
                 >> SetPinnedElement
             )
         , PhxSocket.listen model.phxSocket PhoenixMsg
-        , Accordion.subscriptions model.controlPanelsState ControlPanelsMsg
         ]

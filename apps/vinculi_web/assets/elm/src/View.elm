@@ -1,6 +1,5 @@
 module View exposing (view)
 
-import Bootstrap.Accordion as Accordion
 import Bootstrap.Alert as Alert
 import Bootstrap.Card as Card
 import Bootstrap.Grid as Grid
@@ -10,12 +9,12 @@ import Bootstrap.ListGroup as ListGroup
 import Bootstrap.Tab as Tab
 import Dict
 import Html exposing (Html, a, button, div, i, h5, h6, text)
-import Html.Attributes exposing (class, href, id, style)
+import Html.Attributes exposing (attribute, class, classList, href, id, style)
 import Html.Events exposing (onClick)
 import Types
     exposing
         ( Model
-        , Msg(ToggleFilter, ResetFilters, FilterTabMsg, ControlPanelsMsg)
+        , Msg(ToggleFilter, ResetFilters, FilterTabMsg, ControlPanelState)
         , EdgeType
         , NodeType
         , Operations
@@ -42,6 +41,7 @@ import Types
         , PersonNodeData
         , PublicationNodeData
         , ValueNodeData
+        , Panel(Navigator, Filters)
         )
 
 
@@ -61,73 +61,16 @@ view model =
                     []
                 ]
             , Grid.col [ Col.lg3, Col.attrs [ class "bg-gray rounded-right" ] ]
-                [ Grid.row [ Row.attrs [ class "rounded-top bg-darken-2 control-panel-panel" ] ]
-                    [ Grid.col [ Col.lg12, Col.attrs [ class "text-center" ] ] [ h6 [] [ text "Navigateur" ] ] ]
-                , Grid.row []
-                    [ Grid.col [ Col.lg12, Col.attrs [ class "control-panel-navigator" ] ]
-                        [ viewNodeData <| nodeToDisplay model.operations.node
-                        , viewEdgeData <| edgeToDisplay model.operations.edge
+                [ Grid.row []
+                    [ Grid.col [ Col.lg12, Col.attrs [ class "p-0", id "control-panels", attribute "data-children" "cpanel" ] ]
+                        [ div [ class "cpanels" ]
+                            [ viewPanelTitle model Navigator "Navigateur" "panel-navigator" True
+                            , viewPanelNavigator model
+                            , viewPanelTitle model Filters "Filtres" "panel-filters" False
+                            , viewPanelFilters model
+                            ]
                         ]
                     ]
-                , Grid.row []
-                    [ Grid.col [ Col.lg12, Col.attrs [ class "p-0" ] ]
-                        [ Accordion.config ControlPanelsMsg
-                            |> Accordion.withAnimation
-                            |> Accordion.cards
-                                [ --Accordion.card
-                                  --    { id = "navigator"
-                                  --    , options = [ Card.attrs [ class "rounded-top" ] ]
-                                  --    , header =
-                                  --        Accordion.header
-                                  --            [ class "p-1 control-panel-panel rounded-top"
-                                  --            ]
-                                  --        <|
-                                  --            Accordion.toggle [ class "control-panel-title" ]
-                                  --                [ text "Navigateur"
-                                  --                ]
-                                  --    , blocks =
-                                  --        [ Accordion.block [ Card.blockAttrs [ class "rounded-0" ] ]
-                                  --            [ Card.text []
-                                  --                [ div [ class "control-panel-navigator" ]
-                                  --                    [ viewNodeData <| nodeToDisplay model.operations.node
-                                  --                    , viewEdgeData <| edgeToDisplay model.operations.edge
-                                  --                    ]
-                                  --                ]
-                                  --            ]
-                                  --        ]
-                                  --    }
-                                  --,
-                                  Accordion.card
-                                    { id = "filters"
-                                    , options = [ Card.attrs [ class "rounded-top" ] ]
-                                    , header =
-                                        Accordion.header
-                                            [ class "p-1 control-panel-panel rounded-top"
-                                            ]
-                                            (Accordion.toggle [ class "control-panel-title" ]
-                                                [ text " Filtres"
-                                                ]
-                                            )
-                                            |> Accordion.prependHeader
-                                                [ i [ class "fa fa-angle-right" ] [] ]
-                                    , blocks =
-                                        [ Accordion.block []
-                                            [ Card.text [] [ viewTabFilters model ]
-                                            ]
-                                        ]
-                                    }
-                                ]
-                            |> Accordion.view model.controlPanelsState
-                        ]
-                    ]
-
-                --, Grid.row [ Row.attrs [ class "bg-darken-2 control-panel-panel" ] ]
-                --    [ Grid.col [ Col.lg12, Col.attrs [ class "text-center" ] ] [ h6 [] [ text "Filtres" ] ] ]
-                --, Grid.row []
-                --    [ Grid.col [ Col.lg12 ]
-                --        [ viewTabFilters model
-                --        ]
-                --    ]
                 ]
             ]
         ]
@@ -148,6 +91,56 @@ viewError errorMessage =
                         ]
     in
         div_
+
+
+viewPanelTitle : Model -> Panel -> String -> String -> Bool -> Html Msg
+viewPanelTitle model panel title panelId isExpanded =
+    div [ class "rounded-top control-panel-title p-1" ]
+        [ a
+            [ attribute "data-toggle" "collapse"
+            , attribute "data-parent" "control-panels"
+            , href <| "#" ++ panelId
+            , attribute "aria-expanded" (toString isExpanded)
+            , attribute "aria-controls" panelId
+            , onClick (ControlPanelState panel)
+            ]
+            [ i
+                [ classList
+                    [ ( "fa fa-angle-down link"
+                      , (Dict.get (toString panel) model.controlPanelsState) == Just True
+                      )
+                    , ( "fa fa-angle-right link"
+                      , (Dict.get (toString panel) model.controlPanelsState) == Just False
+                      )
+                    ]
+                ]
+                [ text <| " " ++ title
+                ]
+            ]
+        ]
+
+
+viewPanelNavigator : Model -> Html Msg
+viewPanelNavigator model =
+    div
+        [ id "panel-navigator"
+        , class "control-panel-navigator collapse show"
+        , attribute "role" "tabpanel"
+        ]
+        [ viewNodeData <| nodeToDisplay model.operations.node
+        , viewEdgeData <| edgeToDisplay model.operations.edge
+        ]
+
+
+viewPanelFilters : Model -> Html Msg
+viewPanelFilters model =
+    div
+        [ id "panel-filters"
+        , class "p-1 collapse"
+        , attribute "role" "tabpanel"
+        ]
+        [ viewTabFilters model
+        ]
 
 
 viewTabFilters : Model -> Html Msg
@@ -192,18 +185,22 @@ viewElementFilters elementType elementFilters =
 
 viewElementFilter : ElementType -> ( FilterName, Visible ) -> Html Msg
 viewElementFilter elementType ( filterName, visible ) =
-    let
-        iconClass =
-            case visible of
-                True ->
-                    "fa fa-eye link"
-
-                False ->
-                    "fa fa-eye-slash link"
-    in
-        div [ onClick (ToggleFilter elementType filterName) ]
-            [ i [ class iconClass ] [ text <| " " ++ filterName ]
+    div
+        [ onClick (ToggleFilter elementType filterName)
+        , classList
+            [ ( "text-disabled", not visible )
             ]
+        ]
+        [ i
+            [ classList
+                [ ( "link", True )
+                , ( "filter-list", True )
+                , ( "fa fa-eye", visible )
+                , ( "fa fa-eye-slash", not visible )
+                ]
+            ]
+            [ text <| " " ++ filterName ]
+        ]
 
 
 nodeToDisplay : NodeOperations -> Maybe NodeType

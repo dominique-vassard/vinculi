@@ -5837,135 +5837,6 @@ var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required = F3(
 			decoder);
 	});
 
-var _debois$elm_dom$DOM$className = A2(
-	_elm_lang$core$Json_Decode$at,
-	{
-		ctor: '::',
-		_0: 'className',
-		_1: {ctor: '[]'}
-	},
-	_elm_lang$core$Json_Decode$string);
-var _debois$elm_dom$DOM$scrollTop = A2(_elm_lang$core$Json_Decode$field, 'scrollTop', _elm_lang$core$Json_Decode$float);
-var _debois$elm_dom$DOM$scrollLeft = A2(_elm_lang$core$Json_Decode$field, 'scrollLeft', _elm_lang$core$Json_Decode$float);
-var _debois$elm_dom$DOM$offsetTop = A2(_elm_lang$core$Json_Decode$field, 'offsetTop', _elm_lang$core$Json_Decode$float);
-var _debois$elm_dom$DOM$offsetLeft = A2(_elm_lang$core$Json_Decode$field, 'offsetLeft', _elm_lang$core$Json_Decode$float);
-var _debois$elm_dom$DOM$offsetHeight = A2(_elm_lang$core$Json_Decode$field, 'offsetHeight', _elm_lang$core$Json_Decode$float);
-var _debois$elm_dom$DOM$offsetWidth = A2(_elm_lang$core$Json_Decode$field, 'offsetWidth', _elm_lang$core$Json_Decode$float);
-var _debois$elm_dom$DOM$childNodes = function (decoder) {
-	var loop = F2(
-		function (idx, xs) {
-			return A2(
-				_elm_lang$core$Json_Decode$andThen,
-				function (_p0) {
-					return A2(
-						_elm_lang$core$Maybe$withDefault,
-						_elm_lang$core$Json_Decode$succeed(xs),
-						A2(
-							_elm_lang$core$Maybe$map,
-							function (x) {
-								return A2(
-									loop,
-									idx + 1,
-									{ctor: '::', _0: x, _1: xs});
-							},
-							_p0));
-				},
-				_elm_lang$core$Json_Decode$maybe(
-					A2(
-						_elm_lang$core$Json_Decode$field,
-						_elm_lang$core$Basics$toString(idx),
-						decoder)));
-		});
-	return A2(
-		_elm_lang$core$Json_Decode$map,
-		_elm_lang$core$List$reverse,
-		A2(
-			_elm_lang$core$Json_Decode$field,
-			'childNodes',
-			A2(
-				loop,
-				0,
-				{ctor: '[]'})));
-};
-var _debois$elm_dom$DOM$childNode = function (idx) {
-	return _elm_lang$core$Json_Decode$at(
-		{
-			ctor: '::',
-			_0: 'childNodes',
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$core$Basics$toString(idx),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _debois$elm_dom$DOM$parentElement = function (decoder) {
-	return A2(_elm_lang$core$Json_Decode$field, 'parentElement', decoder);
-};
-var _debois$elm_dom$DOM$previousSibling = function (decoder) {
-	return A2(_elm_lang$core$Json_Decode$field, 'previousSibling', decoder);
-};
-var _debois$elm_dom$DOM$nextSibling = function (decoder) {
-	return A2(_elm_lang$core$Json_Decode$field, 'nextSibling', decoder);
-};
-var _debois$elm_dom$DOM$offsetParent = F2(
-	function (x, decoder) {
-		return _elm_lang$core$Json_Decode$oneOf(
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$core$Json_Decode$field,
-					'offsetParent',
-					_elm_lang$core$Json_Decode$null(x)),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$core$Json_Decode$field, 'offsetParent', decoder),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _debois$elm_dom$DOM$position = F2(
-	function (x, y) {
-		return A2(
-			_elm_lang$core$Json_Decode$andThen,
-			function (_p1) {
-				var _p2 = _p1;
-				var _p4 = _p2._1;
-				var _p3 = _p2._0;
-				return A2(
-					_debois$elm_dom$DOM$offsetParent,
-					{ctor: '_Tuple2', _0: _p3, _1: _p4},
-					A2(_debois$elm_dom$DOM$position, _p3, _p4));
-			},
-			A5(
-				_elm_lang$core$Json_Decode$map4,
-				F4(
-					function (scrollLeft, scrollTop, offsetLeft, offsetTop) {
-						return {ctor: '_Tuple2', _0: (x + offsetLeft) - scrollLeft, _1: (y + offsetTop) - scrollTop};
-					}),
-				_debois$elm_dom$DOM$scrollLeft,
-				_debois$elm_dom$DOM$scrollTop,
-				_debois$elm_dom$DOM$offsetLeft,
-				_debois$elm_dom$DOM$offsetTop));
-	});
-var _debois$elm_dom$DOM$boundingClientRect = A4(
-	_elm_lang$core$Json_Decode$map3,
-	F3(
-		function (_p5, width, height) {
-			var _p6 = _p5;
-			return {top: _p6._1, left: _p6._0, width: width, height: height};
-		}),
-	A2(_debois$elm_dom$DOM$position, 0, 0),
-	_debois$elm_dom$DOM$offsetWidth,
-	_debois$elm_dom$DOM$offsetHeight);
-var _debois$elm_dom$DOM$target = function (decoder) {
-	return A2(_elm_lang$core$Json_Decode$field, 'target', decoder);
-};
-var _debois$elm_dom$DOM$Rectangle = F4(
-	function (a, b, c, d) {
-		return {top: a, left: b, width: c, height: d};
-	});
-
 var _elm_lang$animation_frame$Native_AnimationFrame = function()
 {
 
@@ -16489,523 +16360,6 @@ var _rundis$elm_bootstrap$Bootstrap_Card$imgBottom = F3(
 				}));
 	});
 
-var _rundis$elm_bootstrap$Bootstrap_Accordion$transitionStyle = function (height) {
-	return _elm_lang$html$Html_Attributes$style(
-		{
-			ctor: '::',
-			_0: {ctor: '_Tuple2', _0: 'position', _1: 'relative'},
-			_1: {
-				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: 'height', _1: height},
-				_1: {
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'overflow', _1: 'hidden'},
-					_1: {
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: '-webkit-transition-timing-function', _1: 'ease'},
-						_1: {
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: '-o-transition-timing-function', _1: 'ease'},
-							_1: {
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'transition-timing-function', _1: 'ease'},
-								_1: {
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: '-webkit-transition-duration', _1: '0.35s'},
-									_1: {
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: '-o-transition-duration', _1: '0.35s'},
-										_1: {
-											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'transition-duration', _1: '0.35s'},
-											_1: {
-												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: '-webkit-transition-property', _1: 'height'},
-												_1: {
-													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: '-o-transition-property', _1: 'height'},
-													_1: {
-														ctor: '::',
-														_0: {ctor: '_Tuple2', _0: 'transition-property', _1: 'height'},
-														_1: {ctor: '[]'}
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		});
-};
-var _rundis$elm_bootstrap$Bootstrap_Accordion$heightDecoder = _debois$elm_dom$DOM$target(
-	_debois$elm_dom$DOM$parentElement(
-		_debois$elm_dom$DOM$nextSibling(
-			A2(_debois$elm_dom$DOM$childNode, 0, _debois$elm_dom$DOM$offsetHeight))));
-var _rundis$elm_bootstrap$Bootstrap_Accordion$listGroup = _rundis$elm_bootstrap$Bootstrap_Internal_Card$listGroup;
-var _rundis$elm_bootstrap$Bootstrap_Accordion$block = _rundis$elm_bootstrap$Bootstrap_Internal_Card$block;
-var _rundis$elm_bootstrap$Bootstrap_Accordion$CardState = F2(
-	function (a, b) {
-		return {visibility: a, height: b};
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$Config = function (a) {
-	return {ctor: 'Config', _0: a};
-};
-var _rundis$elm_bootstrap$Bootstrap_Accordion$config = function (toMsg) {
-	return _rundis$elm_bootstrap$Bootstrap_Accordion$Config(
-		{
-			toMsg: toMsg,
-			withAnimation: false,
-			cards: {ctor: '[]'}
-		});
-};
-var _rundis$elm_bootstrap$Bootstrap_Accordion$withAnimation = function (_p0) {
-	var _p1 = _p0;
-	return _rundis$elm_bootstrap$Bootstrap_Accordion$Config(
-		_elm_lang$core$Native_Utils.update(
-			_p1._0,
-			{withAnimation: true}));
-};
-var _rundis$elm_bootstrap$Bootstrap_Accordion$cards = F2(
-	function (cards, _p2) {
-		var _p3 = _p2;
-		return _rundis$elm_bootstrap$Bootstrap_Accordion$Config(
-			_elm_lang$core$Native_Utils.update(
-				_p3._0,
-				{cards: cards}));
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$State = function (a) {
-	return {ctor: 'State', _0: a};
-};
-var _rundis$elm_bootstrap$Bootstrap_Accordion$initialState = _rundis$elm_bootstrap$Bootstrap_Accordion$State(_elm_lang$core$Dict$empty);
-var _rundis$elm_bootstrap$Bootstrap_Accordion$Shown = {ctor: 'Shown'};
-var _rundis$elm_bootstrap$Bootstrap_Accordion$AnimatingUp = {ctor: 'AnimatingUp'};
-var _rundis$elm_bootstrap$Bootstrap_Accordion$StartUp = {ctor: 'StartUp'};
-var _rundis$elm_bootstrap$Bootstrap_Accordion$AnimatingDown = {ctor: 'AnimatingDown'};
-var _rundis$elm_bootstrap$Bootstrap_Accordion$StartDown = {ctor: 'StartDown'};
-var _rundis$elm_bootstrap$Bootstrap_Accordion$subscriptions = F2(
-	function (_p4, toMsg) {
-		var _p5 = _p4;
-		var _p10 = _p5._0;
-		var needsSub = A2(
-			_elm_lang$core$List$any,
-			function (_p6) {
-				var _p7 = _p6;
-				return A2(
-					_elm_lang$core$List$member,
-					_p7._1.visibility,
-					{
-						ctor: '::',
-						_0: _rundis$elm_bootstrap$Bootstrap_Accordion$StartDown,
-						_1: {
-							ctor: '::',
-							_0: _rundis$elm_bootstrap$Bootstrap_Accordion$StartUp,
-							_1: {ctor: '[]'}
-						}
-					});
-			},
-			_elm_lang$core$Dict$toList(_p10));
-		var updState = _rundis$elm_bootstrap$Bootstrap_Accordion$State(
-			A2(
-				_elm_lang$core$Dict$map,
-				F2(
-					function (id, state) {
-						var _p8 = state.visibility;
-						switch (_p8.ctor) {
-							case 'StartDown':
-								return _elm_lang$core$Native_Utils.update(
-									state,
-									{visibility: _rundis$elm_bootstrap$Bootstrap_Accordion$AnimatingDown});
-							case 'StartUp':
-								return _elm_lang$core$Native_Utils.update(
-									state,
-									{visibility: _rundis$elm_bootstrap$Bootstrap_Accordion$AnimatingUp});
-							default:
-								return state;
-						}
-					}),
-				_p10));
-		return needsSub ? _elm_lang$animation_frame$AnimationFrame$times(
-			function (_p9) {
-				return toMsg(updState);
-			}) : _elm_lang$core$Platform_Sub$none;
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$Hidden = {ctor: 'Hidden'};
-var _rundis$elm_bootstrap$Bootstrap_Accordion$visibilityTransition = F2(
-	function (withAnimation, visibility) {
-		var _p11 = {ctor: '_Tuple2', _0: withAnimation, _1: visibility};
-		_v5_8:
-		do {
-			if (_p11.ctor === '_Tuple2') {
-				if (_p11._0 === true) {
-					switch (_p11._1.ctor) {
-						case 'Hidden':
-							return _rundis$elm_bootstrap$Bootstrap_Accordion$StartDown;
-						case 'StartDown':
-							return _rundis$elm_bootstrap$Bootstrap_Accordion$AnimatingDown;
-						case 'AnimatingDown':
-							return _rundis$elm_bootstrap$Bootstrap_Accordion$Shown;
-						case 'Shown':
-							return _rundis$elm_bootstrap$Bootstrap_Accordion$StartUp;
-						case 'StartUp':
-							return _rundis$elm_bootstrap$Bootstrap_Accordion$AnimatingUp;
-						default:
-							return _rundis$elm_bootstrap$Bootstrap_Accordion$Hidden;
-					}
-				} else {
-					switch (_p11._1.ctor) {
-						case 'Hidden':
-							return _rundis$elm_bootstrap$Bootstrap_Accordion$Shown;
-						case 'Shown':
-							return _rundis$elm_bootstrap$Bootstrap_Accordion$Hidden;
-						default:
-							break _v5_8;
-					}
-				}
-			} else {
-				break _v5_8;
-			}
-		} while(false);
-		return _rundis$elm_bootstrap$Bootstrap_Accordion$Shown;
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$getOrInitCardState = F2(
-	function (id, _p12) {
-		var _p13 = _p12;
-		return A2(
-			_elm_lang$core$Maybe$withDefault,
-			{visibility: _rundis$elm_bootstrap$Bootstrap_Accordion$Hidden, height: _elm_lang$core$Maybe$Nothing},
-			A2(_elm_lang$core$Dict$get, id, _p13._0));
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$mapCardState = F3(
-	function (id, mapperFn, _p14) {
-		var _p15 = _p14;
-		var updCardState = mapperFn(
-			A2(_rundis$elm_bootstrap$Bootstrap_Accordion$getOrInitCardState, id, _p15));
-		return _rundis$elm_bootstrap$Bootstrap_Accordion$State(
-			A3(_elm_lang$core$Dict$insert, id, updCardState, _p15._0));
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$clickHandler = F4(
-	function (state, _p17, decoder, _p16) {
-		var _p18 = _p17;
-		var _p19 = _p16;
-		var updState = function (h) {
-			return A3(
-				_rundis$elm_bootstrap$Bootstrap_Accordion$mapCardState,
-				_p19._0.id,
-				function (cardState) {
-					return {
-						height: _elm_lang$core$Maybe$Just(h),
-						visibility: A2(_rundis$elm_bootstrap$Bootstrap_Accordion$visibilityTransition, _p18._0.withAnimation, cardState.visibility)
-					};
-				},
-				state);
-		};
-		return A2(
-			_elm_lang$core$Json_Decode$andThen,
-			function (v) {
-				return _elm_lang$core$Json_Decode$succeed(
-					_p18._0.toMsg(
-						updState(v)));
-			},
-			decoder);
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$renderToggle = F3(
-	function (state, config, _p20) {
-		var _p21 = _p20;
-		var _p22 = _p21._0.header;
-		var toggle = _p22._0.toggle;
-		var _p23 = toggle;
-		var attributes = _p23._0.attributes;
-		var children = _p23._0.children;
-		return A2(
-			_elm_lang$html$Html$a,
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$href(
-						A2(_elm_lang$core$Basics_ops['++'], '#', _p21._0.id)),
-					_1: {
-						ctor: '::',
-						_0: A3(
-							_elm_lang$html$Html_Events$onWithOptions,
-							'click',
-							{stopPropagation: false, preventDefault: true},
-							A4(_rundis$elm_bootstrap$Bootstrap_Accordion$clickHandler, state, config, _rundis$elm_bootstrap$Bootstrap_Accordion$heightDecoder, _p21)),
-						_1: {ctor: '[]'}
-					}
-				},
-				attributes),
-			children);
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$renderCardHeader = F3(
-	function (state, config, _p24) {
-		var _p25 = _p24;
-		var _p26 = _p25._0.header;
-		var elemFn = _p26._0.elemFn;
-		var attributes = _p26._0.attributes;
-		var toggle = _p26._0.toggle;
-		var childrenPreToggle = _p26._0.childrenPreToggle;
-		var childrenPostToggle = _p26._0.childrenPostToggle;
-		return A2(
-			elemFn,
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				attributes,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('card-header'),
-					_1: {ctor: '[]'}
-				}),
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				childrenPreToggle,
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					{
-						ctor: '::',
-						_0: A3(_rundis$elm_bootstrap$Bootstrap_Accordion$renderToggle, state, config, _p25),
-						_1: {ctor: '[]'}
-					},
-					childrenPostToggle)));
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$transitionHandler = F3(
-	function (state, _p28, _p27) {
-		var _p29 = _p28;
-		var _p30 = _p27;
-		return _elm_lang$core$Json_Decode$succeed(
-			_p29._0.toMsg(
-				A3(
-					_rundis$elm_bootstrap$Bootstrap_Accordion$mapCardState,
-					_p30._0.id,
-					function (cardState) {
-						return _elm_lang$core$Native_Utils.update(
-							cardState,
-							{
-								visibility: A2(_rundis$elm_bootstrap$Bootstrap_Accordion$visibilityTransition, _p29._0.withAnimation, cardState.visibility)
-							});
-					},
-					state)));
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$animationAttributes = F3(
-	function (state, config, _p31) {
-		var _p32 = _p31;
-		var _p34 = _p32;
-		var cardState = A2(_rundis$elm_bootstrap$Bootstrap_Accordion$getOrInitCardState, _p32._0.id, state);
-		var pixelHeight = A2(
-			_elm_lang$core$Maybe$withDefault,
-			'0',
-			A2(
-				_elm_lang$core$Maybe$map,
-				function (v) {
-					return A2(
-						_elm_lang$core$Basics_ops['++'],
-						_elm_lang$core$Basics$toString(v),
-						'px');
-				},
-				cardState.height));
-		var _p33 = cardState.visibility;
-		switch (_p33.ctor) {
-			case 'Hidden':
-				return {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$style(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'overflow', _1: 'hidden'},
-							_1: {
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'height', _1: '0'},
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {ctor: '[]'}
-				};
-			case 'StartDown':
-				return {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$style(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'overflow', _1: 'hidden'},
-							_1: {
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'height', _1: '0'},
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {ctor: '[]'}
-				};
-			case 'AnimatingDown':
-				return {
-					ctor: '::',
-					_0: _rundis$elm_bootstrap$Bootstrap_Accordion$transitionStyle(pixelHeight),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html_Events$on,
-							'transitionend',
-							A3(_rundis$elm_bootstrap$Bootstrap_Accordion$transitionHandler, state, config, _p34)),
-						_1: {ctor: '[]'}
-					}
-				};
-			case 'AnimatingUp':
-				return {
-					ctor: '::',
-					_0: _rundis$elm_bootstrap$Bootstrap_Accordion$transitionStyle('0px'),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html_Events$on,
-							'transitionend',
-							A3(_rundis$elm_bootstrap$Bootstrap_Accordion$transitionHandler, state, config, _p34)),
-						_1: {ctor: '[]'}
-					}
-				};
-			case 'StartUp':
-				return {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$style(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'height', _1: pixelHeight},
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				};
-			default:
-				return {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$style(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'height', _1: pixelHeight},
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				};
-		}
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$renderCardBlock = F3(
-	function (state, config, _p35) {
-		var _p36 = _p35;
-		return A2(
-			_elm_lang$html$Html$div,
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$id(_p36._0.id),
-					_1: {ctor: '[]'}
-				},
-				A3(_rundis$elm_bootstrap$Bootstrap_Accordion$animationAttributes, state, config, _p36)),
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{ctor: '[]'},
-					_rundis$elm_bootstrap$Bootstrap_Internal_Card$renderBlocks(_p36._0.blocks)),
-				_1: {ctor: '[]'}
-			});
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$renderCard = F3(
-	function (state, config, _p37) {
-		var _p38 = _p37;
-		var _p39 = _p38;
-		return A2(
-			_elm_lang$html$Html$div,
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				_rundis$elm_bootstrap$Bootstrap_Internal_Card$cardAttributes(_p38._0.options),
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('card'),
-					_1: {ctor: '[]'}
-				}),
-			{
-				ctor: '::',
-				_0: A3(_rundis$elm_bootstrap$Bootstrap_Accordion$renderCardHeader, state, config, _p39),
-				_1: {
-					ctor: '::',
-					_0: A3(_rundis$elm_bootstrap$Bootstrap_Accordion$renderCardBlock, state, config, _p39),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$view = F2(
-	function (state, _p40) {
-		var _p41 = _p40;
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			A2(
-				_elm_lang$core$List$map,
-				A2(_rundis$elm_bootstrap$Bootstrap_Accordion$renderCard, state, _p41),
-				_p41._0.cards));
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$Card = function (a) {
-	return {ctor: 'Card', _0: a};
-};
-var _rundis$elm_bootstrap$Bootstrap_Accordion$card = function (_p42) {
-	var _p43 = _p42;
-	return _rundis$elm_bootstrap$Bootstrap_Accordion$Card(
-		{id: _p43.id, options: _p43.options, header: _p43.header, blocks: _p43.blocks});
-};
-var _rundis$elm_bootstrap$Bootstrap_Accordion$Toggle = function (a) {
-	return {ctor: 'Toggle', _0: a};
-};
-var _rundis$elm_bootstrap$Bootstrap_Accordion$toggle = F2(
-	function (attributes, children) {
-		return _rundis$elm_bootstrap$Bootstrap_Accordion$Toggle(
-			{attributes: attributes, children: children});
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$Header = function (a) {
-	return {ctor: 'Header', _0: a};
-};
-var _rundis$elm_bootstrap$Bootstrap_Accordion$prependHeader = F2(
-	function (elements, _p44) {
-		var _p45 = _p44;
-		var _p46 = _p45._0;
-		return _rundis$elm_bootstrap$Bootstrap_Accordion$Header(
-			_elm_lang$core$Native_Utils.update(
-				_p46,
-				{
-					childrenPreToggle: A2(_elm_lang$core$Basics_ops['++'], elements, _p46.childrenPreToggle)
-				}));
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$appendHeader = F2(
-	function (elements, _p47) {
-		var _p48 = _p47;
-		var _p49 = _p48._0;
-		return _rundis$elm_bootstrap$Bootstrap_Accordion$Header(
-			_elm_lang$core$Native_Utils.update(
-				_p49,
-				{
-					childrenPostToggle: A2(_elm_lang$core$Basics_ops['++'], _p49.childrenPreToggle, elements)
-				}));
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$headerPrivate = F3(
-	function (elemFn, attributes, toggle) {
-		return _rundis$elm_bootstrap$Bootstrap_Accordion$Header(
-			{
-				elemFn: elemFn,
-				attributes: attributes,
-				toggle: toggle,
-				childrenPreToggle: {ctor: '[]'},
-				childrenPostToggle: {ctor: '[]'}
-			});
-	});
-var _rundis$elm_bootstrap$Bootstrap_Accordion$header = _rundis$elm_bootstrap$Bootstrap_Accordion$headerPrivate(_elm_lang$html$Html$div);
-var _rundis$elm_bootstrap$Bootstrap_Accordion$headerH1 = _rundis$elm_bootstrap$Bootstrap_Accordion$headerPrivate(_elm_lang$html$Html$h1);
-var _rundis$elm_bootstrap$Bootstrap_Accordion$headerH2 = _rundis$elm_bootstrap$Bootstrap_Accordion$headerPrivate(_elm_lang$html$Html$h2);
-var _rundis$elm_bootstrap$Bootstrap_Accordion$headerH3 = _rundis$elm_bootstrap$Bootstrap_Accordion$headerPrivate(_elm_lang$html$Html$h3);
-var _rundis$elm_bootstrap$Bootstrap_Accordion$headerH4 = _rundis$elm_bootstrap$Bootstrap_Accordion$headerPrivate(_elm_lang$html$Html$h4);
-var _rundis$elm_bootstrap$Bootstrap_Accordion$headerH5 = _rundis$elm_bootstrap$Bootstrap_Accordion$headerPrivate(_elm_lang$html$Html$h5);
-var _rundis$elm_bootstrap$Bootstrap_Accordion$headerH6 = _rundis$elm_bootstrap$Bootstrap_Accordion$headerPrivate(_elm_lang$html$Html$h6);
-
 var _rundis$elm_bootstrap$Bootstrap_Alert$roleClass = function (role) {
 	var _p0 = role;
 	switch (_p0.ctor) {
@@ -18277,8 +17631,10 @@ var _user$project$Types$FilterLocal = function (a) {
 var _user$project$Types$AddLocal = {ctor: 'AddLocal'};
 var _user$project$Types$Waiting = {ctor: 'Waiting'};
 var _user$project$Types$Init = {ctor: 'Init'};
-var _user$project$Types$ControlPanelsMsg = function (a) {
-	return {ctor: 'ControlPanelsMsg', _0: a};
+var _user$project$Types$Filters = {ctor: 'Filters'};
+var _user$project$Types$Navigator = {ctor: 'Navigator'};
+var _user$project$Types$ControlPanelState = function (a) {
+	return {ctor: 'ControlPanelState', _0: a};
 };
 var _user$project$Types$FilterTabMsg = function (a) {
 	return {ctor: 'FilterTabMsg', _0: a};
@@ -19910,22 +19266,24 @@ var _user$project$View$nodeToDisplay = function (currentNode) {
 var _user$project$View$viewElementFilter = F2(
 	function (elementType, _p3) {
 		var _p4 = _p3;
-		var _p6 = _p4._0;
-		var iconClass = function () {
-			var _p5 = _p4._1;
-			if (_p5 === true) {
-				return 'fa fa-eye link';
-			} else {
-				return 'fa fa-eye-slash  link';
-			}
-		}();
+		var _p6 = _p4._1;
+		var _p5 = _p4._0;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
 				_0: _elm_lang$html$Html_Events$onClick(
-					A2(_user$project$Types$ToggleFilter, elementType, _p6)),
-				_1: {ctor: '[]'}
+					A2(_user$project$Types$ToggleFilter, elementType, _p5)),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'text-disabled', _1: !_p6},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			},
 			{
 				ctor: '::',
@@ -19933,13 +19291,30 @@ var _user$project$View$viewElementFilter = F2(
 					_elm_lang$html$Html$i,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class(iconClass),
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'link', _1: true},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'filter-list', _1: true},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'fa fa-eye', _1: _p6},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'fa fa-eye-slash', _1: !_p6},
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html$text(
-							A2(_elm_lang$core$Basics_ops['++'], ' ', _p6)),
+							A2(_elm_lang$core$Basics_ops['++'], ' ', _p5)),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -20040,6 +19415,118 @@ var _user$project$View$viewTabFilters = function (model) {
 			},
 			_rundis$elm_bootstrap$Bootstrap_Tab$config(_user$project$Types$FilterTabMsg)));
 };
+var _user$project$View$viewPanelFilters = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('panel-filters'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('p-1 collapse'),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'role', 'tabpanel'),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _user$project$View$viewTabFilters(model),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$View$viewPanelTitle = F5(
+	function (model, panel, title, panelId, isExpanded) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('rounded-top control-panel-title p-1'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$a,
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-toggle', 'collapse'),
+						_1: {
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-parent', 'control-panels'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$href(
+									A2(_elm_lang$core$Basics_ops['++'], '#', panelId)),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html_Attributes$attribute,
+										'aria-expanded',
+										_elm_lang$core$Basics$toString(isExpanded)),
+									_1: {
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-controls', panelId),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onClick(
+												_user$project$Types$ControlPanelState(panel)),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$i,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$classList(
+									{
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'fa fa-angle-down link',
+											_1: _elm_lang$core$Native_Utils.eq(
+												A2(
+													_elm_lang$core$Dict$get,
+													_elm_lang$core$Basics$toString(panel),
+													model.controlPanelsState),
+												_elm_lang$core$Maybe$Just(true))
+										},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'fa fa-angle-right link',
+												_1: _elm_lang$core$Native_Utils.eq(
+													A2(
+														_elm_lang$core$Dict$get,
+														_elm_lang$core$Basics$toString(panel),
+														model.controlPanelsState),
+													_elm_lang$core$Maybe$Just(false))
+											},
+											_1: {ctor: '[]'}
+										}
+									}),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									A2(_elm_lang$core$Basics_ops['++'], ' ', title)),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			});
+	});
 var _user$project$View$viewError = function (errorMessage) {
 	var div_ = function () {
 		var _p8 = errorMessage;
@@ -20415,6 +19902,34 @@ var _user$project$View$viewNodeData = function (nodetoDisplay) {
 						_1: {ctor: '[]'}
 					}))));
 };
+var _user$project$View$viewPanelNavigator = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('panel-navigator'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('control-panel-navigator collapse show'),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'role', 'tabpanel'),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _user$project$View$viewNodeData(
+				_user$project$View$nodeToDisplay(model.operations.node)),
+			_1: {
+				ctor: '::',
+				_0: _user$project$View$viewEdgeData(
+					_user$project$View$edgeToDisplay(model.operations.edge)),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$View$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -20488,16 +20003,7 @@ var _user$project$View$view = function (model) {
 									ctor: '::',
 									_0: A2(
 										_rundis$elm_bootstrap$Bootstrap_Grid$row,
-										{
-											ctor: '::',
-											_0: _rundis$elm_bootstrap$Bootstrap_Grid_Row$attrs(
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('rounded-top bg-darken-2 control-panel-panel'),
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										},
+										{ctor: '[]'},
 										{
 											ctor: '::',
 											_0: A2(
@@ -20510,8 +20016,16 @@ var _user$project$View$view = function (model) {
 														_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$attrs(
 															{
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$class('text-center'),
-																_1: {ctor: '[]'}
+																_0: _elm_lang$html$Html_Attributes$class('p-0'),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$id('control-panels'),
+																	_1: {
+																		ctor: '::',
+																		_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-children', 'cpanel'),
+																		_1: {ctor: '[]'}
+																	}
+																}
 															}),
 														_1: {ctor: '[]'}
 													}
@@ -20519,162 +20033,34 @@ var _user$project$View$view = function (model) {
 												{
 													ctor: '::',
 													_0: A2(
-														_elm_lang$html$Html$h6,
-														{ctor: '[]'},
+														_elm_lang$html$Html$div,
 														{
 															ctor: '::',
-															_0: _elm_lang$html$Html$text('Navigateur'),
+															_0: _elm_lang$html$Html_Attributes$class('cpanels'),
 															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: A5(_user$project$View$viewPanelTitle, model, _user$project$Types$Navigator, 'Navigateur', 'panel-navigator', true),
+															_1: {
+																ctor: '::',
+																_0: _user$project$View$viewPanelNavigator(model),
+																_1: {
+																	ctor: '::',
+																	_0: A5(_user$project$View$viewPanelTitle, model, _user$project$Types$Filters, 'Filtres', 'panel-filters', false),
+																	_1: {
+																		ctor: '::',
+																		_0: _user$project$View$viewPanelFilters(model),
+																		_1: {ctor: '[]'}
+																	}
+																}
+															}
 														}),
 													_1: {ctor: '[]'}
 												}),
 											_1: {ctor: '[]'}
 										}),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_rundis$elm_bootstrap$Bootstrap_Grid$row,
-											{ctor: '[]'},
-											{
-												ctor: '::',
-												_0: A2(
-													_rundis$elm_bootstrap$Bootstrap_Grid$col,
-													{
-														ctor: '::',
-														_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$lg12,
-														_1: {
-															ctor: '::',
-															_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$attrs(
-																{
-																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$class('control-panel-navigator'),
-																	_1: {ctor: '[]'}
-																}),
-															_1: {ctor: '[]'}
-														}
-													},
-													{
-														ctor: '::',
-														_0: _user$project$View$viewNodeData(
-															_user$project$View$nodeToDisplay(model.operations.node)),
-														_1: {
-															ctor: '::',
-															_0: _user$project$View$viewEdgeData(
-																_user$project$View$edgeToDisplay(model.operations.edge)),
-															_1: {ctor: '[]'}
-														}
-													}),
-												_1: {ctor: '[]'}
-											}),
-										_1: {
-											ctor: '::',
-											_0: A2(
-												_rundis$elm_bootstrap$Bootstrap_Grid$row,
-												{ctor: '[]'},
-												{
-													ctor: '::',
-													_0: A2(
-														_rundis$elm_bootstrap$Bootstrap_Grid$col,
-														{
-															ctor: '::',
-															_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$lg12,
-															_1: {
-																ctor: '::',
-																_0: _rundis$elm_bootstrap$Bootstrap_Grid_Col$attrs(
-																	{
-																		ctor: '::',
-																		_0: _elm_lang$html$Html_Attributes$class('p-0'),
-																		_1: {ctor: '[]'}
-																	}),
-																_1: {ctor: '[]'}
-															}
-														},
-														{
-															ctor: '::',
-															_0: A2(
-																_rundis$elm_bootstrap$Bootstrap_Accordion$view,
-																model.controlPanelsState,
-																A2(
-																	_rundis$elm_bootstrap$Bootstrap_Accordion$cards,
-																	{
-																		ctor: '::',
-																		_0: _rundis$elm_bootstrap$Bootstrap_Accordion$card(
-																			{
-																				id: 'filters',
-																				options: {
-																					ctor: '::',
-																					_0: _rundis$elm_bootstrap$Bootstrap_Card$attrs(
-																						{
-																							ctor: '::',
-																							_0: _elm_lang$html$Html_Attributes$class('rounded-top'),
-																							_1: {ctor: '[]'}
-																						}),
-																					_1: {ctor: '[]'}
-																				},
-																				header: A2(
-																					_rundis$elm_bootstrap$Bootstrap_Accordion$prependHeader,
-																					{
-																						ctor: '::',
-																						_0: A2(
-																							_elm_lang$html$Html$i,
-																							{
-																								ctor: '::',
-																								_0: _elm_lang$html$Html_Attributes$class('fa fa-angle-right'),
-																								_1: {ctor: '[]'}
-																							},
-																							{ctor: '[]'}),
-																						_1: {ctor: '[]'}
-																					},
-																					A2(
-																						_rundis$elm_bootstrap$Bootstrap_Accordion$header,
-																						{
-																							ctor: '::',
-																							_0: _elm_lang$html$Html_Attributes$class('p-1 control-panel-panel rounded-top'),
-																							_1: {ctor: '[]'}
-																						},
-																						A2(
-																							_rundis$elm_bootstrap$Bootstrap_Accordion$toggle,
-																							{
-																								ctor: '::',
-																								_0: _elm_lang$html$Html_Attributes$class('control-panel-title'),
-																								_1: {ctor: '[]'}
-																							},
-																							{
-																								ctor: '::',
-																								_0: _elm_lang$html$Html$text(' Filtres'),
-																								_1: {ctor: '[]'}
-																							}))),
-																				blocks: {
-																					ctor: '::',
-																					_0: A2(
-																						_rundis$elm_bootstrap$Bootstrap_Accordion$block,
-																						{ctor: '[]'},
-																						{
-																							ctor: '::',
-																							_0: A2(
-																								_rundis$elm_bootstrap$Bootstrap_Card$text,
-																								{ctor: '[]'},
-																								{
-																									ctor: '::',
-																									_0: _user$project$View$viewTabFilters(model),
-																									_1: {ctor: '[]'}
-																								}),
-																							_1: {ctor: '[]'}
-																						}),
-																					_1: {ctor: '[]'}
-																				}
-																			}),
-																		_1: {ctor: '[]'}
-																	},
-																	_rundis$elm_bootstrap$Bootstrap_Accordion$withAnimation(
-																		_rundis$elm_bootstrap$Bootstrap_Accordion$config(_user$project$Types$ControlPanelsMsg)))),
-															_1: {ctor: '[]'}
-														}),
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										}
-									}
+									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
 						}
@@ -20724,11 +20110,7 @@ var _user$project$Subscriptions$subscriptions = function (model) {
 							_1: {
 								ctor: '::',
 								_0: A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$listen, model.phxSocket, _user$project$Types$PhoenixMsg),
-								_1: {
-									ctor: '::',
-									_0: A2(_rundis$elm_bootstrap$Bootstrap_Accordion$subscriptions, model.controlPanelsState, _user$project$Types$ControlPanelsMsg),
-									_1: {ctor: '[]'}
-								}
+								_1: {ctor: '[]'}
 							}
 						}
 					}
@@ -20801,11 +20183,37 @@ var _user$project$Main$errorMessage = F2(
 			_1: _elm_lang$core$Platform_Cmd$none
 		};
 	});
+var _user$project$Main$toggleVisible = function (visible) {
+	var _p2 = visible;
+	if (_p2.ctor === 'Just') {
+		return _elm_lang$core$Maybe$Just(!_p2._0);
+	} else {
+		return _elm_lang$core$Maybe$Just(false);
+	}
+};
 var _user$project$Main$joinChannel = A2(
 	_elm_lang$core$Task$perform,
 	_elm_lang$core$Basics$always(_user$project$Types$Join),
 	_elm_lang$core$Task$succeed(
 		{ctor: '_Tuple0'}));
+var _user$project$Main$initControlPanelsState = _elm_lang$core$Dict$fromList(
+	{
+		ctor: '::',
+		_0: {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Basics$toString(_user$project$Types$Navigator),
+			_1: true
+		},
+		_1: {
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Basics$toString(_user$project$Types$Filters),
+				_1: false
+			},
+			_1: {ctor: '[]'}
+		}
+	});
 var _user$project$Main$initOperations = function (flags) {
 	return {
 		node: {
@@ -20830,7 +20238,7 @@ var _user$project$Main$init = function (flags) {
 			operations: _user$project$Main$initOperations(flags),
 			snapshots: _user$project$Accessors_Snapshots$init,
 			filterTabState: _rundis$elm_bootstrap$Bootstrap_Tab$initialState,
-			controlPanelsState: _rundis$elm_bootstrap$Bootstrap_Accordion$initialState
+			controlPanelsState: _user$project$Main$initControlPanelsState
 		},
 		_1: _user$project$Main$joinChannel
 	};
@@ -20838,12 +20246,12 @@ var _user$project$Main$init = function (flags) {
 var _user$project$Main$channelName = 'constellation:explore';
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p2 = msg;
-		switch (_p2.ctor) {
+		var _p3 = msg;
+		switch (_p3.ctor) {
 			case 'PhoenixMsg':
-				var _p3 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$update, _p2._0, model.phxSocket);
-				var phxSocket = _p3._0;
-				var phxCmd = _p3._1;
+				var _p4 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$update, _p3._0, model.phxSocket);
+				var phxSocket = _p4._0;
+				var phxCmd = _p4._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -20862,20 +20270,20 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SendGraph':
-				var _p4 = model.operations.graph.data;
-				if (_p4.ctor === 'Just') {
+				var _p5 = model.operations.graph.data;
+				if (_p5.ctor === 'Just') {
 					return {
 						ctor: '_Tuple2',
 						_0: model,
 						_1: _user$project$Ports$addToGraph(
-							_user$project$Encoders_Graph$encoder(_p4._0))
+							_user$project$Encoders_Graph$encoder(_p5._0))
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'InitGraph':
-				var _p5 = model.operations.graph.data;
-				if (_p5.ctor === 'Just') {
+				var _p6 = model.operations.graph.data;
+				if (_p6.ctor === 'Just') {
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
@@ -20896,7 +20304,7 @@ var _user$project$Main$update = F2(
 								_1: {
 									ctor: '::',
 									_0: _user$project$Ports$initGraph(
-										_user$project$Encoders_Graph$encoder(_p5._0)),
+										_user$project$Encoders_Graph$encoder(_p6._0)),
 									_1: {ctor: '[]'}
 								}
 							}
@@ -20905,15 +20313,15 @@ var _user$project$Main$update = F2(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'SetSearchNode':
-				if (_p2._0.ctor === 'Ok') {
-					var newOps = function (_p6) {
+				if (_p3._0.ctor === 'Ok') {
+					var newOps = function (_p7) {
 						return A2(
 							_user$project$Accessors_Operations$setGraphCurrentOperation,
 							_user$project$Types$AddLocal,
 							A2(
 								_user$project$Accessors_Operations$setSearchedNode,
-								_elm_lang$core$Maybe$Just(_p2._0._0),
-								_p6));
+								_elm_lang$core$Maybe$Just(_p3._0._0),
+								_p7));
 					}(model.operations);
 					return {
 						ctor: '_Tuple2',
@@ -20930,14 +20338,14 @@ var _user$project$Main$update = F2(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'SetBrowsedElement':
-				if (_p2._0.ctor === 'Ok') {
-					var _p8 = _p2._0._0;
+				if (_p3._0.ctor === 'Ok') {
+					var _p9 = _p3._0._0;
 					var newModel = function () {
-						var _p7 = _p8.elementType;
-						if (_p7.ctor === 'EdgeElt') {
-							return A2(_user$project$Main$updateBrowsedEdge, _p8, model);
+						var _p8 = _p9.elementType;
+						if (_p8.ctor === 'EdgeElt') {
+							return A2(_user$project$Main$updateBrowsedEdge, _p9, model);
 						} else {
-							return A2(_user$project$Main$updateBrowsedNode, _p8, model);
+							return A2(_user$project$Main$updateBrowsedNode, _p9, model);
 						}
 					}();
 					return {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none};
@@ -20948,16 +20356,16 @@ var _user$project$Main$update = F2(
 							model,
 							{
 								errorMessage: _elm_lang$core$Maybe$Just(
-									A2(_elm_lang$core$Basics_ops['++'], 'Failed to set browsedElement: ', _p2._0._0))
+									A2(_elm_lang$core$Basics_ops['++'], 'Failed to set browsedElement: ', _p3._0._0))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
 			case 'UnsetBrowsedElement':
-				if (_p2._0.ctor === 'Ok') {
+				if (_p3._0.ctor === 'Ok') {
 					var newOps = function () {
-						var _p9 = _p2._0._0;
-						if (_p9.ctor === 'NodeElt') {
+						var _p10 = _p3._0._0;
+						if (_p10.ctor === 'NodeElt') {
 							return A2(_user$project$Accessors_Operations$setBrowsedNode, _elm_lang$core$Maybe$Nothing, model.operations);
 						} else {
 							return A2(_user$project$Accessors_Operations$setBrowsedEdge, _elm_lang$core$Maybe$Nothing, model.operations);
@@ -20977,20 +20385,20 @@ var _user$project$Main$update = F2(
 							model,
 							{
 								errorMessage: _elm_lang$core$Maybe$Just(
-									A2(_elm_lang$core$Basics_ops['++'], 'Failed to unset browsedElement: ', _p2._0._0))
+									A2(_elm_lang$core$Basics_ops['++'], 'Failed to unset browsedElement: ', _p3._0._0))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
 			case 'SetPinnedElement':
-				if (_p2._0.ctor === 'Ok') {
-					var _p11 = _p2._0._0;
+				if (_p3._0.ctor === 'Ok') {
+					var _p12 = _p3._0._0;
 					var newModel = function () {
-						var _p10 = _p11.elementType;
-						if (_p10.ctor === 'EdgeElt') {
-							return A2(_user$project$Main$updatePinnedEdge, _p11, model);
+						var _p11 = _p12.elementType;
+						if (_p11.ctor === 'EdgeElt') {
+							return A2(_user$project$Main$updatePinnedEdge, _p12, model);
 						} else {
-							return A2(_user$project$Main$updatePinnedNode, _p11, model);
+							return A2(_user$project$Main$updatePinnedNode, _p12, model);
 						}
 					}();
 					return {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none};
@@ -21001,32 +20409,32 @@ var _user$project$Main$update = F2(
 							model,
 							{
 								errorMessage: _elm_lang$core$Maybe$Just(
-									A2(_elm_lang$core$Basics_ops['++'], 'Failed to unset pinnedElement: ', _p2._0._0))
+									A2(_elm_lang$core$Basics_ops['++'], 'Failed to unset pinnedElement: ', _p3._0._0))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
 			case 'SetGraphState':
-				if (_p2._0.ctor === 'Ok') {
+				if (_p3._0.ctor === 'Ok') {
 					var newOps = function () {
-						var _p12 = model.operations.graph.current;
-						if (_p12.ctor === 'AddLocal') {
+						var _p13 = model.operations.graph.current;
+						if (_p13.ctor === 'AddLocal') {
 							return A2(
 								_user$project$Accessors_Operations$setGraphCurrentOperation,
 								_user$project$Types$FilterLocal(1),
 								model.operations);
 						} else {
-							return function (_p13) {
+							return function (_p14) {
 								return A2(
 									_user$project$Accessors_Operations$setGraphData,
 									_elm_lang$core$Maybe$Nothing,
-									A2(_user$project$Accessors_Operations$setGraphCurrentOperation, _user$project$Types$Waiting, _p13));
+									A2(_user$project$Accessors_Operations$setGraphCurrentOperation, _user$project$Types$Waiting, _p14));
 							}(model.operations);
 						}
 					}();
 					var cmds = function () {
-						var _p14 = model.operations.graph.current;
-						if (_p14.ctor === 'AddLocal') {
+						var _p15 = model.operations.graph.current;
+						if (_p15.ctor === 'AddLocal') {
 							return _elm_lang$core$Platform_Cmd$batch(
 								{
 									ctor: '::',
@@ -21051,7 +20459,7 @@ var _user$project$Main$update = F2(
 							return _elm_lang$core$Platform_Cmd$none;
 						}
 					}();
-					var newSnapshots = A3(_user$project$Accessors_Snapshots$addNewSnapshot, _p2._0._0, model.operations, model.snapshots);
+					var newSnapshots = A3(_user$project$Accessors_Snapshots$addNewSnapshot, _p3._0._0, model.operations, model.snapshots);
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -21066,7 +20474,7 @@ var _user$project$Main$update = F2(
 							model,
 							{
 								errorMessage: _elm_lang$core$Maybe$Just(
-									A2(_elm_lang$core$Basics_ops['++'], 'Failed to set new graph state: ', _p2._0._0))
+									A2(_elm_lang$core$Basics_ops['++'], 'Failed to set new graph state: ', _p3._0._0))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -21082,7 +20490,7 @@ var _user$project$Main$update = F2(
 							_fbonetti$elm_phoenix_socket$Phoenix_Channel$withPayload,
 							_user$project$Encoders_Common$userEncoder(model.userToken),
 							_fbonetti$elm_phoenix_socket$Phoenix_Channel$init(_user$project$Main$channelName))));
-				var _p15 = A2(
+				var _p16 = A2(
 					_fbonetti$elm_phoenix_socket$Phoenix_Socket$join,
 					channel,
 					A4(
@@ -21102,8 +20510,8 @@ var _user$project$Main$update = F2(
 								_user$project$Types$ReceiveNodeLocalGraph,
 								_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
 									_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(model.socketUrl))))));
-				var phxSocket = _p15._0;
-				var phxCmd = _p15._1;
+				var phxSocket = _p16._0;
+				var phxCmd = _p16._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -21122,18 +20530,18 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'GetNodeLocalGraph':
-				var _p16 = model.operations.node.searched;
-				if (_p16.ctor === 'Nothing') {
+				var _p17 = model.operations.node.searched;
+				if (_p17.ctor === 'Nothing') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
-					var _p18 = _p16._0;
+					var _p19 = _p17._0;
 					var payload = _elm_lang$core$Json_Encode$object(
 						{
 							ctor: '::',
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'uuid',
-								_1: _elm_lang$core$Json_Encode$string(_p18.uuid)
+								_1: _elm_lang$core$Json_Encode$string(_p19.uuid)
 							},
 							_1: {
 								ctor: '::',
@@ -21141,7 +20549,7 @@ var _user$project$Main$update = F2(
 									ctor: '_Tuple2',
 									_0: 'labels',
 									_1: _elm_lang$core$Json_Encode$list(
-										A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, _p18.labels))
+										A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, _p19.labels))
 								},
 								_1: {ctor: '[]'}
 							}
@@ -21156,9 +20564,9 @@ var _user$project$Main$update = F2(
 								_fbonetti$elm_phoenix_socket$Phoenix_Push$withPayload,
 								payload,
 								A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'node:local_graph', _user$project$Main$channelName))));
-					var _p17 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
-					var phxSocket = _p17._0;
-					var phxCmd = _p17._1;
+					var _p18 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
+					var phxSocket = _p18._0;
+					var phxCmd = _p18._1;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -21170,8 +20578,8 @@ var _user$project$Main$update = F2(
 			case 'ReceiveNodeLocalGraph':
 				var newOps = A2(_user$project$Accessors_Operations$setSearchedNode, _elm_lang$core$Maybe$Nothing, model.operations);
 				var localGraphCmd = function () {
-					var _p19 = model.operations.graph.current;
-					if (_p19.ctor === 'Init') {
+					var _p20 = model.operations.graph.current;
+					if (_p20.ctor === 'Init') {
 						return A2(
 							_elm_lang$core$Task$perform,
 							_elm_lang$core$Basics$always(_user$project$Types$InitGraph),
@@ -21185,18 +20593,18 @@ var _user$project$Main$update = F2(
 								{ctor: '_Tuple0'}));
 					}
 				}();
-				var decodedGraph = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Graph$fromWsDecoder, _p2._0);
-				var _p20 = decodedGraph;
-				if (_p20.ctor === 'Ok') {
-					var _p21 = _p20._0;
+				var decodedGraph = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Graph$fromWsDecoder, _p3._0);
+				var _p21 = decodedGraph;
+				if (_p21.ctor === 'Ok') {
+					var _p22 = _p21._0;
 					var finalOps = A2(
 						_user$project$Accessors_Operations$setGraphData,
 						_elm_lang$core$Maybe$Just(
-							A2(_user$project$Accessors_Graph$updateMetaData, model.operations.node.searched, _p21)),
+							A2(_user$project$Accessors_Graph$updateMetaData, model.operations.node.searched, _p22)),
 						newOps);
 					var deDupedGraph = A2(
 						_user$project$Accessors_Graph$substractGraph,
-						_p21,
+						_p22,
 						_user$project$Accessors_Snapshots$getCurrent(model.snapshots).graph);
 					var graphCmd = (_elm_lang$core$Native_Utils.cmp(
 						_elm_lang$core$List$length(deDupedGraph),
@@ -21218,7 +20626,7 @@ var _user$project$Main$update = F2(
 									A2(
 										_elm_lang$core$Basics_ops['++'],
 										'Cannot decode received graph. -[',
-										A2(_elm_lang$core$Basics_ops['++'], _p20._0, ']')))
+										A2(_elm_lang$core$Basics_ops['++'], _p21._0, ']')))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -21231,9 +20639,9 @@ var _user$project$Main$update = F2(
 						_fbonetti$elm_phoenix_socket$Phoenix_Push$onOk,
 						_user$project$Types$ReceiveNodeLabels,
 						A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'node:labels', _user$project$Main$channelName)));
-				var _p22 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
-				var phxSocket = _p22._0;
-				var phxCmd = _p22._1;
+				var _p23 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
+				var phxSocket = _p23._0;
+				var phxCmd = _p23._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -21242,16 +20650,16 @@ var _user$project$Main$update = F2(
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Types$PhoenixMsg, phxCmd)
 				};
 			case 'ReceiveNodeLabels':
-				var decodedLabels = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Element$filterDecoder, _p2._0);
-				var _p23 = decodedLabels;
-				if (_p23.ctor === 'Ok') {
+				var decodedLabels = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Element$filterDecoder, _p3._0);
+				var _p24 = decodedLabels;
+				if (_p24.ctor === 'Ok') {
 					var elementFilters = _elm_lang$core$Dict$fromList(
 						A2(
 							_elm_lang$core$List$map,
 							function (x) {
 								return {ctor: '_Tuple2', _0: x, _1: true};
 							},
-							_p23._0));
+							_p24._0));
 					var newOps = A2(_user$project$Accessors_Operations$setNodeFilters, elementFilters, model.operations);
 					var newSnapshots = A2(_user$project$Accessors_Snapshots$setNodeFilters, elementFilters, model.snapshots);
 					return {
@@ -21271,7 +20679,7 @@ var _user$project$Main$update = F2(
 									A2(
 										_elm_lang$core$Basics_ops['++'],
 										'Cannot decode received node labels. -[',
-										A2(_elm_lang$core$Basics_ops['++'], _p23._0, ']')))
+										A2(_elm_lang$core$Basics_ops['++'], _p24._0, ']')))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -21284,9 +20692,9 @@ var _user$project$Main$update = F2(
 						_fbonetti$elm_phoenix_socket$Phoenix_Push$onOk,
 						_user$project$Types$ReceiveEdgeTypes,
 						A2(_fbonetti$elm_phoenix_socket$Phoenix_Push$init, 'edge:types', _user$project$Main$channelName)));
-				var _p24 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
-				var phxSocket = _p24._0;
-				var phxCmd = _p24._1;
+				var _p25 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$push, phxPush, model.phxSocket);
+				var phxSocket = _p25._0;
+				var phxCmd = _p25._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -21295,16 +20703,16 @@ var _user$project$Main$update = F2(
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Types$PhoenixMsg, phxCmd)
 				};
 			case 'ReceiveEdgeTypes':
-				var decodedTypes = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Element$filterDecoder, _p2._0);
-				var _p25 = decodedTypes;
-				if (_p25.ctor === 'Ok') {
+				var decodedTypes = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Decoders_Element$filterDecoder, _p3._0);
+				var _p26 = decodedTypes;
+				if (_p26.ctor === 'Ok') {
 					var elementFilters = _elm_lang$core$Dict$fromList(
 						A2(
 							_elm_lang$core$List$map,
 							function (x) {
 								return {ctor: '_Tuple2', _0: x, _1: true};
 							},
-							_p25._0));
+							_p26._0));
 					var newOps = A2(_user$project$Accessors_Operations$setEdgeFilters, elementFilters, model.operations);
 					var newSnapshots = A2(_user$project$Accessors_Snapshots$setEdgeFilters, elementFilters, model.snapshots);
 					return {
@@ -21320,22 +20728,22 @@ var _user$project$Main$update = F2(
 						A2(
 							_elm_lang$core$Basics_ops['++'],
 							'Cannot decode received edge types. -[',
-							A2(_elm_lang$core$Basics_ops['++'], _p25._0, ']')),
+							A2(_elm_lang$core$Basics_ops['++'], _p26._0, ']')),
 						model);
 				}
 			case 'ToggleFilter':
-				if (_p2._0.ctor === 'NodeElt') {
-					var _p26 = _p2._1;
+				if (_p3._0.ctor === 'NodeElt') {
+					var _p27 = _p3._1;
 					var filteredElements = A2(
 						_user$project$Accessors_Graph$getFilteredNodes,
 						{
 							ctor: '::',
-							_0: _p26,
+							_0: _p27,
 							_1: {ctor: '[]'}
 						},
 						_user$project$Accessors_Snapshots$getCurrent(model.snapshots).graph);
-					var newOps = A2(_user$project$Accessors_Operations$toggleNodeFilterState, _p26, model.operations);
-					var visible = A2(_user$project$Accessors_Operations$getNodeFilterState, _p26, newOps);
+					var newOps = A2(_user$project$Accessors_Operations$toggleNodeFilterState, _p27, model.operations);
+					var visible = A2(_user$project$Accessors_Operations$getNodeFilterState, _p27, newOps);
 					var cmd = _user$project$Ports$setVisibleElements(
 						A3(_user$project$Encoders_Operations$visibleElementsEncoder, _user$project$Types$NodeElt, filteredElements, visible));
 					return {
@@ -21346,17 +20754,17 @@ var _user$project$Main$update = F2(
 						_1: cmd
 					};
 				} else {
-					var _p27 = _p2._1;
+					var _p28 = _p3._1;
 					var filteredElements = A2(
 						_user$project$Accessors_Graph$getFilteredEdges,
 						{
 							ctor: '::',
-							_0: _p27,
+							_0: _p28,
 							_1: {ctor: '[]'}
 						},
 						_user$project$Accessors_Snapshots$getCurrent(model.snapshots).graph);
-					var newOps = A2(_user$project$Accessors_Operations$toggleEdgeFilterState, _p27, model.operations);
-					var visible = A2(_user$project$Accessors_Operations$getEdgeFilterState, _p27, newOps);
+					var newOps = A2(_user$project$Accessors_Operations$toggleEdgeFilterState, _p28, model.operations);
+					var visible = A2(_user$project$Accessors_Operations$getEdgeFilterState, _p28, newOps);
 					var cmd = _user$project$Ports$setVisibleElements(
 						A3(_user$project$Encoders_Operations$visibleElementsEncoder, _user$project$Types$EdgeElt, filteredElements, visible));
 					return {
@@ -21368,14 +20776,14 @@ var _user$project$Main$update = F2(
 					};
 				}
 			case 'ApplyFiltersOnLocalGraph':
-				if (_p2._0.ctor === 'NodeElt') {
+				if (_p3._0.ctor === 'NodeElt') {
 					var filteredElements = function () {
-						var _p28 = model.operations.graph.data;
-						if (_p28.ctor === 'Just') {
+						var _p29 = model.operations.graph.data;
+						if (_p29.ctor === 'Just') {
 							return A2(
 								_user$project$Accessors_Graph$getFilteredNodes,
 								_user$project$Accessors_Operations$getNodeActiveFilters(model.operations),
-								_p28._0);
+								_p29._0);
 						} else {
 							return {ctor: '[]'};
 						}
@@ -21385,12 +20793,12 @@ var _user$project$Main$update = F2(
 					return {ctor: '_Tuple2', _0: model, _1: cmd};
 				} else {
 					var filteredElements = function () {
-						var _p29 = model.operations.graph.data;
-						if (_p29.ctor === 'Just') {
+						var _p30 = model.operations.graph.data;
+						if (_p30.ctor === 'Just') {
 							return A2(
 								_user$project$Accessors_Graph$getFilteredEdges,
 								_user$project$Accessors_Operations$getEdgeActiveFilters(model.operations),
-								_p29._0);
+								_p30._0);
 						} else {
 							return {ctor: '[]'};
 						}
@@ -21400,7 +20808,7 @@ var _user$project$Main$update = F2(
 					return {ctor: '_Tuple2', _0: model, _1: cmd};
 				}
 			case 'ResetFilters':
-				if (_p2._0.ctor === 'NodeElt') {
+				if (_p3._0.ctor === 'NodeElt') {
 					var newOps = _user$project$Accessors_Operations$resetNodeFilters(model.operations);
 					return {
 						ctor: '_Tuple2',
@@ -21442,15 +20850,20 @@ var _user$project$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{filterTabState: _p2._0}),
+						{filterTabState: _p3._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			default:
+				var newPanelsState = A3(
+					_elm_lang$core$Dict$update,
+					_elm_lang$core$Basics$toString(_p3._0),
+					_user$project$Main$toggleVisible,
+					model.controlPanelsState);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{controlPanelsState: _p2._0}),
+						{controlPanelsState: newPanelsState}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
@@ -21486,7 +20899,7 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Bootstrap.Tab.State":{"args":[],"tags":{"State":["{ activeTab : Maybe.Maybe String , visibility : Bootstrap.Tab.Visibility }"]}},"Bootstrap.Accordion.State":{"args":[],"tags":{"State":["Dict.Dict String Bootstrap.Accordion.CardState"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Types.NodeData":{"args":[],"tags":{"InstitutionNode":["Types.InstitutionNodeData"],"LocationNode":["Types.LocationNodeData"],"PersonNode":["Types.PersonNodeData"],"ValueNode":["Types.ValueNodeData"],"PublicationNode":["Types.PublicationNodeData"],"GenericNode":["Types.GenericNodeData"]}},"Types.ElementType":{"args":[],"tags":{"NodeElt":[],"EdgeElt":[]}},"Bootstrap.Tab.Visibility":{"args":[],"tags":{"Start":[],"Showing":[],"Hidden":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Types.EdgeData":{"args":[],"tags":{"InfluencedEdge":["Types.InfluencedEdgeData"],"GenericEdge":["Types.GenericEdgeData"]}},"Types.Msg":{"args":[],"tags":{"SetPinnedElement":["Result.Result String Types.PinnedElement"],"SetSearchNode":["Result.Result String Types.SearchNodeType"],"GetNodeLocalGraph":[],"JoinError":[],"Join":[],"UnsetBrowsedElement":["Result.Result String Types.ElementType"],"GetNodeLabels":[],"FilterTabMsg":["Bootstrap.Tab.State"],"GetEdgeTypes":[],"HandleSendError":["Json.Encode.Value"],"ReceiveNodeLabels":["Json.Encode.Value"],"SetGraphState":["Result.Result String Types.GraphSnapshot"],"PhoenixMsg":["Phoenix.Socket.Msg Types.Msg"],"ApplyFiltersOnLocalGraph":["Types.ElementType"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"ToggleFilter":["Types.ElementType","Types.FilterName"],"SendGraph":[],"ControlPanelsMsg":["Bootstrap.Accordion.State"],"ReceiveEdgeTypes":["Json.Encode.Value"],"ResetFilters":["Types.ElementType"],"InitGraph":[],"SetBrowsedElement":["Result.Result String Types.BrowsedElement"]}},"Bootstrap.Accordion.Visibility":{"args":[],"tags":{"AnimatingDown":[],"StartDown":[],"StartUp":[],"AnimatingUp":[],"Hidden":[],"Shown":[]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Types.Element":{"args":[],"tags":{"Node":["Types.NodeType"],"Edge":["Types.EdgeType"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Types.GenericNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String }"},"Types.InfluencedEdgeData":{"args":[],"type":"{ id : String , source : String , target : String , edge_type : String , strength : Int }"},"Types.FilterName":{"args":[],"type":"String"},"Types.LocationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lat : Maybe.Maybe Float , long : Maybe.Maybe Float }"},"Types.PersonNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lastName : String , firstName : String , aka : String , internalLink : String , externalLink : String }"},"Types.ValueNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , value : Int }"},"Types.PublicationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , title : String , titleFr : String , internalLink : String , externalLink : String }"},"Types.BrowsedElement":{"args":[],"type":"{ id : String, elementType : Types.ElementType }"},"Bootstrap.Accordion.CardState":{"args":[],"type":"{ visibility : Bootstrap.Accordion.Visibility , height : Maybe.Maybe Float }"},"Types.Position":{"args":[],"type":"{ x : Float, y : Float }"},"Types.GenericEdgeData":{"args":[],"type":"{ id : String, source : String, target : String, edge_type : String }"},"Types.NodeType":{"args":[],"type":"{ group : String , data : Types.NodeData , classes : String , position : Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.GraphSnapshot":{"args":[],"type":"{ graph : Types.Graph, description : String }"},"Types.SearchNodeType":{"args":[],"type":"{ uuid : String, labels : List String }"},"Types.PinnedElement":{"args":[],"type":"{ elementType : Types.ElementType, pin : Bool }"},"Time.Time":{"args":[],"type":"Float"},"Types.EdgeType":{"args":[],"type":"{ group : String , data : Types.EdgeData , classes : String , position : Maybe.Maybe Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.InstitutionNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , institution_type : String }"},"Types.Graph":{"args":[],"type":"List Types.Element"}},"message":"Types.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Bootstrap.Tab.State":{"args":[],"tags":{"State":["{ activeTab : Maybe.Maybe String , visibility : Bootstrap.Tab.Visibility }"]}},"Json.Encode.Value":{"args":[],"tags":{"Value":[]}},"Types.NodeData":{"args":[],"tags":{"InstitutionNode":["Types.InstitutionNodeData"],"LocationNode":["Types.LocationNodeData"],"PersonNode":["Types.PersonNodeData"],"ValueNode":["Types.ValueNodeData"],"PublicationNode":["Types.PublicationNodeData"],"GenericNode":["Types.GenericNodeData"]}},"Types.ElementType":{"args":[],"tags":{"NodeElt":[],"EdgeElt":[]}},"Bootstrap.Tab.Visibility":{"args":[],"tags":{"Start":[],"Showing":[],"Hidden":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Types.EdgeData":{"args":[],"tags":{"InfluencedEdge":["Types.InfluencedEdgeData"],"GenericEdge":["Types.GenericEdgeData"]}},"Types.Msg":{"args":[],"tags":{"SetPinnedElement":["Result.Result String Types.PinnedElement"],"SetSearchNode":["Result.Result String Types.SearchNodeType"],"GetNodeLocalGraph":[],"JoinError":[],"Join":[],"UnsetBrowsedElement":["Result.Result String Types.ElementType"],"GetNodeLabels":[],"FilterTabMsg":["Bootstrap.Tab.State"],"GetEdgeTypes":[],"HandleSendError":["Json.Encode.Value"],"ReceiveNodeLabels":["Json.Encode.Value"],"SetGraphState":["Result.Result String Types.GraphSnapshot"],"PhoenixMsg":["Phoenix.Socket.Msg Types.Msg"],"ApplyFiltersOnLocalGraph":["Types.ElementType"],"ReceiveNodeLocalGraph":["Json.Encode.Value"],"ToggleFilter":["Types.ElementType","Types.FilterName"],"SendGraph":[],"ReceiveEdgeTypes":["Json.Encode.Value"],"ResetFilters":["Types.ElementType"],"InitGraph":[],"SetBrowsedElement":["Result.Result String Types.BrowsedElement"],"ControlPanelState":["Types.Panel"]}},"Types.Panel":{"args":[],"tags":{"Filters":[],"Navigator":[]}},"Types.Element":{"args":[],"tags":{"Node":["Types.NodeType"],"Edge":["Types.EdgeType"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Phoenix.Socket.Msg":{"args":["msg"],"tags":{"ChannelErrored":["String"],"ChannelClosed":["String"],"ExternalMsg":["msg"],"ChannelJoined":["String"],"Heartbeat":["Time.Time"],"NoOp":[],"ReceiveReply":["String","Int"]}}},"aliases":{"Types.GenericNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String }"},"Types.InfluencedEdgeData":{"args":[],"type":"{ id : String , source : String , target : String , edge_type : String , strength : Int }"},"Types.FilterName":{"args":[],"type":"String"},"Types.LocationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lat : Maybe.Maybe Float , long : Maybe.Maybe Float }"},"Types.PersonNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , lastName : String , firstName : String , aka : String , internalLink : String , externalLink : String }"},"Types.ValueNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , value : Int }"},"Types.PublicationNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , title : String , titleFr : String , internalLink : String , externalLink : String }"},"Types.BrowsedElement":{"args":[],"type":"{ id : String, elementType : Types.ElementType }"},"Types.Position":{"args":[],"type":"{ x : Float, y : Float }"},"Types.GenericEdgeData":{"args":[],"type":"{ id : String, source : String, target : String, edge_type : String }"},"Types.NodeType":{"args":[],"type":"{ group : String , data : Types.NodeData , classes : String , position : Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.GraphSnapshot":{"args":[],"type":"{ graph : Types.Graph, description : String }"},"Types.SearchNodeType":{"args":[],"type":"{ uuid : String, labels : List String }"},"Types.PinnedElement":{"args":[],"type":"{ elementType : Types.ElementType, pin : Bool }"},"Time.Time":{"args":[],"type":"Float"},"Types.EdgeType":{"args":[],"type":"{ group : String , data : Types.EdgeData , classes : String , position : Maybe.Maybe Types.Position , grabbable : Bool , locked : Bool , removed : Bool , selectable : Bool , selected : Bool }"},"Types.InstitutionNodeData":{"args":[],"type":"{ id : String , labels : List String , name : String , parentNode : Maybe.Maybe String , institution_type : String }"},"Types.Graph":{"args":[],"type":"List Types.Element"}},"message":"Types.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])

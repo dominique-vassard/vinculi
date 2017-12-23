@@ -5,7 +5,6 @@ import Json.Encode exposing (Value)
 import Dict exposing (Dict)
 import Utils.ZipList as ZipList exposing (ZipList)
 import Bootstrap.Tab as Tab
-import Bootstrap.Accordion as Accordion
 
 
 --- FLAGS
@@ -287,7 +286,7 @@ type alias Model =
     , operations : Operations
     , snapshots : ZipList Snapshot
     , filterTabState : Tab.State
-    , controlPanelsState : Accordion.State
+    , controlPanelsState : Dict String Visible
     }
 
 
@@ -295,6 +294,11 @@ type alias SearchNodeType =
     { uuid : String
     , labels : List String
     }
+
+
+type Panel
+    = Navigator
+    | Filters
 
 
 type Msg
@@ -319,4 +323,4 @@ type Msg
     | ApplyFiltersOnLocalGraph ElementType
     | ResetFilters ElementType
     | FilterTabMsg Tab.State
-    | ControlPanelsMsg Accordion.State
+    | ControlPanelState Panel

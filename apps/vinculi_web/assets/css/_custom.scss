@@ -52,12 +52,6 @@ body {
     border-color: lightgrey;
 }
 
-.control-panel-panel {
-  background-color: lightgrey;
-  margin-bottom: 0.25em;
-  box-shadow: 0px 2px 3px grey;
-}
-
 .nav-filter-node {
   border: 1px solid #7F7F7F !important;
   background-color: $node-color !important;
@@ -97,16 +91,23 @@ body {
 .filter-pane {
   border: 1px solid #7F7F7F;
   border-top-color: transparent;
-  height: 580px;
+  max-height: 400px;
+  overflow: auto;
 }
 
 .control-panel-title {
+  background-color: lightgrey;
+  margin-bottom: 0.25em;
+  box-shadow: 0px 2px 3px grey;
+}
+
+.control-panel-title > a {
   color: #000;
 }
 
-.control-panel-title:hover {
+.control-panel-title > a:hover {
   text-decoration: none;
-  color: gray
+  color: gray;
 }
 
 .control-panel-navigator {
@@ -115,4 +116,12 @@ body {
 
 .link {
   cursor: pointer;
+}
+
+.text-disabled {
+  color: gray;
+}
+
+.filter-list:hover {
+  color:#999;
 }

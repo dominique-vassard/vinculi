@@ -14,10 +14,9 @@ import Phoenix.Socket as PhxSocket
         )
 import Phoenix.Channel as PhxChannel exposing (init, onJoin)
 import Phoenix.Push as PhxPush exposing (init, onError, onOk, withPayload)
-import Bootstrap.Accordion as Accordion
 import Bootstrap.Tab as Tab
 import Task
-import Dict
+import Dict exposing (..)
 import Types exposing (..)
 import Ports
     exposing
@@ -85,6 +84,11 @@ initOperations flags =
     }
 
 
+initControlPanelsState : Dict String Visible
+initControlPanelsState =
+    Dict.fromList [ ( toString Navigator, True ), ( toString Filters, False ) ]
+
+
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( { phxSocket = PhxSocket.init flags.socketUrl
@@ -94,7 +98,7 @@ init flags =
       , operations = initOperations flags
       , snapshots = Snapshots.init
       , filterTabState = Tab.initialState
-      , controlPanelsState = Accordion.initialState
+      , controlPanelsState = initControlPanelsState
       }
     , joinChannel
     )
@@ -616,8 +620,22 @@ update msg model =
         FilterTabMsg state ->
             ( { model | filterTabState = state }, Cmd.none )
 
-        ControlPanelsMsg state ->
-            ( { model | controlPanelsState = state }, Cmd.none )
+        ControlPanelState panel ->
+            let
+                newPanelsState =
+                    Dict.update (toString panel) toggleVisible model.controlPanelsState
+            in
+                ( { model | controlPanelsState = newPanelsState }, Cmd.none )
+
+
+toggleVisible : Maybe Visible -> Maybe Visible
+toggleVisible visible =
+    case visible of
+        Just v ->
+            Just (not v)
+
+        Nothing ->
+            Just False
 
 
 errorMessage : String -> Model -> ( Model, Cmd Msg )
