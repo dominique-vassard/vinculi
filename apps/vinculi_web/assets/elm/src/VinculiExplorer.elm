@@ -287,7 +287,7 @@ update msg model =
 
                 ( phxSocket, phxCmd ) =
                     PhxSocket.init model.socketUrl
-                        |> PhxSocket.withDebug
+                        --|> PhxSocket.withDebug
                         |> PhxSocket.on "node:local_graph"
                             channelName
                             ReceiveNodeLocalGraph

@@ -358,7 +358,7 @@ var GraphManager = /** @class */ (function () {
                 // fit: false,
                 animate: true,
                 avoidOverlap: true,
-                spacingFactor: 3,
+                spacingFactor: 4,
                 animationDuration: 300
             }
         });

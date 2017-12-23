@@ -32,5 +32,5 @@ function nextOperation(graphManager) {
 async function initGraphManager(elmApp, serverUrl: string) {
     const graphManager = new GraphManager(elmApp, serverUrl)
     await graphManager.init()
-    nextOperation(graphManager)
+    // nextOperation(graphManager)
 }

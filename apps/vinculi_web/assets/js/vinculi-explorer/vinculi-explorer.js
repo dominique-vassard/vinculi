@@ -60,10 +60,11 @@ function initGraphManager(elmApp, serverUrl) {
             switch (_a.label) {
                 case 0:
                     graphManager = new graph_manager_1.GraphManager(elmApp, serverUrl);
-                    return [4 /*yield*/, graphManager.init()];
+                    return [4 /*yield*/, graphManager.init()
+                        // nextOperation(graphManager)
+                    ];
                 case 1:
                     _a.sent();
-                    nextOperation(graphManager);
                     return [2 /*return*/];
             }
         });
