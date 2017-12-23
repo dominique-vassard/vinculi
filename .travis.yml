@@ -16,7 +16,6 @@ services:
   - neo4j
 
 before_script:
-  - echo TRAVIS_NEO4J_VERSION
   - mysql -e "CREATE DATABASE arsmagbdd_test;" -u root
   - mysql -e "CREATE USER 'arsmagbdd'@'localhost' IDENTIFIED BY 'ars_magica';"
   - mysql -e "GRANT ALL ON *.* TO 'arsmagbdd'@'localhost' WITH GRANT OPTION;"
