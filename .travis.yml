@@ -7,8 +7,8 @@ otp_release: 19.3
 
 env:
   global:
-    - NEO4J_PATH=/usr/local/neo4j-3.2.1
-    - NEO4J_CONF_PATH=/usr/local/neo4j-3.2.1/conf
+    - NEO4J_PATH=/usr/local/neo4j-3.2.7
+    - NEO4J_CONF_PATH=/usr/local/neo4j-3.2.7/conf
 
 services:
   - mysql
@@ -16,6 +16,7 @@ services:
   - neo4j
 
 before_script:
+  - echo TRAVIS_NEO4J_VERSION
   - mysql -e "CREATE DATABASE arsmagbdd_test;" -u root
   - mysql -e "CREATE USER 'arsmagbdd'@'localhost' IDENTIFIED BY 'ars_magica';"
   - mysql -e "GRANT ALL ON *.* TO 'arsmagbdd'@'localhost' WITH GRANT OPTION;"
